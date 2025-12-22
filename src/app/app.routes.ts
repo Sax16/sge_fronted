@@ -19,6 +19,7 @@ import { SignInComponent } from './pages/auth-pages/sign-in/sign-in.component';
 import { SignUpComponent } from './pages/auth-pages/sign-up/sign-up.component';
 import { CalenderComponent } from './pages/calender/calender.component';
 import { UsersComponent } from './pages/users/users.component';
+import { EmployeesComponent } from './pages/employees/employees.component';
 
 export const routes: Routes = [
   {
@@ -108,6 +109,11 @@ export const routes: Routes = [
         component:UsersComponent,
         title:'Gestión de Usuarios | ELOHIM SGE'
       },
+      {
+        path:'employees',
+        component: EmployeesComponent,
+        title: 'Gestión de Empleados | ELOHIM SGE'
+      }
     ]
   },
   // auth pages
