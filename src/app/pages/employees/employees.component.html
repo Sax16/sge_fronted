@@ -1,4 +1,14 @@
 <div>
   <app-page-breadcrumb pageTitle="Gestión de Empleados" />
-  <app-employee-table></app-employee-table>
+
+  <app-employee-table
+    (newEmployee)="openModal()"
+  >
+  </app-employee-table>
+
+  <!-- Modal for adding a new employee -->
+  <app-modal [isOpen]="isOpen" (close)="closeModal()" className="max-w-[700px] m-4">
+    <app-employee-form (submitForm)="closeModal()"></app-employee-form>
+  </app-modal>
+
 </div>
