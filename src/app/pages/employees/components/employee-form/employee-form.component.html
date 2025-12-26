@@ -1,0 +1,208 @@
+<div
+  class="no-scrollbar relative w-full max-w-[700px] overflow-y-auto rounded-3xl bg-white p-4 dark:bg-gray-900 lg:p-11"
+>
+  <div class="px-2 pr-14">
+    <h4 class="mb-2 text-2xl font-semibold text-gray-800 dark:text-white/90">
+      Registrar Nuevo Empleado
+    </h4>
+    <p class="mb-6 text-sm text-gray-500 dark:text-gray-400 lg:mb-7">
+      Complete el siguiente formulario para agregar un nuevo empleado.
+    </p>
+  </div>
+  <form class="flex flex-col" [formGroup]="employeeForm">
+    <div
+      class="custom-scrollbar h-[450px] overflow-y-auto px-2 pb-3 flex flex-col gap-5 lg:gap-6"
+    >
+      <div>
+        <div class="flex gap-1 mb-2">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            class="text-gray-500 dark:text-gray-400 -ml-1"
+          >
+            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+            <path d="M8 7a4 4 0 1 0 8 0a4 4 0 0 0 -8 0" />
+            <path d="M6 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2" />
+          </svg>
+          <h5 class="text-lg font-medium text-gray-800 dark:text-white/90">
+            Información Personal
+          </h5>
+        </div>
+        <div class="grid grid-cols-1 gap-x-6 gap-y-5 lg:grid-cols-2">
+          <div>
+            <app-label for="name">Nombres</app-label>
+            <app-input-field-reactive
+              type="text"
+              [id]="'name'"
+              placeholder="Nombres"
+              formControlName="name"
+            />
+          </div>
+          <div>
+            <app-label for="surname">Apellidos</app-label>
+            <app-input-field-reactive
+              type="text"
+              [id]="'lastName'"
+              placeholder="Apellidos"
+              formControlName="lastName"
+            />
+          </div>
+          <div>
+            <app-label for="dni">DNI</app-label>
+            <app-input-field-reactive
+              type="number"
+              [id]="'dni'"
+              placeholder="DNI"
+              formControlName="dni"
+            />
+          </div>
+          <div>
+            <app-label for="ruc">RUC</app-label>
+            <app-input-field-reactive
+              type="number"
+              [id]="'ruc'"
+              placeholder="RUC"
+              formControlName="ruc"
+            />
+          </div>
+          <div>
+            <app-label for="gender">Género</app-label>
+            <app-select-reactive
+              [options]="optionsGender"
+              [id]="'gender'"
+              placeholder="Seleccionar Género"
+              formControlName="gender"
+            ></app-select-reactive>
+          </div>
+          <div>
+            <app-label for="address">Dirección</app-label>
+            <app-input-field-reactive
+              type="text"
+              [id]="'address'"
+              placeholder="Dirección"
+              formControlName="address"
+            />
+          </div>
+          <div>
+            <app-date-picker-reactive
+              [id]="'birthDate'"
+              label="Fecha de Nacimiento"
+              placeholder="Seleccionar fecha"
+              formControlName="birthDate"
+            />
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="flex gap-1 mb-2">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            class="text-gray-500 dark:text-gray-400 -ml-1"
+          >
+            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+            <path
+              d="M5 4h4l2 5l-2.5 1.5a11 11 0 0 0 5 5l1.5 -2.5l5 2v4a2 2 0 0 1 -2 2a16 16 0 0 1 -15 -15a2 2 0 0 1 2 -2"
+            />
+          </svg>
+          <h5 class="text-lg font-medium text-gray-800 dark:text-white/90">
+            Información de Contacto
+          </h5>
+        </div>
+        <div class="grid grid-cols-1 gap-x-6 gap-y-5 lg:grid-cols-2">
+          <div>
+            <app-label for="phone">Teléfono</app-label>
+            <app-input-field-reactive
+              type="text"
+              [id]="'phoneNumber'"
+              placeholder="+51 987654321"
+              formControlName="phoneNumber"
+              autocomplete="tel"
+            />
+          </div>
+          <div>
+            <app-label for="email">Correo Electrónico</app-label>
+            <app-input-field-reactive
+              type="email"
+              [id]="'email'"
+              placeholder="correo@ejemplo.com"
+              formControlName="email"
+              [error]="emailCtrl.invalid && (emailCtrl.touched || submitted)"
+              [hint]="getEmailHint()"
+            />
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="flex gap-1 mb-2">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            class="text-gray-500 dark:text-gray-400 -ml-1"
+          >
+            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+            <path
+              d="M3 7m0 2a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v9a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2z"
+            />
+            <path d="M8 7v-2a2 2 0 0 1 2 -2h4a2 2 0 0 1 2 2v2" />
+            <path d="M12 12l0 .01" />
+            <path d="M3 13a20 20 0 0 0 18 0" />
+          </svg>
+          <h5 class="text-lg font-medium text-gray-800 dark:text-white/90">
+            Información Laboral
+          </h5>
+        </div>
+        <div class="grid grid-cols-1 gap-x-6 gap-y-5 lg:grid-cols-2">
+          <div>
+            <app-label for="position">Responsabilidad</app-label>
+            <app-select-reactive
+              [options]="optionsPosition"
+              [id]="'position'"
+              placeholder="Seleccionar Responsabilidad"
+              formControlName="position"
+            ></app-select-reactive>
+          </div>
+          <div>
+            <app-label for="isActive">Estado</app-label>
+            <app-select-reactive
+              [options]="optionsStatus"
+              [id]="'isActive'"
+              placeholder="Seleccionar Estado"
+              formControlName="isActive"
+            ></app-select-reactive>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="flex items-center gap-3 px-2 mt-6 lg:justify-end">
+      <app-button size="sm" (btnClick)="onSubmit()"
+        >Save Changes</app-button
+      >
+    </div>
+  </form>
+  <div>
+    Mostrando datos
+    {{ employeeForm.value | json }}
+  </div>
+</div>
