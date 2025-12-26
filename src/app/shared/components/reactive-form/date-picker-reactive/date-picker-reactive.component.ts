@@ -23,6 +23,8 @@ export class DatePickerReactiveComponent
   @Input() id!: string;
   @Input() label?: string;
   @Input() placeholder?: string;
+  @Input() hint?: string;
+  @Input() error = false;
 
   @ViewChild('dateInput') dateInput?: ElementRef<HTMLInputElement>;
 
@@ -74,5 +76,10 @@ export class DatePickerReactiveComponent
 
   ngOnDestroy() {
     this.flatpickrInstance?.destroy();
+  }
+
+  get hintClass(): string {
+    if (this.error) return 'text-error-500';
+    return 'text-gray-500';
   }
 }

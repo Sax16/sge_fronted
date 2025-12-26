@@ -43,6 +43,7 @@
               [id]="'name'"
               placeholder="Nombres"
               formControlName="name"
+              [error]="shouldShowError(nameControl)"
             />
           </div>
           <div>
@@ -52,30 +53,35 @@
               [id]="'lastName'"
               placeholder="Apellidos"
               formControlName="lastName"
+              [error]="shouldShowError(lastNameControl)"
             />
           </div>
           <div>
             <app-label for="dni">DNI</app-label>
             <app-input-field-reactive
-              type="number"
+              type="text"
               [id]="'dni'"
               placeholder="DNI"
               formControlName="dni"
+              [error]="shouldShowError(dniControl)"
+              [hint]="getDniHint()"
             />
           </div>
           <div>
             <app-label for="ruc">RUC</app-label>
             <app-input-field-reactive
-              type="number"
+              type="text"
               [id]="'ruc'"
-              placeholder="RUC"
+              placeholder="RUC (Opcional)"
               formControlName="ruc"
+              [error]="shouldShowError(rucControl)"
+              [hint]="getRucHint()"
             />
           </div>
           <div>
             <app-label for="gender">Género</app-label>
             <app-select-reactive
-              [options]="optionsGender"
+              [options]="genderOptions"
               [id]="'gender'"
               placeholder="Seleccionar Género"
               formControlName="gender"
@@ -96,6 +102,8 @@
               label="Fecha de Nacimiento"
               placeholder="Seleccionar fecha"
               formControlName="birthDate"
+              [error]="shouldShowError(birthDateControl)"
+              [hint]="getBirthDateHint()"
             />
           </div>
         </div>
@@ -132,6 +140,8 @@
               placeholder="+51 987654321"
               formControlName="phoneNumber"
               autocomplete="tel"
+              [error]="shouldShowError(phoneNumberControl)"
+              [hint]="getPhoneHint()"
             />
           </div>
           <div>
@@ -141,7 +151,7 @@
               [id]="'email'"
               placeholder="correo@ejemplo.com"
               formControlName="email"
-              [error]="emailCtrl.invalid && (emailCtrl.touched || submitted)"
+              [error]="shouldShowError(emailControl)"
               [hint]="getEmailHint()"
             />
           </div>
@@ -177,7 +187,7 @@
           <div>
             <app-label for="position">Responsabilidad</app-label>
             <app-select-reactive
-              [options]="optionsPosition"
+              [options]="positionOptions"
               [id]="'position'"
               placeholder="Seleccionar Responsabilidad"
               formControlName="position"
@@ -186,7 +196,7 @@
           <div>
             <app-label for="isActive">Estado</app-label>
             <app-select-reactive
-              [options]="optionsStatus"
+              [options]="statusOptions"
               [id]="'isActive'"
               placeholder="Seleccionar Estado"
               formControlName="isActive"
@@ -196,13 +206,20 @@
       </div>
     </div>
     <div class="flex items-center gap-3 px-2 mt-6 lg:justify-end">
-      <app-button size="sm" (btnClick)="onSubmit()"
-        >Save Changes</app-button
+      <app-button 
+        size="sm" 
+        variant="outline"
+        (btnClick)="onCancel()"
       >
+        Cancelar
+      </app-button>
+      <app-button 
+        size="sm" 
+        (btnClick)="onSubmit()"
+        [disabled]="isLoading"
+      >
+        {{ isLoading ? 'Guardando...' : 'Guardar Cambios' }}
+      </app-button>
     </div>
   </form>
-  <div>
-    Mostrando datos
-    {{ employeeForm.value | json }}
-  </div>
 </div>

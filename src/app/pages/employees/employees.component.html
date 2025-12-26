@@ -1,14 +1,33 @@
 <div>
   <app-page-breadcrumb pageTitle="Gestión de Empleados" />
 
+  @if (errorMessage) {
+    <div class="mb-4 rounded-lg bg-red-50 p-4 text-red-800 dark:bg-red-900/20 dark:text-red-400">
+      {{ errorMessage }}
+    </div>
+  }
+
+  @if (isLoading) {
+    <div class="flex items-center justify-center p-8">
+      <div class="text-gray-500 dark:text-gray-400">Cargando...</div>
+    </div>
+  }
+
   <app-employee-table
-    (newEmployee)="openModal()"
-  >
-  </app-employee-table>
+    [employees]="employees"
+    (newEmployee)="openCreateModal()"
+    (deleteEmployee)="handleEmployeeDelete($event)"
+  />
 
   <!-- Modal for adding a new employee -->
-  <app-modal [isOpen]="isOpen" (close)="closeModal()" className="max-w-[700px] m-4">
-    <app-employee-form (submitForm)="closeModal()"></app-employee-form>
+  <app-modal 
+    [isOpen]="isModalOpen" 
+    (close)="closeModal()" 
+    className="max-w-[700px] m-4"
+  >
+    <app-employee-form 
+      (submitForm)="handleEmployeeSubmit($event)"
+      (cancelForm)="closeModal()"
+    />
   </app-modal>
-
 </div>
