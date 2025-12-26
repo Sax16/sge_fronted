@@ -1,0 +1,29 @@
+<div class="relative">
+  <select
+    [disabled]="disabled"
+    [value]="value"
+    [id]="id"
+    (change)="handleChange($event)"
+    [ngClass]="selectClasses"
+  >
+    <!-- Placeholder -->
+    <option value="" disabled>
+      {{ placeholder }}
+    </option>
+
+    @for (option of options; track option.value) {
+      <option [value]="option.value">
+        {{ option.label }}
+      </option>
+    }
+  </select>
+  <span class="absolute text-gray-500 -translate-y-1/2 pointer-events-none right-3 top-1/2 dark:text-gray-400">
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-chevron-down"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M6 9l6 6l6 -6" /></svg>
+  </span>
+
+  @if (hint) {
+    <p class="mt-1.5 text-xs" [ngClass]="hintClass">
+      {{ hint }}
+    </p>
+  }
+</div>
