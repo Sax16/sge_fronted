@@ -1,5 +1,5 @@
 <div>
-  <app-page-breadcrumb pageTitle="Gestión de Empleados" />
+  <app-page-breadcrumb />
 
   @if (errorMessage) {
     <div class="mb-4 rounded-lg bg-red-50 p-4 text-red-800 dark:bg-red-900/20 dark:text-red-400">
@@ -13,21 +13,35 @@
     </div>
   }
 
-  <app-employee-table
-    [employees]="employees"
-    (newEmployee)="openCreateModal()"
-    (deleteEmployee)="handleEmployeeDelete($event)"
-  />
-
-  <!-- Modal for adding a new employee -->
-  <app-modal 
-    [isOpen]="isModalOpen" 
-    (close)="closeModal()" 
-    className="max-w-[700px] m-4"
-  >
-    <app-employee-form 
-      (submitForm)="handleEmployeeSubmit($event)"
-      (cancelForm)="closeModal()"
+  <!-- List View -->
+  @if (isListView()) {
+    <app-employee-table
+      [employees]="employees"
+      (newEmployee)="handleNewEmployeeClick()"
+      (editEmployee)="handleEditEmployeeClick($event)"
+      (deleteEmployee)="handleEmployeeDelete($event)"
     />
-  </app-modal>
+  }
+
+  <!-- Create View -->
+  @if (isCreateView()) {
+    <div class="overflow-hidden rounded-2xl border border-gray-200 bg-white dark:border-white/[0.05] dark:bg-white/[0.03]">
+      <app-employee-form 
+        (submitForm)="handleEmployeeCreate($any($event))"
+        (cancelForm)="handleFormCancel()"
+      />
+    </div>
+  }
+
+  <!-- Edit View -->
+  @if (isEditView() && selectedEmployee) {
+    <div class="overflow-hidden rounded-2xl border border-gray-200 bg-white dark:border-white/[0.05] dark:bg-white/[0.03]">
+      <app-employee-form 
+        [employee]="selectedEmployee"
+        [isEditMode]="true"
+        (submitForm)="handleEmployeeUpdate($any($event))"
+        (cancelForm)="handleFormCancel()"
+      />
+    </div>
+  }
 </div>

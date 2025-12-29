@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, Output, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, Output, OnInit, OnChanges, SimpleChanges } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators, AbstractControl } from '@angular/forms';
 import { LabelComponent } from '../../../../shared/components/form/label/label.component';
 import { ButtonComponent } from '../../../../shared/components/ui/button/button.component';
@@ -7,7 +7,7 @@ import { InputFieldReactiveComponent } from '../../../../shared/components/react
 import { DatePickerReactiveComponent } from '../../../../shared/components/reactive-form/date-picker-reactive/date-picker-reactive.component';
 import { SelectReactiveComponent } from '../../../../shared/components/reactive-form/select-reactive/select-reactive.component';
 import { EmployeeValidationService } from '../../services/employee-validation.service';
-import { CreateEmployeeDto, EmployeeFormData, Gender, EmployeePosition, EmployeeStatus } from '../../models/employee.model';
+import { CreateEmployeeDto, UpdateEmployeeDto, Employee, EmployeeFormData, Gender, EmployeePosition, EmployeeStatus } from '../../models/employee.model';
 
 /**
  * Select option interface for dropdowns
@@ -36,8 +36,11 @@ interface SelectOption {
   templateUrl: './employee-form.component.html',
   styles: ``
 })
-export class EmployeeFormComponent implements OnInit {
-  @Output() submitForm = new EventEmitter<CreateEmployeeDto>();
+export class EmployeeFormComponent implements OnInit, OnChanges {
+  @Input() employee: Employee | null = null;
+  @Input() isEditMode = false;
+  
+  @Output() submitForm = new EventEmitter<CreateEmployeeDto | UpdateEmployeeDto>();
   @Output() cancelForm = new EventEmitter<void>();
 
   readonly positionOptions: SelectOption[] = [
@@ -67,6 +70,12 @@ export class EmployeeFormComponent implements OnInit {
     this.initializeForm();
   }
 
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['employee'] && this.employee && this.employeeForm) {
+      this.populateForm(this.employee);
+    }
+  }
+
   /**
    * Initialize employee form with validators
    */
@@ -84,6 +93,41 @@ export class EmployeeFormComponent implements OnInit {
       position: new FormControl<EmployeePosition | ''>('', []),
       isActive: new FormControl<EmployeeStatus | ''>('', [Validators.required]),
     });
+
+    // Populate form if employee data exists
+    if (this.employee) {
+      this.populateForm(this.employee);
+    }
+  }
+
+  /**
+   * Populate form with employee data
+   * @param employee - Employee to populate form with
+   */
+  private populateForm(employee: Employee): void {
+    this.employeeForm.patchValue({
+      name: employee.firstName,
+      lastName: employee.lastName,
+      dni: employee.dni,
+      ruc: employee.ruc || '',
+      gender: employee.gender,
+      birthDate: employee.birthDate ? this.formatDateForInput(employee.birthDate) : '',
+      phoneNumber: employee.phoneNumber,
+      email: employee.email,
+      address: employee.address,
+      position: employee.position,
+      isActive: employee.isActive,
+    });
+  }
+
+  /**
+   * Format date for input field
+   * @param date - Date to format
+   * @returns Formatted date string
+   */
+  private formatDateForInput(date: Date): string {
+    const d = new Date(date);
+    return d.toISOString().split('T')[0];
   }
 
   /**
@@ -98,9 +142,15 @@ export class EmployeeFormComponent implements OnInit {
       return;
     }
 
-    const employeeData = this.buildEmployeeDto();
+    const employeeData = this.isEditMode 
+      ? this.buildUpdateDto() 
+      : this.buildCreateDto();
+    
     this.submitForm.emit(employeeData);
-    this.resetForm();
+    
+    if (!this.isEditMode) {
+      this.resetForm();
+    }
   }
 
   /**
@@ -130,7 +180,29 @@ export class EmployeeFormComponent implements OnInit {
    * Build CreateEmployeeDto from form data
    * @returns CreateEmployeeDto object
    */
-  private buildEmployeeDto(): CreateEmployeeDto {
+  private buildCreateDto(): CreateEmployeeDto {
+    const formValue = this.employeeForm.value as EmployeeFormData;
+    
+    return {
+      firstName: formValue.name.trim(),
+      lastName: formValue.lastName.trim(),
+      dni: formValue.dni.trim(),
+      ruc: formValue.ruc ? formValue.ruc.trim() : undefined,
+      gender: formValue.gender as Gender,
+      birthDate: formValue.birthDate ? new Date(formValue.birthDate) : null,
+      address: formValue.address.trim(),
+      phoneNumber: formValue.phoneNumber.trim(),
+      email: formValue.email.trim(),
+      isActive: formValue.isActive as EmployeeStatus,
+      position: formValue.position as EmployeePosition,
+    };
+  }
+
+  /**
+   * Build UpdateEmployeeDto from form data
+   * @returns UpdateEmployeeDto object
+   */
+  private buildUpdateDto(): UpdateEmployeeDto {
     const formValue = this.employeeForm.value as EmployeeFormData;
     
     return {
@@ -154,6 +226,25 @@ export class EmployeeFormComponent implements OnInit {
   private resetForm(): void {
     this.employeeForm.reset();
     this.isSubmitted = false;
+  }
+
+  /**
+   * Get form title based on mode
+   * @returns Form title
+   */
+  getFormTitle(): string {
+    return this.isEditMode ? 'Editar Empleado' : 'Registrar Nuevo Empleado';
+  }
+
+  /**
+   * Get submit button text based on mode
+   * @returns Button text
+   */
+  getSubmitButtonText(): string {
+    if (this.isLoading) {
+      return this.isEditMode ? 'Actualizando...' : 'Guardando...';
+    }
+    return this.isEditMode ? 'Actualizar Empleado' : 'Guardar Cambios';
   }
 
   // Getters for form controls (for template access)

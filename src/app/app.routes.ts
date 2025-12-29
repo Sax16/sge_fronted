@@ -25,6 +25,7 @@ export const routes: Routes = [
   {
     path:'',
     component:AppLayoutComponent,
+    data: { breadcrumb: 'Inicio' },
     children:[
       {
         path: '',
@@ -41,6 +42,7 @@ export const routes: Routes = [
       {
         path:'profile',
         component:ProfileComponent,
+        data: { breadcrumb: 'Perfil' },
         title:'Angular Profile Dashboard | TailAdmin - Angular Admin Dashboard Template'
       },
       {
@@ -107,12 +109,31 @@ export const routes: Routes = [
       {
         path:'users',
         component:UsersComponent,
-        title:'Gestión de Usuarios | ELOHIM SGE'
+        title:'Gestión de Usuarios | ELOHIM SGE',
+        data: { breadcrumb: 'Gestión de Usuarios' },
       },
       {
         path:'employees',
-        component: EmployeesComponent,
-        title: 'Gestión de Empleados | ELOHIM SGE'
+        data: { breadcrumb: 'Gestión de Empleados' },
+        children: [
+          {
+            path: '',
+            component: EmployeesComponent,
+            title: 'Gestión de Empleados | ELOHIM SGE',
+          },
+          {
+            path: 'create',
+            component: EmployeesComponent,
+            title: 'Crear Empleado | ELOHIM SGE',
+            data: { breadcrumb: 'Crear Empleado' },
+          },
+          {
+            path: 'edit/:id',
+            component: EmployeesComponent,
+            title: 'Editar Empleado | ELOHIM SGE',
+            data: { breadcrumb: 'Editar Empleado' },
+          },
+        ],
       }
     ]
   },

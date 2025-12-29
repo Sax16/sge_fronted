@@ -3,10 +3,10 @@
 >
   <div class="px-2 pr-14">
     <h4 class="mb-2 text-2xl font-semibold text-gray-800 dark:text-white/90">
-      Registrar Nuevo Empleado
+      {{ getFormTitle() }}
     </h4>
     <p class="mb-6 text-sm text-gray-500 dark:text-gray-400 lg:mb-7">
-      Complete el siguiente formulario para agregar un nuevo empleado.
+      Complete el siguiente formulario para {{ isEditMode ? 'actualizar el' : 'agregar un nuevo' }} empleado.
     </p>
   </div>
   <form class="flex flex-col" [formGroup]="employeeForm">
@@ -218,7 +218,7 @@
         (btnClick)="onSubmit()"
         [disabled]="isLoading"
       >
-        {{ isLoading ? 'Guardando...' : 'Guardar Cambios' }}
+        {{ getSubmitButtonText() }}
       </app-button>
     </div>
   </form>

@@ -1,26 +1,31 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, OnDestroy } from '@angular/core';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { Subject, takeUntil } from 'rxjs';
 import { PageBreadcrumbComponent } from '../../shared/components/common/page-breadcrumb/page-breadcrumb.component';
-import { ModalComponent } from '../../shared/components/ui/modal/modal.component';
 import { EmployeeTableComponent } from './components/employee-table/employee-table.component';
 import { EmployeeFormComponent } from './components/employee-form/employee-form.component';
-import { ModalService } from '../../shared/services/modal.service';
 import { EmployeeService } from './services/employee.service';
-import { Employee, CreateEmployeeDto } from './models/employee.model';
+import { Employee, CreateEmployeeDto, UpdateEmployeeDto } from './models/employee.model';
+
+/**
+ * Employee View Mode
+ * Determines what to display in the component
+ */
+type EmployeeViewMode = 'list' | 'create' | 'edit';
 
 /**
  * Employees Component
- * Main container for employee management
+ * Main container for employee management with routing
  * Implements Single Responsibility Principle (SRP) - Orchestrates employee management UI
  */
 @Component({
   selector: 'app-employees',
   imports: [
     CommonModule,
+    RouterModule,
     PageBreadcrumbComponent,
     EmployeeTableComponent,
-    ModalComponent,
     EmployeeFormComponent,
   ],
   templateUrl: './employees.component.html',
@@ -30,22 +35,155 @@ export class EmployeesComponent implements OnInit, OnDestroy {
   private readonly destroy$ = new Subject<void>();
   
   employees: Employee[] = [];
-  isModalOpen = false;
+  selectedEmployee: Employee | null = null;
+  currentViewMode: EmployeeViewMode = 'list';
   isLoading = false;
   errorMessage: string | null = null;
 
   constructor(
-    public modalService: ModalService,
-    private employeeService: EmployeeService
+    private employeeService: EmployeeService,
+    private router: Router,
+    private route: ActivatedRoute
   ) {}
 
   ngOnInit(): void {
     this.loadEmployees();
+    this.subscribeToRouteChanges();
   }
 
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
+  }
+
+  /**
+   * Subscribe to route changes to determine view mode
+   */
+  private subscribeToRouteChanges(): void {
+    this.route.url
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(() => this.handleRouteChange());
+  }
+
+  /**
+   * Handle route change and update view mode
+   */
+  private handleRouteChange(): void {
+    const url = this.router.url;
+    
+    if (this.isCreateRoute(url)) {
+      this.setViewMode('create');
+      return;
+    }
+    
+    if (this.isEditRoute(url)) {
+      this.handleEditRoute();
+      return;
+    }
+    
+    this.setViewMode('list');
+  }
+
+  /**
+   * Check if current route is create route
+   * @param url - Current URL
+   * @returns true if create route, false otherwise
+   */
+  private isCreateRoute(url: string): boolean {
+    return url.includes('/employees/create');
+  }
+
+  /**
+   * Check if current route is edit route
+   * @param url - Current URL
+   * @returns true if edit route, false otherwise
+   */
+  private isEditRoute(url: string): boolean {
+    return url.includes('/employees/edit/');
+  }
+
+  /**
+   * Handle edit route by loading employee data
+   */
+  private handleEditRoute(): void {
+    const employeeId = this.getEmployeeIdFromRoute();
+    
+    // Early return if no ID found
+    if (!employeeId) {
+      this.handleInvalidEmployeeId();
+      return;
+    }
+
+    this.loadEmployeeForEdit(employeeId);
+  }
+
+  /**
+   * Get employee ID from route parameters
+   * @returns Employee ID or null
+   */
+  private getEmployeeIdFromRoute(): string | null {
+    return this.route.firstChild?.snapshot.paramMap.get('id') || null;
+  }
+
+  /**
+   * Handle invalid employee ID
+   */
+  private handleInvalidEmployeeId(): void {
+    this.errorMessage = 'ID de empleado inválido';
+    this.navigateToList();
+  }
+
+  /**
+   * Load employee for editing
+   * @param employeeId - Employee ID to load
+   */
+  private loadEmployeeForEdit(employeeId: string): void {
+    this.isLoading = true;
+
+    this.employeeService
+      .getEmployeeById(employeeId)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (employee) => this.handleEmployeeLoaded(employee),
+        error: (error) => this.handleEmployeeLoadError(error),
+      });
+  }
+
+  /**
+   * Handle employee loaded for editing
+   * @param employee - Loaded employee
+   */
+  private handleEmployeeLoaded(employee: Employee): void {
+    this.selectedEmployee = employee;
+    this.setViewMode('edit');
+    this.isLoading = false;
+  }
+
+  /**
+   * Handle error loading employee
+   * @param error - Error object
+   */
+  private handleEmployeeLoadError(error: Error): void {
+    this.errorMessage = 'Error al cargar empleado. Por favor, intente nuevamente.';
+    this.isLoading = false;
+    console.error('Error loading employee:', error);
+    this.navigateToList();
+  }
+
+  /**
+   * Set current view mode
+   * @param mode - View mode to set
+   */
+  private setViewMode(mode: EmployeeViewMode): void {
+    this.currentViewMode = mode;
+    this.clearErrorMessage();
+  }
+
+  /**
+   * Clear error message
+   */
+  private clearErrorMessage(): void {
+    this.errorMessage = null;
   }
 
   /**
@@ -84,25 +222,62 @@ export class EmployeesComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Open modal for creating new employee
+   * Navigate to create employee page
    */
-  openCreateModal(): void {
-    this.isModalOpen = true;
+  navigateToCreate(): void {
+    this.router.navigate(['employees', 'create']);
   }
 
   /**
-   * Close employee modal
+   * Navigate to edit employee page
+   * @param employeeId - ID of employee to edit
    */
-  closeModal(): void {
-    this.isModalOpen = false;
+  navigateToEdit(employeeId: string): void {
+    this.router.navigate(['employees', 'edit', employeeId]);
   }
 
   /**
-   * Handle employee form submission
+   * Navigate to employee list
+   */
+  navigateToList(): void {
+    this.router.navigate(['employees']);
+  }
+
+  /**
+   * Handle new employee button click
+   */
+  handleNewEmployeeClick(): void {
+    this.navigateToCreate();
+  }
+
+  /**
+   * Handle edit employee button click
+   * @param employeeId - ID of employee to edit
+   */
+  handleEditEmployeeClick(employeeId: string): void {
+    this.navigateToEdit(employeeId);
+  }
+
+  /**
+   * Handle employee form submission (create)
    * @param employeeData - Employee data from form
    */
-  handleEmployeeSubmit(employeeData: CreateEmployeeDto): void {
+  handleEmployeeCreate(employeeData: CreateEmployeeDto): void {
     this.createEmployee(employeeData);
+  }
+
+  /**
+   * Handle employee form submission (update)
+   * @param employeeData - Employee data from form
+   */
+  handleEmployeeUpdate(employeeData: UpdateEmployeeDto): void {
+    // Early return if no selected employee
+    if (!this.selectedEmployee) {
+      this.errorMessage = 'No hay empleado seleccionado para actualizar';
+      return;
+    }
+
+    this.updateEmployee(this.selectedEmployee.id, employeeData);
   }
 
   /**
@@ -122,13 +297,49 @@ export class EmployeesComponent implements OnInit, OnDestroy {
   }
 
   /**
+   * Update existing employee
+   * @param employeeId - Employee ID
+   * @param employeeData - Employee data to update
+   */
+  private updateEmployee(employeeId: string, employeeData: UpdateEmployeeDto): void {
+    this.isLoading = true;
+
+    this.employeeService
+      .updateEmployee(employeeId, employeeData)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (employee) => this.handleEmployeeUpdated(employee),
+        error: (error) => this.handleUpdateError(error),
+      });
+  }
+
+  /**
    * Handle successful employee creation
    * @param employee - Created employee
    */
   private handleEmployeeCreated(employee: Employee): void {
     this.employees = [...this.employees, employee];
     this.isLoading = false;
-    this.closeModal();
+    this.navigateToList();
+  }
+
+  /**
+   * Handle successful employee update
+   * @param employee - Updated employee
+   */
+  private handleEmployeeUpdated(employee: Employee): void {
+    const index = this.employees.findIndex((emp) => emp.id === employee.id);
+    
+    if (index !== -1) {
+      this.employees = [
+        ...this.employees.slice(0, index),
+        employee,
+        ...this.employees.slice(index + 1),
+      ];
+    }
+    
+    this.isLoading = false;
+    this.navigateToList();
   }
 
   /**
@@ -139,6 +350,16 @@ export class EmployeesComponent implements OnInit, OnDestroy {
     this.errorMessage = 'Error al crear empleado. Por favor, intente nuevamente.';
     this.isLoading = false;
     console.error('Error creating employee:', error);
+  }
+
+  /**
+   * Handle error during employee update
+   * @param error - Error object
+   */
+  private handleUpdateError(error: Error): void {
+    this.errorMessage = 'Error al actualizar empleado. Por favor, intente nuevamente.';
+    this.isLoading = false;
+    console.error('Error updating employee:', error);
   }
 
   /**
@@ -194,5 +415,36 @@ export class EmployeesComponent implements OnInit, OnDestroy {
     this.errorMessage = 'Error al eliminar empleado. Por favor, intente nuevamente.';
     this.isLoading = false;
     console.error('Error deleting employee:', error);
+  }
+
+  /**
+   * Handle form cancellation
+   */
+  handleFormCancel(): void {
+    this.navigateToList();
+  }
+
+  /**
+   * Check if should show list view
+   * @returns true if list view, false otherwise
+   */
+  isListView(): boolean {
+    return this.currentViewMode === 'list';
+  }
+
+  /**
+   * Check if should show create view
+   * @returns true if create view, false otherwise
+   */
+  isCreateView(): boolean {
+    return this.currentViewMode === 'create';
+  }
+
+  /**
+   * Check if should show edit view
+   * @returns true if edit view, false otherwise
+   */
+  isEditView(): boolean {
+    return this.currentViewMode === 'edit';
   }
 }
