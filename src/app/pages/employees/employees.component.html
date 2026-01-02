@@ -1,5 +1,5 @@
 <div>
-  <app-page-breadcrumb />
+  <app-page-breadcrumb [pageTitle]="'Gestión de Empleados'" />
 
   @if (errorMessage) {
     <div class="mb-4 rounded-lg bg-red-50 p-4 text-red-800 dark:bg-red-900/20 dark:text-red-400">
@@ -20,6 +20,7 @@
       (newEmployee)="handleNewEmployeeClick()"
       (editEmployee)="handleEditEmployeeClick($event)"
       (deleteEmployee)="handleEmployeeDelete($event)"
+      (viewEmployee)="handleViewEmployeeClick($event)"
     />
   }
 
@@ -43,5 +44,12 @@
         (cancelForm)="handleFormCancel()"
       />
     </div>
+  }
+
+  <!-- View View -->
+  @if (isViewView() && selectedEmployee) {
+    <app-employee-detail 
+      [employee]="selectedEmployee"
+    />
   }
 </div>

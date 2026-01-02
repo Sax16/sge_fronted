@@ -133,6 +133,12 @@ export const routes: Routes = [
             title: 'Editar Empleado | ELOHIM SGE',
             data: { breadcrumb: 'Editar Empleado' },
           },
+          {
+            path: 'view/:id',
+            component: EmployeesComponent,
+            title: 'Ver Empleado | ELOHIM SGE',
+            data: { breadcrumb: 'Ver Empleado' },
+          }
         ],
       }
     ]

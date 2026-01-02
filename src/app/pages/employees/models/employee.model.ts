@@ -40,6 +40,23 @@ export interface CreateEmployeeDto {
   position: EmployeePosition;
 }
 
+// Data Transfer Object for viewing employees (all fields readonly)
+export interface ViewEmployeeDto {
+  readonly id: string;
+  readonly firstName: string;
+  readonly lastName: string;
+  readonly dni: string;
+  readonly ruc?: string;
+  readonly gender: Gender;
+  readonly birthDate: Date | null;
+  readonly address: string;
+  readonly phoneNumber: string;
+  readonly email: string;
+  readonly isActive: EmployeeStatus;
+  readonly position: EmployeePosition;
+  readonly createdAt: Date;
+}
+
 // Data Transfer Object for updating employees (all fields optional except id)
 export interface UpdateEmployeeDto {
   firstName?: string;

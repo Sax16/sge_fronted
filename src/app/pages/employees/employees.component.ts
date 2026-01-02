@@ -5,6 +5,7 @@ import { Subject, takeUntil } from 'rxjs';
 import { PageBreadcrumbComponent } from '../../shared/components/common/page-breadcrumb/page-breadcrumb.component';
 import { EmployeeTableComponent } from './components/employee-table/employee-table.component';
 import { EmployeeFormComponent } from './components/employee-form/employee-form.component';
+import { EmployeeDetailComponent } from './components/employee-detail/employee-detail.component';
 import { EmployeeService } from './services/employee.service';
 import { Employee, CreateEmployeeDto, UpdateEmployeeDto } from './models/employee.model';
 
@@ -12,7 +13,7 @@ import { Employee, CreateEmployeeDto, UpdateEmployeeDto } from './models/employe
  * Employee View Mode
  * Determines what to display in the component
  */
-type EmployeeViewMode = 'list' | 'create' | 'edit';
+type EmployeeViewMode = 'list' | 'create' | 'edit' | 'view';
 
 /**
  * Employees Component
@@ -27,6 +28,7 @@ type EmployeeViewMode = 'list' | 'create' | 'edit';
     PageBreadcrumbComponent,
     EmployeeTableComponent,
     EmployeeFormComponent,
+    EmployeeDetailComponent
   ],
   templateUrl: './employees.component.html',
   styles: ``
@@ -80,6 +82,11 @@ export class EmployeesComponent implements OnInit, OnDestroy {
       this.handleEditRoute();
       return;
     }
+
+    if (this.isViewRoute(url)) {
+      this.handleViewRoute();
+      return;
+    }
     
     this.setViewMode('list');
   }
@@ -103,6 +110,15 @@ export class EmployeesComponent implements OnInit, OnDestroy {
   }
 
   /**
+   * Check if current route is view route
+   * @param url - Current URL
+   * @returns true if view route, false otherwise
+   */
+  private isViewRoute(url: string): boolean {
+    return url.includes('/employees/view/');
+  }
+
+  /**
    * Handle edit route by loading employee data
    */
   private handleEditRoute(): void {
@@ -118,11 +134,26 @@ export class EmployeesComponent implements OnInit, OnDestroy {
   }
 
   /**
+   * Handle view route by loading employee data
+   */
+  private handleViewRoute(): void {
+    const employeeId = this.getEmployeeIdFromRoute();
+    
+    // Early return if no ID found
+    if (!employeeId) {
+      this.handleInvalidEmployeeId();
+      return;
+    }
+
+    this.loadEmployeeForView(employeeId);
+  }
+
+  /**
    * Get employee ID from route parameters
    * @returns Employee ID or null
    */
   private getEmployeeIdFromRoute(): string | null {
-    return this.route.firstChild?.snapshot.paramMap.get('id') || null;
+    return this.route.snapshot.paramMap.get('id') || null;
   }
 
   /**
@@ -158,7 +189,33 @@ export class EmployeesComponent implements OnInit, OnDestroy {
     this.setViewMode('edit');
     this.isLoading = false;
   }
-
+  
+  /**
+   * Load employee for viewing
+   * @param employeeId - Employee ID to load
+  */
+ private loadEmployeeForView(employeeId: string): void {
+   this.isLoading = true;
+   
+   this.employeeService
+   .getEmployeeById(employeeId)
+   .pipe(takeUntil(this.destroy$))
+   .subscribe({
+     next: (employee) => this.handleEmployeeLoadedForView(employee),
+     error: (error) => this.handleEmployeeLoadError(error),
+    });
+  }
+  
+  /**
+   * Handle employee loaded for viewing
+   * @param employee - Loaded employee
+  */
+ private handleEmployeeLoadedForView(employee: Employee): void {
+   this.selectedEmployee = employee;
+   this.setViewMode('view');
+   this.isLoading = false;
+  }
+  
   /**
    * Handle error loading employee
    * @param error - Error object
@@ -169,11 +226,11 @@ export class EmployeesComponent implements OnInit, OnDestroy {
     console.error('Error loading employee:', error);
     this.navigateToList();
   }
-
+  
   /**
    * Set current view mode
    * @param mode - View mode to set
-   */
+  */
   private setViewMode(mode: EmployeeViewMode): void {
     this.currentViewMode = mode;
     this.clearErrorMessage();
@@ -237,6 +294,14 @@ export class EmployeesComponent implements OnInit, OnDestroy {
   }
 
   /**
+   * Navigate to view employee page
+   * @param employeeId - ID of employee to view
+   */
+  navigateToView(employeeId: string): void {
+    this.router.navigate(['employees', 'view', employeeId]);
+  }
+
+  /**
    * Navigate to employee list
    */
   navigateToList(): void {
@@ -256,6 +321,14 @@ export class EmployeesComponent implements OnInit, OnDestroy {
    */
   handleEditEmployeeClick(employeeId: string): void {
     this.navigateToEdit(employeeId);
+  }
+
+  /**
+   * Handle view employee button click
+   * @param employeeId - ID of employee to view
+   */
+  handleViewEmployeeClick(employeeId: string): void {
+    this.navigateToView(employeeId);
   }
 
   /**
@@ -446,5 +519,13 @@ export class EmployeesComponent implements OnInit, OnDestroy {
    */
   isEditView(): boolean {
     return this.currentViewMode === 'edit';
+  }
+
+  /**
+   * Check if should show view view
+   * @returns true if view view, false otherwise
+   */
+  isViewView(): boolean {
+    return this.currentViewMode === 'view';
   }
 }

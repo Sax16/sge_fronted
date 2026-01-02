@@ -26,6 +26,7 @@ export class EmployeeTableComponent {
   @Output() newEmployee = new EventEmitter<void>();
   @Output() editEmployee = new EventEmitter<string>();
   @Output() deleteEmployee = new EventEmitter<string>();
+  @Output() viewEmployee = new EventEmitter<string>();
 
   /**
    * Handle new employee button click
@@ -48,6 +49,14 @@ export class EmployeeTableComponent {
    */
   handleDeleteClick(employeeId: string): void {
     this.deleteEmployee.emit(employeeId);
+  }
+
+  /**
+   * Handle view employee button click
+   * @param employeeId - ID of employee to view
+   */
+  handleViewClick(employeeId: string): void {
+    this.viewEmployee.emit(employeeId);
   }
 
   /**

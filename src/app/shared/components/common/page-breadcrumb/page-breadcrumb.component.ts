@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, Input } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { Subject, takeUntil } from 'rxjs';
@@ -23,7 +23,7 @@ export class PageBreadcrumbComponent implements OnInit, OnDestroy {
   private readonly destroy$ = new Subject<void>();
   
   breadcrumbs: BreadcrumbItem[] = [];
-  pageTitle = '';
+  @Input() pageTitle = '';
 
   constructor(private breadcrumbService: BreadcrumbService) {}
 
@@ -51,17 +51,17 @@ export class PageBreadcrumbComponent implements OnInit, OnDestroy {
    */
   private handleBreadcrumbsUpdate(breadcrumbs: BreadcrumbItem[]): void {
     this.breadcrumbs = breadcrumbs;
-    this.updatePageTitle(breadcrumbs);
+    /* this.updatePageTitle(breadcrumbs); */
   }
 
   /**
    * Update page title from last active breadcrumb
    * @param breadcrumbs - Current breadcrumbs
    */
-  private updatePageTitle(breadcrumbs: BreadcrumbItem[]): void {
+/*   private updatePageTitle(breadcrumbs: BreadcrumbItem[]): void {
     const activeBreadcrumb = this.findActiveBreadcrumb(breadcrumbs);
     this.pageTitle = activeBreadcrumb?.label || '';
-  }
+  } */
 
   /**
    * Find active breadcrumb
