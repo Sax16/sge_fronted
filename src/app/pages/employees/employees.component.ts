@@ -80,11 +80,13 @@ export class EmployeesComponent implements OnInit, OnDestroy {
     
     if (this.isEditRoute(url)) {
       this.handleEditRoute();
+      this.setViewMode('edit');
       return;
     }
 
     if (this.isViewRoute(url)) {
       this.handleViewRoute();
+      this.setViewMode('view');
       return;
     }
     
@@ -186,7 +188,6 @@ export class EmployeesComponent implements OnInit, OnDestroy {
    */
   private handleEmployeeLoaded(employee: Employee): void {
     this.selectedEmployee = employee;
-    this.setViewMode('edit');
     this.isLoading = false;
   }
   
@@ -212,7 +213,6 @@ export class EmployeesComponent implements OnInit, OnDestroy {
   */
  private handleEmployeeLoadedForView(employee: Employee): void {
    this.selectedEmployee = employee;
-   this.setViewMode('view');
    this.isLoading = false;
   }
   

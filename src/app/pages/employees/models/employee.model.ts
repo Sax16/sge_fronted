@@ -4,9 +4,8 @@
  */
 
 // Type aliases for better readability and type safety
-export type Gender = 'MALE' | 'FEMALE';
-export type EmployeeStatus = 'ACTIVE' | 'INACTIVE';
-export type EmployeePosition = 'ADMIN' | 'CASHIER' | 'WAREHOUSE' | 'SELLER';
+export type Gender = 'Masculino' | 'Femenino';
+export type EmployeePosition = 'Administrador' | 'Cajero' | 'Almacenero' | 'Vendedor';
 
 // Main Employee interface with strict types
 export interface Employee {
@@ -20,7 +19,7 @@ export interface Employee {
   address: string;
   phoneNumber: string;
   email: string;
-  isActive: EmployeeStatus;
+  isActive: boolean;
   position: EmployeePosition;
   readonly createdAt: Date;
 }
@@ -36,7 +35,7 @@ export interface CreateEmployeeDto {
   address: string;
   phoneNumber: string;
   email: string;
-  isActive: EmployeeStatus;
+  isActive: boolean;
   position: EmployeePosition;
 }
 
@@ -52,7 +51,7 @@ export interface ViewEmployeeDto {
   readonly address: string;
   readonly phoneNumber: string;
   readonly email: string;
-  readonly isActive: EmployeeStatus;
+  readonly isActive: boolean;
   readonly position: EmployeePosition;
   readonly createdAt: Date;
 }
@@ -68,7 +67,7 @@ export interface UpdateEmployeeDto {
   address?: string;
   phoneNumber?: string;
   email?: string;
-  isActive?: EmployeeStatus;
+  isActive?: boolean;
   position?: EmployeePosition;
 }
 
@@ -80,7 +79,7 @@ export interface EmployeeTableViewModel {
   phoneNumber: string;
   email: string;
   position: string;
-  status: EmployeeStatus;
+  status: boolean;
   createdAt: string;
 }
 
@@ -96,7 +95,7 @@ export interface EmployeeFormData {
   email: string;
   address: string;
   position: EmployeePosition | '';
-  isActive: EmployeeStatus | '';
+  isActive: boolean;
 }
 
 // Validation result

@@ -7,7 +7,7 @@ import { InputFieldReactiveComponent } from '../../../../shared/components/react
 import { DatePickerReactiveComponent } from '../../../../shared/components/reactive-form/date-picker-reactive/date-picker-reactive.component';
 import { SelectReactiveComponent } from '../../../../shared/components/reactive-form/select-reactive/select-reactive.component';
 import { EmployeeValidationService } from '../../services/employee-validation.service';
-import { CreateEmployeeDto, UpdateEmployeeDto, Employee, EmployeeFormData, Gender, EmployeePosition, EmployeeStatus } from '../../models/employee.model';
+import { CreateEmployeeDto, UpdateEmployeeDto, Employee, EmployeeFormData, Gender, EmployeePosition } from '../../models/employee.model';
 
 /**
  * Select option interface for dropdowns
@@ -44,20 +44,20 @@ export class EmployeeFormComponent implements OnInit, OnChanges {
   @Output() cancelForm = new EventEmitter<void>();
 
   readonly positionOptions: SelectOption[] = [
-    { value: 'ADMIN', label: 'Administrador' },
-    { value: 'CASHIER', label: 'Cajero' },
-    { value: 'WAREHOUSE', label: 'Almacenero' },
-    { value: 'SELLER', label: 'Vendedor' },
+    { value: 'Administrador', label: 'Administrador' },
+    { value: 'Cajero', label: 'Cajero' },
+    { value: 'Almacenero', label: 'Almacenero' },
+    { value: 'Vendedor', label: 'Vendedor' },
   ];
 
   readonly statusOptions: SelectOption[] = [
-    { value: 'ACTIVE', label: 'Activo' },
-    { value: 'INACTIVE', label: 'Inactivo' },
+    { value: 'Activo', label: 'Activo' },
+    { value: 'Inactivo', label: 'Inactivo' },
   ];
 
   readonly genderOptions: SelectOption[] = [
-    { value: 'MALE', label: 'Masculino' },
-    { value: 'FEMALE', label: 'Femenino' },
+    { value: 'Masculino', label: 'Masculino' },
+    { value: 'Femenino', label: 'Femenino' },
   ];
 
   employeeForm!: FormGroup;
@@ -90,8 +90,8 @@ export class EmployeeFormComponent implements OnInit, OnChanges {
       phoneNumber: new FormControl('', [this.validationService.phoneValidator]),
       email: new FormControl('', [Validators.email]),
       address: new FormControl('', []),
-      position: new FormControl<EmployeePosition | ''>('', []),
-      isActive: new FormControl<EmployeeStatus | ''>('', [Validators.required]),
+      position: new FormControl<EmployeePosition | ''>('', [Validators.required]),
+      isActive: new FormControl(false, [Validators.required]),
     });
 
     // Populate form if employee data exists
@@ -193,7 +193,7 @@ export class EmployeeFormComponent implements OnInit, OnChanges {
       address: formValue.address.trim(),
       phoneNumber: formValue.phoneNumber.trim(),
       email: formValue.email.trim(),
-      isActive: formValue.isActive as EmployeeStatus,
+      isActive: formValue.isActive,
       position: formValue.position as EmployeePosition,
     };
   }
@@ -215,7 +215,7 @@ export class EmployeeFormComponent implements OnInit, OnChanges {
       address: formValue.address.trim(),
       phoneNumber: formValue.phoneNumber.trim(),
       email: formValue.email.trim(),
-      isActive: formValue.isActive as EmployeeStatus,
+      isActive: formValue.isActive,
       position: formValue.position as EmployeePosition,
     };
   }

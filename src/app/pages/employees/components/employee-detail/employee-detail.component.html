@@ -1,7 +1,237 @@
-<div class="min-h-screen rounded-2xl border border-gray-200 bg-white px-5 py-7 dark:border-gray-800 dark:bg-white/[0.03] xl:px-10 xl:py-12">
-    <div class="mx-auto w-full max-w-[630px] text-center">
-      <p>Employee Detail Component Works!</p>
+@if (employee) {
+  <div class="rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03] lg:p-6">
+    <div class="flex gap-5 flex-row items-center justify-between mb-5 lg:mb-6">
+      <div class="flex items-center gap-2">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="menu-item-icon-active"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M3 12a9 9 0 1 0 18 0a9 9 0 1 0 -18 0" /><path d="M9 10a3 3 0 1 0 6 0a3 3 0 1 0 -6 0" /><path d="M6.168 18.849a4 4 0 0 1 3.832 -2.849h4a4 4 0 0 1 3.834 2.855" /></svg>
+        <h4 class="text-lg font-semibold text-center text-gray-800 dark:text-white/90 xl:text-left">
+          {{ getFullName(employee) }}
+        </h4>
+      </div>
+      <app-button size="sm" variant="outline" startIcon='<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="size-5"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M7 7h-1a2 2 0 0 0 -2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2 -2v-1" /><path d="M20.385 6.585a2.1 2.1 0 0 0 -2.97 -2.97l-8.415 8.385v3h3l8.385 -8.415z" /><path d="M16 5l3 3" /></svg>'>
+        Editar
+      </app-button>
+    </div>
+    <div class="space-y-6">
+      <div>
+        <div class="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]">
+          <div class="px-6 py-5">
+            <h4 class="text-lg font-semibold text-gray-800 dark:text-white/90">
+              Información Personal
+            </h4>
+          </div>
+          <div class="p-4 border-t border-gray-100 dark:border-gray-800 sm:p-6">
+            <div class="grid grid-cols-1 gap-4 lg:grid-cols-3 lg:gap-7 2xl:gap-x-32">
+              <div>
+                <p class="mb-2 text-base leading-normal text-gray-500 dark:text-gray-400">
+                  Nombres
+                </p>
+                <p class="text-base font-medium text-gray-800 dark:text-white/90">
+                  {{ employee.firstName }}
+                </p>
+              </div>
+              <div>
+                <p class="mb-2 text-base leading-normal text-gray-500 dark:text-gray-400">
+                  Appellidos
+                </p>
+                <p class="text-base font-medium text-gray-800 dark:text-white/90">
+                  {{ employee.lastName }}
+                </p>
+              </div>
+              <div>
+                <p class="mb-2 text-base leading-normal text-gray-500 dark:text-gray-400">
+                  DNI
+                </p>
+                <p class="text-base font-medium text-gray-800 dark:text-white/90">
+                  {{ employee.dni }}
+                </p>
+              </div>
+              <div>
+                <p class="mb-2 text-base leading-normal text-gray-500 dark:text-gray-400">
+                  RUC
+                </p>
+                <p class="text-base font-medium text-gray-800 dark:text-white/90">
+                  {{ employee.ruc || 'N/A' }}
+                </p>
+              </div>
+              <div>
+                <p class="mb-2 text-base leading-normal text-gray-500 dark:text-gray-400">
+                  Género
+                </p>
+                <p class="text-base font-medium text-gray-800 dark:text-white/90">
+                  {{ employee.gender }}
+                </p>
+              </div>
+              <div>
+                <p class="mb-2 text-base leading-normal text-gray-500 dark:text-gray-400">
+                  Fecha de Nacimiento
+                </p>
+                <p class="text-base font-medium text-gray-800 dark:text-white/90">
+                  {{ employee.birthDate ? (employee.birthDate | date:'longDate') : 'N/A' }}
+                </p>
+              </div>
+              <div>
+                <p class="mb-2 text-base leading-normal text-gray-500 dark:text-gray-400">
+                  Dirección
+                </p>
+                <p class="text-base font-medium text-gray-800 dark:text-white/90">
+                  {{ employee.address || 'N/A' }}
+                </p>
+              </div>
+              <div>
+                <p class="mb-2 text-base leading-normal text-gray-500 dark:text-gray-400">
+                  Teléfono
+                </p>
+                <p class="text-base font-medium text-gray-800 dark:text-white/90">
+                  {{ employee.phoneNumber || 'N/A' }}
+                </p>
+              </div>
+              <div>
+                <p class="mb-2 text-base leading-normal text-gray-500 dark:text-gray-400">
+                  Correo Electrónico
+                </p>
+                <p class="text-base font-medium text-gray-800 dark:text-white/90">
+                  {{ employee.email || 'N/A' }}
+                </p>
+              </div>
+              <div>
+                <p class="mb-2 text-base leading-normal text-gray-500 dark:text-gray-400">
+                  Estado
+                </p>
+                <p class="text-base font-medium text-gray-800 dark:text-white/90">
+                  {{ employee.isActive ? 'Activo' : 'Inactivo' }}
+                </p>
+              </div>
+              <div>
+                <p class="mb-2 text-base leading-normal text-gray-500 dark:text-gray-400">
+                  Responsabilidad
+                </p>
+                <p class="text-base font-medium text-gray-800 dark:text-white/90">
+                  {{ employee.position }}
+                </p>
+              </div>
+              <div>
+                <p class="mb-2 text-base leading-normal text-gray-500 dark:text-gray-400">
+                  Fecha de Registro
+                </p>
+                <p class="text-base font-medium text-gray-800 dark:text-white/90">
+                  {{ employee.createdAt | date:'longDate' }}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="overflow-hidden rounded-2xl border border-gray-200 bg-white dark:border-white/[0.05] dark:bg-white/[0.03]">
+        <div class="px-4 pt-4 sm:px-6">
+          <div class="flex flex-col gap-2 mb-4 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <h3 class="text-lg font-semibold text-gray-800 dark:text-white/90">
+                Historial de Pagos
+              </h3>
+            </div>
 
-      {{ this.employee | json }}
+            <div class="flex items-center gap-3">
+              <button
+                (click)="handleFilter()"
+                class="inline-flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-theme-sm font-medium text-gray-700 shadow-theme-xs hover:bg-gray-50 hover:text-gray-800 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-white/[0.03] dark:hover:text-gray-200"
+              >
+                <svg
+                  class="stroke-current fill-white dark:fill-gray-800"
+                  width="20"
+                  height="20"
+                  viewBox="0 0 20 20"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M2.29004 5.90393H17.7067"
+                    stroke=""
+                    strokeWidth="1.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                  <path
+                    d="M17.7075 14.0961H2.29085"
+                    stroke=""
+                    strokeWidth="1.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                  <path
+                    d="M12.0826 3.33331C13.5024 3.33331 14.6534 4.48431 14.6534 5.90414C14.6534 7.32398 13.5024 8.47498 12.0826 8.47498C10.6627 8.47498 9.51172 7.32398 9.51172 5.90415C9.51172 4.48432 10.6627 3.33331 12.0826 3.33331Z"
+                    fill=""
+                    stroke=""
+                    strokeWidth="1.5"
+                  />
+                  <path
+                    d="M7.91745 11.525C6.49762 11.525 5.34662 12.676 5.34662 14.0959C5.34661 15.5157 6.49762 16.6667 7.91745 16.6667C9.33728 16.6667 10.4883 15.5157 10.4883 14.0959C10.4883 12.676 9.33728 11.525 7.91745 11.525Z"
+                    fill=""
+                    stroke=""
+                    strokeWidth="1.5"
+                  />
+                </svg>
+                Año
+              </button>
+              <button
+                (click)="handleSeeAll()"
+                class="inline-flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-theme-sm font-medium text-gray-700 shadow-theme-xs hover:bg-gray-50 hover:text-gray-800 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-white/[0.03] dark:hover:text-gray-200"
+              >
+                Descargar Historial
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="max-w-full overflow-x-auto">
+          <table class="w-full">
+            <thead class="border-gray-100 border-y dark:border-white/[0.05]">
+              <tr>
+                <th scope="col" class="px-4 py-3 font-medium text-gray-500 sm:px-6 text-start text-theme-xs dark:text-gray-400">
+                  Fecha
+                </th>
+                <th scope="col" class="px-4 py-3 font-medium text-gray-500 sm:px-6 text-start text-theme-xs dark:text-gray-400">
+                  Descripción            
+              </th>
+                <th scope="col" class="px-4 py-3 font-medium text-gray-500 sm:px-6 text-start text-theme-xs dark:text-gray-400">
+                  Remuneración
+                </th>
+                <th scope="col" class="px-4 py-3 font-medium text-gray-500 sm:px-6 text-start text-theme-xs dark:text-gray-400">
+                  Deducción
+                </th>
+                <th scope="col" class="px-4 py-3 font-medium text-gray-500 sm:px-6 text-start text-theme-xs dark:text-gray-400">
+                  Bonificación
+                </th>
+                <th scope="col" class="px-4 py-3 font-medium text-gray-500 sm:px-6 text-start text-theme-xs dark:text-gray-400">
+                  Total
+                </th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-100 dark:divide-white/[0.05]">
+              @for (payment of tableData; track $index) {
+              <tr>
+                <td class="px-4 py-3 font-medium text-gray-800 sm:px-6 text-start text-theme-sm dark:text-white/90">
+                  {{ payment.date | date:'shortDate' }}
+                </td>
+                <td class="px-4 py-3 font-medium text-gray-800 sm:px-6 text-start text-theme-sm dark:text-white/90">
+                  {{ payment.description }}
+                </td>
+                <td class="px-4 text-theme-sm sm:px-6 text-start text-success-600">
+                  S/ {{ payment.remuneration }}
+                </td>
+                <td class="px-4 text-theme-sm sm:px-6 text-start text-error-600">
+                  S/ {{ payment.deduction }}
+                </td>
+                <td class="px-4 text-theme-sm sm:px-6 text-start text-success-600">
+                  S/ {{ payment.bonus }}
+                </td>
+                <td class="px-4 text-theme-sm sm:px-6 text-start font-semibold text-gray-800 dark:text-white/90">
+                  S/ {{ payment.remuneration - payment.deduction + payment.bonus }}
+                </td>
+              </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
     </div>
   </div>
+}

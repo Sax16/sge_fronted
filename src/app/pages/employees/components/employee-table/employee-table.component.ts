@@ -3,7 +3,7 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { BadgeComponent } from '../../../../shared/components/ui/badge/badge.component';
 import { AvatarTextComponent } from '../../../../shared/components/ui/avatar/avatar-text.component';
 import { ButtonComponent } from '../../../../shared/components/ui/button/button.component';
-import { Employee, EmployeeStatus } from '../../models/employee.model';
+import { Employee } from '../../models/employee.model';
 
 /**
  * Employee Table Component
@@ -89,8 +89,8 @@ export class EmployeeTableComponent {
    * @param status - Employee status
    * @returns Status label
    */
-  getStatusLabel(status: EmployeeStatus): string {
-    return status === 'ACTIVE' ? 'Activo' : 'Inactivo';
+  getStatusLabel(isActive: boolean): string {
+    return isActive ? 'Activo' : 'Inactivo';
   }
 
   /**
@@ -98,8 +98,8 @@ export class EmployeeTableComponent {
    * @param status - Employee status
    * @returns Badge color
    */
-  getBadgeColor(status: EmployeeStatus): 'success' | 'light' {
-    return status === 'ACTIVE' ? 'success' : 'light';
+  getBadgeColor(isActive: boolean): 'success' | 'light' {
+    return isActive ? 'success' : 'light';
   }
 
   /**
