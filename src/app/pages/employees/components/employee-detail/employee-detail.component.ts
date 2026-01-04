@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { Employee } from '../../models/employee.model';
 import { ButtonComponent } from '../../../../shared/components/ui/button/button.component';
 
@@ -14,10 +14,15 @@ import { ButtonComponent } from '../../../../shared/components/ui/button/button.
 })
 export class EmployeeDetailComponent {
   @Input() employee: Employee | null = null;
+  @Output() editEmployee = new EventEmitter<string>();
   
 
   getFullName(employee: Employee): string {
     return `${employee.firstName} ${employee.lastName}`;
+  }
+
+  handleEditClick(employeeId: string): void {
+    this.editEmployee.emit(employeeId);
   }
 
   // Temporal forma para tabla de pagos a empleados

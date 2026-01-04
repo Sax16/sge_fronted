@@ -50,6 +50,7 @@
   @if (isViewView() && selectedEmployee) {
     <app-employee-detail 
       [employee]="selectedEmployee"
+      (editEmployee)="handleEditEmployeeClick($event)"
     />
   }
 </div>
