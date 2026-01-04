@@ -26,24 +26,20 @@
 
   <!-- Create View -->
   @if (isCreateView()) {
-    <div class="overflow-hidden rounded-2xl border border-gray-200 bg-white dark:border-white/[0.05] dark:bg-white/[0.03]">
       <app-employee-form 
         (submitForm)="handleEmployeeCreate($any($event))"
         (cancelForm)="handleFormCancel()"
       />
-    </div>
   }
 
   <!-- Edit View -->
   @if (isEditView() && selectedEmployee) {
-    <div class="overflow-hidden rounded-2xl border border-gray-200 bg-white dark:border-white/[0.05] dark:bg-white/[0.03]">
       <app-employee-form 
         [employee]="selectedEmployee"
         [isEditMode]="true"
         (submitForm)="handleEmployeeUpdate($any($event))"
         (cancelForm)="handleFormCancel()"
       />
-    </div>
   }
 
   <!-- View View -->

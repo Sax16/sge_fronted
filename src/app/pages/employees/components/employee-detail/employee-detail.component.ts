@@ -2,12 +2,14 @@ import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { Employee } from '../../models/employee.model';
 import { ButtonComponent } from '../../../../shared/components/ui/button/button.component';
+import { BadgeComponent } from '../../../../shared/components/ui/badge/badge.component';
 
 @Component({
   selector: 'app-employee-detail',
   imports: [
     CommonModule,
-    ButtonComponent
+    ButtonComponent,
+    BadgeComponent,
   ],
   templateUrl: './employee-detail.component.html',
   styles: ``
@@ -23,6 +25,10 @@ export class EmployeeDetailComponent {
 
   handleEditClick(employeeId: string): void {
     this.editEmployee.emit(employeeId);
+  }
+
+  getBadgeColor(isActive: boolean): 'success' | 'light' {
+    return isActive ? 'success' : 'light';
   }
 
   // Temporal forma para tabla de pagos a empleados
