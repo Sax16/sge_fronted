@@ -30,6 +30,7 @@ export class DatePickerReactiveComponent
 
   private flatpickrInstance?: flatpickr.Instance;
   private isDisabled = false;
+  private initialValue: string | null = null;
 
   private onChange = (_: any) => {};
   private onTouched = () => {};
@@ -38,7 +39,7 @@ export class DatePickerReactiveComponent
     if (!this.dateInput) return;
 
     this.flatpickrInstance = flatpickr(this.dateInput.nativeElement, {
-      dateFormat: 'Y-m-d',
+      dateFormat: 'd/m/Y',
       onChange: (_, dateStr) => {
         this.onChange(dateStr);
       },
@@ -47,6 +48,12 @@ export class DatePickerReactiveComponent
       },
     });
 
+    // Aplicar valor inicial si existe
+    if (this.initialValue) {
+      this.flatpickrInstance.setDate(this.initialValue, false);
+      this.initialValue = null;
+    }
+
     // 🔑 aplicar disabled si Angular lo envió antes
     this.dateInput.nativeElement.disabled = this.isDisabled;
   }
@@ -54,6 +61,9 @@ export class DatePickerReactiveComponent
   writeValue(value: string | null): void {
     if (this.flatpickrInstance && value) {
       this.flatpickrInstance.setDate(value, false);
+    } else if (value) {
+      // Guardar el valor para aplicarlo después de la inicialización
+      this.initialValue = value;
     }
   }
 

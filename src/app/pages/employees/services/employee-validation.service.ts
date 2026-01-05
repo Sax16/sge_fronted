@@ -145,7 +145,9 @@ export class EmployeeValidationService {
       return null; // Birth date is optional
     }
 
-    const birthDate = new Date(value);
+    // Actual format is dd/mm/yyyy, convert to Date
+    const [day, month, year] = value.split('/');
+    const birthDate = new Date(+year, +month - 1, +day);
     
     if (!this.isValidAge(birthDate)) {
       return { 
