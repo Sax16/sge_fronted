@@ -89,7 +89,7 @@ export class EmployeeTableComponent {
    * @param status - Employee status
    * @returns Status label
    */
-  getStatusLabel(isActive: boolean): string {
+  getStatusLabel(isActive: boolean): 'Activo' | 'Inactivo' {
     return isActive ? 'Activo' : 'Inactivo';
   }
 

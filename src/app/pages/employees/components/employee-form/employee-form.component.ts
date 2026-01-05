@@ -50,9 +50,9 @@ export class EmployeeFormComponent implements OnInit, OnChanges {
     { value: 'Vendedor', label: 'Vendedor' },
   ];
 
-  readonly statusOptions: SelectOption[] = [
-    { value: 'Activo', label: 'Activo' },
-    { value: 'Inactivo', label: 'Inactivo' },
+  readonly statusOptions = [
+    { value: true, label: 'Activo' },
+    { value: false, label: 'Inactivo' },
   ];
 
   readonly genderOptions: SelectOption[] = [
@@ -85,18 +85,18 @@ export class EmployeeFormComponent implements OnInit, OnChanges {
       lastName: new FormControl('', [Validators.required, Validators.minLength(2)]),
       dni: new FormControl('', [Validators.required, this.validationService.dniValidator]),
       ruc: new FormControl('', [this.validationService.rucValidator]),
-      gender: new FormControl<Gender | ''>('', [Validators.required]),
+      gender: new FormControl<Gender | null>(null, [Validators.required]),
       birthDate: new FormControl('', [this.validationService.ageValidator]),
       phoneNumber: new FormControl('', [this.validationService.phoneValidator]),
       email: new FormControl('', [Validators.email]),
       address: new FormControl('', []),
-      position: new FormControl<EmployeePosition | ''>('', [Validators.required]),
-      isActive: new FormControl(false, [Validators.required]),
+      position: new FormControl<EmployeePosition | null>(null, [Validators.required]),
+      isActive: new FormControl<boolean | null>(null, [Validators.required]),
     });
 
     // Populate form if employee data exists
     if (this.employee) {
-      this.populateForm(this.employee);
+      this.populateForm(this.employee); 
     }
   }
 
