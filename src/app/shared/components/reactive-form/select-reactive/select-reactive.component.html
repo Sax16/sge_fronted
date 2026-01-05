@@ -1,18 +1,18 @@
 <div class="relative">
   <select
     [disabled]="disabled"
-    [value]="value"
+    [(ngModel)]="value"
     [id]="id"
-    (change)="handleChange($event)"
+    (ngModelChange)="onModelChange($event)"
     [ngClass]="selectClasses"
   >
     <!-- Placeholder -->
-    <option value="" disabled>
+    <option [ngValue]="null" disabled>
       {{ placeholder }}
     </option>
 
     @for (option of options; track option.value) {
-      <option [value]="option.value">
+      <option [ngValue]="option.value">
         {{ option.label }}
       </option>
     }

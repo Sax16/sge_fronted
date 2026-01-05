@@ -1,16 +1,16 @@
 import { CommonModule } from '@angular/common';
 import { Component, Input, forwardRef } from '@angular/core';
-import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
+import { ControlValueAccessor, NG_VALUE_ACCESSOR, FormsModule } from '@angular/forms';
 
 export interface Option {
-  value: string;
+  value: string | boolean;
   label: string;
 }
 
 @Component({
   selector: 'app-select-reactive',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule],
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,
@@ -32,14 +32,14 @@ export class SelectReactiveComponent implements ControlValueAccessor {
   @Input() success = false;
   @Input() hint?: string;
 
-  value = '';
+  value: any = null;
   disabled = false;
 
   private onChange = (_: any) => {};
   private onTouched = () => {};
 
-  writeValue(value: string | null): void {
-    this.value = value ?? '';
+  writeValue(value: any): void {
+    this.value = value ?? null;
   }
 
   registerOnChange(fn: any): void {
@@ -54,9 +54,25 @@ export class SelectReactiveComponent implements ControlValueAccessor {
     this.disabled = isDisabled;
   }
 
-  handleChange(event: Event) {
-    const value = (event.target as HTMLSelectElement).value;
-    this.value = value;
+  // Manejar el cambio de selección
+  handleChange(event: Event): void {
+    const rawValue = (event.target as HTMLSelectElement).value;
+    
+    // Convertir el valor string a su tipo original
+    let parsedValue: any = rawValue;
+    
+    // Buscar la opción correspondiente para obtener el valor real
+    const option = this.options.find(opt => String(opt.value) === rawValue);
+    if (option) {
+      parsedValue = option.value;
+    }
+    
+    this.value = parsedValue;
+    this.onChange(parsedValue);
+    this.onTouched();
+  }
+
+  onModelChange(value: any): void {
     this.onChange(value);
     this.onTouched();
   }
@@ -83,7 +99,7 @@ export class SelectReactiveComponent implements ControlValueAccessor {
 }
 
   get isPlaceholder(): boolean {
-    return this.value === null || this.value === '';
+    return this.value === null || this.value === '' || this.value === undefined;
   }
 
   get hintClass(): string {
