@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 import { Observable, of, throwError } from 'rxjs';
 import { delay, map } from 'rxjs/operators';
 import {
@@ -19,13 +20,29 @@ import {
 export class EmployeeService {
   // In-memory storage for demo purposes (would be replaced with HTTP calls)
   private employees: Employee[] = this.getMockEmployees();
+  
+  constructor(private http: HttpClient) {}
 
   /**
    * Get all employees
    * @returns Observable of employee array
    */
   getAllEmployees(): Observable<Employee[]> {
-    return of(this.employees).pipe(delay(300));
+    return this.fetchEmployeesFromApi();
+  }
+
+  /**
+   * Fetch employees from API
+   * @returns Observable of employee array from backend
+   */
+  private fetchEmployeesFromApi(): Observable<Employee[]> {
+    const url = 'http://localhost:8000/employees';
+    return this.http.get<Employee[]>(url)
+      .pipe(
+        // Adapt snake_case to camelCase if necessary
+        
+      )
+      ;
   }
 
   /**
@@ -33,7 +50,7 @@ export class EmployeeService {
    * @param id - Employee ID
    * @returns Observable of employee or error
    */
-  getEmployeeById(id: string): Observable<Employee> {
+  getEmployeeById(id: number): Observable<Employee> {
     const employee = this.employees.find((emp) => emp.id === id);
 
     if (!employee) {
@@ -70,7 +87,7 @@ export class EmployeeService {
    * @returns Observable of updated employee or error
    */
   updateEmployee(
-    id: string,
+    id: number,
     dto: UpdateEmployeeDto
   ): Observable<Employee> {
     const index = this.employees.findIndex((emp) => emp.id === id);
@@ -102,7 +119,7 @@ export class EmployeeService {
    * @param id - Employee ID
    * @returns Observable of void or error
    */
-  deleteEmployee(id: string): Observable<void> {
+  deleteEmployee(id: number): Observable<void> {
     const index = this.employees.findIndex((emp) => emp.id === id);
 
     if (index === -1) {
@@ -153,11 +170,12 @@ export class EmployeeService {
    * Generate unique employee ID
    * @returns Unique employee ID
    */
-  private generateEmployeeId(): string {
-    const prefix = 'EMP';
-    const timestamp = Date.now();
-    const random = Math.floor(Math.random() * 1000);
-    return `${prefix}${timestamp}${random}`;
+  private generateEmployeeId(): number {
+    // Simulate auto-increment ID from database
+    const maxId = this.employees.length > 0 
+      ? Math.max(...this.employees.map(emp => emp.id))
+      : 0;
+    return maxId + 1;
   }
 
   /**
@@ -167,7 +185,7 @@ export class EmployeeService {
   private getMockEmployees(): Employee[] {
     return [
       {
-        id: 'EMP001',
+        id: 1,
         firstName: 'Juan',
         lastName: 'Pérez García',
         dni: '12345678',
@@ -182,7 +200,7 @@ export class EmployeeService {
         createdAt: new Date('2024-01-15'),
       },
       {
-        id: 'EMP002',
+        id: 2,
         firstName: 'María',
         lastName: 'López Fernández',
         dni: '87654321',
@@ -196,7 +214,7 @@ export class EmployeeService {
         createdAt: new Date('2024-02-10'),
       },
       {
-        id: 'EMP003',
+        id: 3,
         firstName: 'Carlos',
         lastName: 'Rodríguez Silva',
         dni: '11223344',
@@ -211,7 +229,7 @@ export class EmployeeService {
         createdAt: new Date('2024-01-20'),
       },
       {
-        id: 'EMP004',
+        id: 4,
         firstName: 'Ana',
         lastName: 'Martínez Torres',
         dni: '55667788',
@@ -225,7 +243,7 @@ export class EmployeeService {
         createdAt: new Date('2024-03-05'),
       },
       {
-        id: 'EMP005',
+        id: 5,
         firstName: 'Luis',
         lastName: 'González Ramos',
         dni: '99887766',

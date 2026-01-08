@@ -13,7 +13,6 @@ registerLocaleData(localeEspe)
   imports: [
     RouterModule,
   ],
-  providers: [{ provide: LOCALE_ID, useValue: 'es-PE' }],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css',
 })

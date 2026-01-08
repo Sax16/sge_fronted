@@ -154,8 +154,12 @@ export class EmployeesComponent implements OnInit, OnDestroy {
    * Get employee ID from route parameters
    * @returns Employee ID or null
    */
-  private getEmployeeIdFromRoute(): string | null {
-    return this.route.snapshot.paramMap.get('id') || null;
+  private getEmployeeIdFromRoute(): number | null {
+    const idParam = this.route.snapshot.paramMap.get('id');
+    if (!idParam) return null;
+    
+    const id = Number(idParam);
+    return isNaN(id) ? null : id;
   }
 
   /**
@@ -170,7 +174,7 @@ export class EmployeesComponent implements OnInit, OnDestroy {
    * Load employee for editing
    * @param employeeId - Employee ID to load
    */
-  private loadEmployeeForEdit(employeeId: string): void {
+  private loadEmployeeForEdit(employeeId: number): void {
     this.isLoading = true;
 
     this.employeeService
@@ -195,7 +199,7 @@ export class EmployeesComponent implements OnInit, OnDestroy {
    * Load employee for viewing
    * @param employeeId - Employee ID to load
   */
- private loadEmployeeForView(employeeId: string): void {
+ private loadEmployeeForView(employeeId: number): void {
    this.isLoading = true;
    
    this.employeeService
@@ -265,6 +269,7 @@ export class EmployeesComponent implements OnInit, OnDestroy {
    */
   private handleEmployeesLoaded(employees: Employee[]): void {
     this.employees = employees;
+    console.log('Employees loaded:', employees);
     this.isLoading = false;
   }
 
@@ -289,7 +294,7 @@ export class EmployeesComponent implements OnInit, OnDestroy {
    * Navigate to edit employee page
    * @param employeeId - ID of employee to edit
    */
-  navigateToEdit(employeeId: string): void {
+  navigateToEdit(employeeId: number): void {
     this.router.navigate(['employees', 'edit', employeeId]);
   }
 
@@ -297,7 +302,7 @@ export class EmployeesComponent implements OnInit, OnDestroy {
    * Navigate to view employee page
    * @param employeeId - ID of employee to view
    */
-  navigateToView(employeeId: string): void {
+  navigateToView(employeeId: number): void {
     this.router.navigate(['employees', 'view', employeeId]);
   }
 
@@ -319,7 +324,7 @@ export class EmployeesComponent implements OnInit, OnDestroy {
    * Handle edit employee button click
    * @param employeeId - ID of employee to edit
    */
-  handleEditEmployeeClick(employeeId: string): void {
+  handleEditEmployeeClick(employeeId: number): void {
     this.navigateToEdit(employeeId);
   }
 
@@ -327,7 +332,7 @@ export class EmployeesComponent implements OnInit, OnDestroy {
    * Handle view employee button click
    * @param employeeId - ID of employee to view
    */
-  handleViewEmployeeClick(employeeId: string): void {
+  handleViewEmployeeClick(employeeId: number): void {
     this.navigateToView(employeeId);
   }
 
@@ -374,7 +379,7 @@ export class EmployeesComponent implements OnInit, OnDestroy {
    * @param employeeId - Employee ID
    * @param employeeData - Employee data to update
    */
-  private updateEmployee(employeeId: string, employeeData: UpdateEmployeeDto): void {
+  private updateEmployee(employeeId: number, employeeData: UpdateEmployeeDto): void {
     this.isLoading = true;
 
     this.employeeService
@@ -439,7 +444,7 @@ export class EmployeesComponent implements OnInit, OnDestroy {
    * Handle employee deletion request
    * @param employeeId - ID of employee to delete
    */
-  handleEmployeeDelete(employeeId: string): void {
+  handleEmployeeDelete(employeeId: number): void {
     if (!this.confirmDelete()) {
       return;
     }
@@ -459,7 +464,7 @@ export class EmployeesComponent implements OnInit, OnDestroy {
    * Delete employee
    * @param employeeId - ID of employee to delete
    */
-  private deleteEmployee(employeeId: string): void {
+  private deleteEmployee(employeeId: number): void {
     this.isLoading = true;
 
     this.employeeService
@@ -475,7 +480,7 @@ export class EmployeesComponent implements OnInit, OnDestroy {
    * Handle successful employee deletion
    * @param employeeId - ID of deleted employee
    */
-  private handleEmployeeDeleted(employeeId: string): void {
+  private handleEmployeeDeleted(employeeId: number): void {
     this.employees = this.employees.filter((emp) => emp.id !== employeeId);
     this.isLoading = false;
   }

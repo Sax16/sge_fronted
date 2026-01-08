@@ -24,9 +24,9 @@ import { Employee } from '../../models/employee.model';
 export class EmployeeTableComponent {
   @Input() employees: Employee[] = [];
   @Output() newEmployee = new EventEmitter<void>();
-  @Output() editEmployee = new EventEmitter<string>();
-  @Output() deleteEmployee = new EventEmitter<string>();
-  @Output() viewEmployee = new EventEmitter<string>();
+  @Output() editEmployee = new EventEmitter<number>();
+  @Output() deleteEmployee = new EventEmitter<number>();
+  @Output() viewEmployee = new EventEmitter<number>();
 
   /**
    * Handle new employee button click
@@ -39,7 +39,7 @@ export class EmployeeTableComponent {
    * Handle edit employee button click
    * @param employeeId - ID of employee to edit
    */
-  handleEditClick(employeeId: string): void {
+  handleEditClick(employeeId: number): void {
     this.editEmployee.emit(employeeId);
   }
 
@@ -47,7 +47,7 @@ export class EmployeeTableComponent {
    * Handle delete employee button click
    * @param employeeId - ID of employee to delete
    */
-  handleDeleteClick(employeeId: string): void {
+  handleDeleteClick(employeeId: number): void {
     this.deleteEmployee.emit(employeeId);
   }
 
@@ -55,7 +55,7 @@ export class EmployeeTableComponent {
    * Handle view employee button click
    * @param employeeId - ID of employee to view
    */
-  handleViewClick(employeeId: string): void {
+  handleViewClick(employeeId: number): void {
     this.viewEmployee.emit(employeeId);
   }
 
@@ -129,7 +129,7 @@ export class EmployeeTableComponent {
    * @param employee - Employee object
    * @returns Unique identifier
    */
-  trackByEmployeeId(index: number, employee: Employee): string {
+  trackByEmployeeId(index: number, employee: Employee): number {
     return employee.id;
   }
 }

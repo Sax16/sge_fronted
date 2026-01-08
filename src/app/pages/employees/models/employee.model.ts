@@ -9,7 +9,7 @@ export type EmployeePosition = 'Administrador' | 'Cajero' | 'Almacenero' | 'Vend
 
 // Main Employee interface with strict types
 export interface Employee {
-  readonly id: string;
+  readonly id: number;
   firstName: string;
   lastName: string;
   dni: string;
@@ -41,7 +41,7 @@ export interface CreateEmployeeDto {
 
 // Data Transfer Object for viewing employees (all fields readonly)
 export interface ViewEmployeeDto {
-  readonly id: string;
+  readonly id: number;
   readonly firstName: string;
   readonly lastName: string;
   readonly dni: string;
@@ -73,7 +73,7 @@ export interface UpdateEmployeeDto {
 
 // View Model for table display
 export interface EmployeeTableViewModel {
-  id: string;
+  id: number;
   fullName: string;
   dni: string;
   phoneNumber: string;

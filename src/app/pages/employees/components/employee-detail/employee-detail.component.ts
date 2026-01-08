@@ -22,14 +22,14 @@ export interface Option {
 export class EmployeeDetailComponent {
 
   @Input() employee: Employee | null = null;
-  @Output() editEmployee = new EventEmitter<string>();
+  @Output() editEmployee = new EventEmitter<number>();
   
 
   getFullName(employee: Employee): string {
     return `${employee.firstName} ${employee.lastName}`;
   }
 
-  handleEditClick(employeeId: string): void {
+  handleEditClick(employeeId: number): void {
     this.editEmployee.emit(employeeId);
   }
 
