@@ -71,6 +71,7 @@ export class EmployeeService {
         id: this.generateEmployeeId(),
         ...dto,
         createdAt: new Date(),
+        updatedAt: new Date(),
       };
 
       this.employees = [...this.employees, newEmployee];
@@ -196,8 +197,9 @@ export class EmployeeService {
         phoneNumber: '987654321',
         email: 'juan.perez@empresa.com',
         isActive: true,
-        position: 'Administrador',
+        position: 'Docente',
         createdAt: new Date('2024-01-15'),
+        updatedAt: new Date('2024-01-15'),
       },
       {
         id: 2,
@@ -210,8 +212,9 @@ export class EmployeeService {
         phoneNumber: '912345678',
         email: 'maria.lopez@empresa.com',
         isActive: true,
-        position: 'Cajero',
+        position: 'Docente',
         createdAt: new Date('2024-02-10'),
+        updatedAt: new Date('2024-02-10'),
       },
       {
         id: 3,
@@ -225,8 +228,9 @@ export class EmployeeService {
         phoneNumber: '998877665',
         email: 'carlos.rodriguez@empresa.com',
         isActive: false,
-        position: 'Almacenero',
+        position: 'Director',
         createdAt: new Date('2024-01-20'),
+        updatedAt: new Date('2024-01-20'),
       },
       {
         id: 4,
@@ -239,8 +243,9 @@ export class EmployeeService {
         phoneNumber: '955443322',
         email: 'ana.martinez@empresa.com',
         isActive: true,
-        position: 'Vendedor',
+        position: 'Otro',
         createdAt: new Date('2024-03-05'),
+        updatedAt: new Date('2024-03-05'),
       },
       {
         id: 5,
@@ -253,8 +258,9 @@ export class EmployeeService {
         phoneNumber: '966554433',
         email: 'luis.gonzalez@empresa.com',
         isActive: false,
-        position: 'Vendedor',
+        position: 'Administrativo',
         createdAt: new Date('2024-02-28'),
+        updatedAt: new Date('2024-02-28'),
       },
     ];
   }

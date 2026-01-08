@@ -5,7 +5,7 @@
 
 // Type aliases for better readability and type safety
 export type Gender = 'Masculino' | 'Femenino';
-export type EmployeePosition = 'Administrador' | 'Cajero' | 'Almacenero' | 'Vendedor';
+export type EmployeePosition = 'Docente' | 'Auxiliar' | 'Secretaria' | 'Director' | 'Subdirector' | 'Psicologo' | 'Promotor' | 'Administrativo' | 'Otro';
 
 // Main Employee interface with strict types
 export interface Employee {
@@ -22,6 +22,7 @@ export interface Employee {
   isActive: boolean;
   position: EmployeePosition;
   readonly createdAt: Date;
+  readonly updatedAt: Date;
 }
 
 // Data Transfer Object for creating employees (without id and createdAt)
@@ -54,6 +55,7 @@ export interface ViewEmployeeDto {
   readonly isActive: boolean;
   readonly position: EmployeePosition;
   readonly createdAt: Date;
+  readonly updatedAt: Date;
 }
 
 // Data Transfer Object for updating employees (all fields optional except id)

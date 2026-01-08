@@ -269,7 +269,6 @@ export class EmployeesComponent implements OnInit, OnDestroy {
    */
   private handleEmployeesLoaded(employees: Employee[]): void {
     this.employees = employees;
-    console.log('Employees loaded:', employees);
     this.isLoading = false;
   }
 
