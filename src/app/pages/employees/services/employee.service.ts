@@ -51,13 +51,23 @@ export class EmployeeService {
    * @returns Observable of employee or error
    */
   getEmployeeById(id: number): Observable<Employee> {
-    const employee = this.employees.find((emp) => emp.id === id);
+    const employee = this.fetchEmployeeByIdFromApi(id);
 
     if (!employee) {
       return throwError(() => new Error(`Employee with ID ${id} not found`));
     }
 
-    return of(employee).pipe(delay(300));
+    return employee;
+  }
+
+  /**
+   * Fetch employee by ID from API
+   * @param id - Employee ID
+   * @returns Observable of employee or null
+   */
+  private fetchEmployeeByIdFromApi(id: number): Observable<Employee> {
+    const url = `http://localhost:8000/employees/${id}`;
+    return this.http.get<Employee>(url);
   }
 
   /**
