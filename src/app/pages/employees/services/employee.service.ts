@@ -37,12 +37,7 @@ export class EmployeeService {
    */
   private fetchEmployeesFromApi(): Observable<Employee[]> {
     const url = 'http://localhost:8000/employees';
-    return this.http.get<Employee[]>(url)
-      .pipe(
-        // Adapt snake_case to camelCase if necessary
-        
-      )
-      ;
+    return this.http.get<Employee[]>(url);
   }
 
   /**
@@ -63,7 +58,7 @@ export class EmployeeService {
   /**
    * Fetch employee by ID from API
    * @param id - Employee ID
-   * @returns Observable of employee or null
+   * @returns Observable of employee from backend
    */
   private fetchEmployeeByIdFromApi(id: number): Observable<Employee> {
     const url = `http://localhost:8000/employees/${id}`;
@@ -75,20 +70,23 @@ export class EmployeeService {
    * @param dto - Create employee data transfer object
    * @returns Observable of created employee or error
    */
-  createEmployee(dto: CreateEmployeeDto): Observable<Employee> {
+  createEmployee(newEmployee: CreateEmployeeDto): Observable<Employee> {
     try {
-      const newEmployee: Employee = {
-        id: this.generateEmployeeId(),
-        ...dto,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      };
+      return this.postEmployeeToApi(newEmployee);
 
-      this.employees = [...this.employees, newEmployee];
-      return of(newEmployee).pipe(delay(300));
     } catch (error) {
       return throwError(() => new Error('Failed to create employee'));
     }
+  }
+
+  /**
+   * Post new employee to API
+   * @param dto - Create employee data transfer object
+   * @returns Observable of created employee from backend
+   */
+  private postEmployeeToApi(newEmployee: CreateEmployeeDto): Observable<Employee> {
+    const url = 'http://localhost:8000/employees';
+    return this.http.post<Employee>(url, newEmployee);
   }
 
   /**
@@ -202,7 +200,7 @@ export class EmployeeService {
         dni: '12345678',
         ruc: '10123456781',
         gender: 'Masculino',
-        birthDate: new Date('1990-05-15'),
+        birthDate: '1990-05-15',
         address: 'Av. Principal 123, Lima',
         phoneNumber: '987654321',
         email: 'juan.perez@empresa.com',
@@ -210,67 +208,6 @@ export class EmployeeService {
         position: 'Docente',
         createdAt: new Date('2024-01-15'),
         updatedAt: new Date('2024-01-15'),
-      },
-      {
-        id: 2,
-        firstName: 'María',
-        lastName: 'López Fernández',
-        dni: '87654321',
-        gender: 'Femenino',
-        birthDate: new Date('1992-08-20'),
-        address: 'Jr. Secundario 456, Callao',
-        phoneNumber: '912345678',
-        email: 'maria.lopez@empresa.com',
-        isActive: true,
-        position: 'Docente',
-        createdAt: new Date('2024-02-10'),
-        updatedAt: new Date('2024-02-10'),
-      },
-      {
-        id: 3,
-        firstName: 'Carlos',
-        lastName: 'Rodríguez Silva',
-        dni: '11223344',
-        ruc: '10112233441',
-        gender: 'Masculino',
-        birthDate: new Date('1988-12-10'),
-        address: 'Calle Tercera 789, Miraflores',
-        phoneNumber: '998877665',
-        email: 'carlos.rodriguez@empresa.com',
-        isActive: false,
-        position: 'Director',
-        createdAt: new Date('2024-01-20'),
-        updatedAt: new Date('2024-01-20'),
-      },
-      {
-        id: 4,
-        firstName: 'Ana',
-        lastName: 'Martínez Torres',
-        dni: '55667788',
-        gender: 'Femenino',
-        birthDate: new Date('1995-03-25'),
-        address: 'Av. Los Olivos 321, San Isidro',
-        phoneNumber: '955443322',
-        email: 'ana.martinez@empresa.com',
-        isActive: true,
-        position: 'Otro',
-        createdAt: new Date('2024-03-05'),
-        updatedAt: new Date('2024-03-05'),
-      },
-      {
-        id: 5,
-        firstName: 'Luis',
-        lastName: 'González Ramos',
-        dni: '99887766',
-        gender: 'Masculino',
-        birthDate: new Date('1991-07-18'),
-        address: 'Jr. Las Flores 654, Surco',
-        phoneNumber: '966554433',
-        email: 'luis.gonzalez@empresa.com',
-        isActive: false,
-        position: 'Administrativo',
-        createdAt: new Date('2024-02-28'),
-        updatedAt: new Date('2024-02-28'),
       },
     ];
   }

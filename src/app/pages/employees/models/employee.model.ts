@@ -15,7 +15,7 @@ export interface Employee {
   dni: string;
   ruc?: string;
   gender: Gender;
-  birthDate: Date | null;
+  birthDate: string | null;
   address: string;
   phoneNumber: string;
   email: string;
@@ -32,7 +32,7 @@ export interface CreateEmployeeDto {
   dni: string;
   ruc?: string;
   gender: Gender;
-  birthDate: Date | null;
+  birthDate: string | null;
   address: string;
   phoneNumber: string;
   email: string;
@@ -40,7 +40,7 @@ export interface CreateEmployeeDto {
   position: EmployeePosition;
 }
 
-// Data Transfer Object for viewing employees (all fields readonly)
+// Data Transfer Object for viewing employees (all fields readonly) - NO SE USA AUN
 export interface ViewEmployeeDto {
   readonly id: number;
   readonly firstName: string;
@@ -48,7 +48,7 @@ export interface ViewEmployeeDto {
   readonly dni: string;
   readonly ruc?: string;
   readonly gender: Gender;
-  readonly birthDate: Date | null;
+  readonly birthDate: string | null;
   readonly address: string;
   readonly phoneNumber: string;
   readonly email: string;
@@ -65,7 +65,7 @@ export interface UpdateEmployeeDto {
   dni?: string;
   ruc?: string;
   gender?: Gender;
-  birthDate?: Date | null;
+  birthDate?: string | null;
   address?: string;
   phoneNumber?: string;
   email?: string;
@@ -87,7 +87,7 @@ export interface EmployeeTableViewModel {
 
 // Form data interface
 export interface EmployeeFormData {
-  name: string;
+  firstName: string;
   lastName: string;
   dni: string;
   ruc: string;

@@ -44,10 +44,10 @@ export class EmployeeFormComponent implements OnInit, OnChanges {
   @Output() cancelForm = new EventEmitter<void>();
 
   readonly positionOptions: SelectOption[] = [
-    { value: 'Administrador', label: 'Administrador' },
-    { value: 'Cajero', label: 'Cajero' },
-    { value: 'Almacenero', label: 'Almacenero' },
-    { value: 'Vendedor', label: 'Vendedor' },
+    { value: 'Docente', label: 'Docente' },
+    { value: 'Auxiliar', label: 'Auxiliar' },
+    { value: 'Administrativo', label: 'Administrativo' },
+    { value: 'Promotor', label: 'Promotor' },
   ];
 
   readonly statusOptions = [
@@ -81,7 +81,7 @@ export class EmployeeFormComponent implements OnInit, OnChanges {
    */
   private initializeForm(): void {
     this.employeeForm = new FormGroup({
-      name: new FormControl('', [Validators.required, Validators.minLength(2)]),
+      firstName: new FormControl('', [Validators.required, Validators.minLength(2)]),
       lastName: new FormControl('', [Validators.required, Validators.minLength(2)]),
       dni: new FormControl('', [Validators.required, this.validationService.dniValidator]),
       ruc: new FormControl('', [this.validationService.rucValidator]),
@@ -96,7 +96,7 @@ export class EmployeeFormComponent implements OnInit, OnChanges {
 
     // Populate form if employee data exists
     if (this.employee) {
-      this.populateForm(this.employee); 
+      this.populateForm(this.employee);
     }
   }
 
@@ -106,7 +106,7 @@ export class EmployeeFormComponent implements OnInit, OnChanges {
    */
   private populateForm(employee: Employee): void {
     this.employeeForm.patchValue({
-      name: employee.firstName,
+      firstName: employee.firstName,
       lastName: employee.lastName,
       dni: employee.dni,
       ruc: employee.ruc || '',
@@ -122,14 +122,13 @@ export class EmployeeFormComponent implements OnInit, OnChanges {
 
   /**
    * Format date for input field
-   * @param date - Date to format
-   * @returns Formatted date string
+   * @param date - Date in format yyyy-MM-dd
+   * @returns Formatted date string in dd/MM/yyyy
    */
-  private formatDateForInput(date: Date): string {
-    const d = new Date(date);
-    const day = d.getDate().toString().padStart(2, '0');
-    const month = (d.getMonth() + 1).toString().padStart(2, '0');
-    const year = d.getFullYear();
+  private formatDateForInput(date: string): string {
+    const year = date.substring(0, 4);
+    const month = date.substring(5, 7);
+    const day = date.substring(8, 10);
     return `${day}/${month}/${year}`;
   }
 
@@ -187,12 +186,12 @@ export class EmployeeFormComponent implements OnInit, OnChanges {
     const formValue = this.employeeForm.value as EmployeeFormData;
     
     return {
-      firstName: formValue.name.trim(),
+      firstName: formValue.firstName.trim(),
       lastName: formValue.lastName.trim(),
       dni: formValue.dni.trim(),
       ruc: formValue.ruc ? formValue.ruc.trim() : undefined,
       gender: formValue.gender as Gender,
-      birthDate: formValue.birthDate ? new Date(formValue.birthDate) : null,
+      birthDate: formValue.birthDate ? formValue.birthDate.trim() : null,
       address: formValue.address.trim(),
       phoneNumber: formValue.phoneNumber.trim(),
       email: formValue.email.trim(),
@@ -209,12 +208,12 @@ export class EmployeeFormComponent implements OnInit, OnChanges {
     const formValue = this.employeeForm.value as EmployeeFormData;
     
     return {
-      firstName: formValue.name.trim(),
+      firstName: formValue.firstName.trim(),
       lastName: formValue.lastName.trim(),
       dni: formValue.dni.trim(),
       ruc: formValue.ruc ? formValue.ruc.trim() : undefined,
       gender: formValue.gender as Gender,
-      birthDate: formValue.birthDate ? new Date(formValue.birthDate) : null,
+      birthDate: formValue.birthDate ? formValue.birthDate : null,
       address: formValue.address.trim(),
       phoneNumber: formValue.phoneNumber.trim(),
       email: formValue.email.trim(),
@@ -252,8 +251,8 @@ export class EmployeeFormComponent implements OnInit, OnChanges {
 
   // Getters for form controls (for template access)
   
-  get nameControl(): AbstractControl {
-    return this.getControl('name');
+  get firstNameControl(): AbstractControl {
+    return this.getControl('firstName');
   }
 
   get lastNameControl(): AbstractControl {
