@@ -191,7 +191,7 @@ export class EmployeeFormComponent implements OnInit, OnChanges {
       dni: formValue.dni.trim(),
       ruc: formValue.ruc ? formValue.ruc.trim() : undefined,
       gender: formValue.gender as Gender,
-      birthDate: formValue.birthDate ? formValue.birthDate.trim() : null,
+      birthDate: formValue.birthDate ? this.formatDateForApi(formValue.birthDate) : null,
       address: formValue.address.trim(),
       phoneNumber: formValue.phoneNumber.trim(),
       email: formValue.email.trim(),
@@ -213,7 +213,7 @@ export class EmployeeFormComponent implements OnInit, OnChanges {
       dni: formValue.dni.trim(),
       ruc: formValue.ruc ? formValue.ruc.trim() : undefined,
       gender: formValue.gender as Gender,
-      birthDate: formValue.birthDate ? formValue.birthDate : null,
+      birthDate: formValue.birthDate ? this.formatDateForApi(formValue.birthDate) : null,
       address: formValue.address.trim(),
       phoneNumber: formValue.phoneNumber.trim(),
       email: formValue.email.trim(),
@@ -228,6 +228,18 @@ export class EmployeeFormComponent implements OnInit, OnChanges {
   private resetForm(): void {
     this.employeeForm.reset();
     this.isSubmitted = false;
+  }
+
+  /**
+   * Format date for post request to API
+   * @param date - Date in format dd/MM/yyyy
+   * @returns Formatted date string in yyyy-MM-dd
+   */
+  private formatDateForApi(date: string): string {
+    const year = date.substring(6, 10);
+    const month = date.substring(3, 5);
+    const day = date.substring(0, 2);
+    return `${year}-${month}-${day}`;
   }
 
   /**
