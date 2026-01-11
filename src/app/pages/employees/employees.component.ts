@@ -187,37 +187,28 @@ export class EmployeesComponent implements OnInit, OnDestroy {
   }
 
   /**
+   * Load employee for viewing
+   * @param employeeId - Employee ID to load
+  */
+  private loadEmployeeForView(employeeId: number): void {
+    this.isLoading = true;
+    
+    this.employeeService
+    .getEmployeeById(employeeId)
+    .pipe(takeUntil(this.destroy$))
+    .subscribe({
+      next: (employee) => this.handleEmployeeLoaded(employee),
+      error: (error) => this.handleEmployeeLoadError(error),
+     });
+   }
+
+  /**
    * Handle employee loaded for editing
    * @param employee - Loaded employee
    */
   private handleEmployeeLoaded(employee: Employee): void {
     this.selectedEmployee = employee;
     this.isLoading = false;
-  }
-  
-  /**
-   * Load employee for viewing
-   * @param employeeId - Employee ID to load
-  */
- private loadEmployeeForView(employeeId: number): void {
-   this.isLoading = true;
-   
-   this.employeeService
-   .getEmployeeById(employeeId)
-   .pipe(takeUntil(this.destroy$))
-   .subscribe({
-     next: (employee) => this.handleEmployeeLoadedForView(employee),
-     error: (error) => this.handleEmployeeLoadError(error),
-    });
-  }
-  
-  /**
-   * Handle employee loaded for viewing
-   * @param employee - Loaded employee
-  */
- private handleEmployeeLoadedForView(employee: Employee): void {
-   this.selectedEmployee = employee;
-   this.isLoading = false;
   }
   
   /**
@@ -368,7 +359,7 @@ export class EmployeesComponent implements OnInit, OnDestroy {
       .createEmployee(employeeData)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
-        next: (employee) => this.handleEmployeeCreated(employee),
+        next: () => this.handleEmployeeCreated(),
         error: (error) => this.handleCreateError(error),
       });
   }
@@ -385,7 +376,7 @@ export class EmployeesComponent implements OnInit, OnDestroy {
       .updateEmployee(employeeId, employeeData)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
-        next: (employee) => this.handleEmployeeUpdated(employee),
+        next: () => this.handleEmployeeUpdated(),
         error: (error) => this.handleUpdateError(error),
       });
   }
@@ -394,8 +385,7 @@ export class EmployeesComponent implements OnInit, OnDestroy {
    * Handle successful employee creation
    * @param employee - Created employee
    */
-  private handleEmployeeCreated(employee: Employee): void {
-    this.employees = [...this.employees, employee];
+  private handleEmployeeCreated(): void {
     this.isLoading = false;
     this.navigateToList();
   }
@@ -404,17 +394,7 @@ export class EmployeesComponent implements OnInit, OnDestroy {
    * Handle successful employee update
    * @param employee - Updated employee
    */
-  private handleEmployeeUpdated(employee: Employee): void {
-    const index = this.employees.findIndex((emp) => emp.id === employee.id);
-    
-    if (index !== -1) {
-      this.employees = [
-        ...this.employees.slice(0, index),
-        employee,
-        ...this.employees.slice(index + 1),
-      ];
-    }
-    
+  private handleEmployeeUpdated(): void {
     this.isLoading = false;
     this.navigateToList();
   }

@@ -84,9 +84,9 @@ export class EmployeeService {
    * @param dto - Create employee data transfer object
    * @returns Observable of created employee from backend
    */
-  private postEmployeeToApi(newEmployee: CreateEmployeeDto): Observable<Employee> {
+  private postEmployeeToApi(dto: CreateEmployeeDto): Observable<Employee> {
     const url = 'http://localhost:8000/employees';
-    return this.http.post<Employee>(url, newEmployee);
+    return this.http.post<Employee>(url, dto);
   }
 
   /**
@@ -99,28 +99,23 @@ export class EmployeeService {
     id: number,
     dto: UpdateEmployeeDto
   ): Observable<Employee> {
-    const index = this.employees.findIndex((emp) => emp.id === id);
-
-    if (index === -1) {
-      return throwError(() => new Error(`Employee with ID ${id} not found`));
-    }
 
     try {
-      const updatedEmployee: Employee = {
-        ...this.employees[index],
-        ...dto,
-      };
-
-      this.employees = [
-        ...this.employees.slice(0, index),
-        updatedEmployee,
-        ...this.employees.slice(index + 1),
-      ];
-
-      return of(updatedEmployee).pipe(delay(300));
+      return this.putEmployeeToApi(id, dto);
     } catch (error) {
       return throwError(() => new Error('Failed to update employee'));
     }
+  }
+
+  /**
+   * Put updated employee to API
+   * @param id - Employee ID
+   * @param dto - Update employee data transfer object
+   * @returns Observable of updated employee from backend
+   */
+  private putEmployeeToApi(id: number, dto: UpdateEmployeeDto): Observable<Employee> {
+    const url = `http://localhost:8000/employees/${id}`;
+    return this.http.put<Employee>(url, dto);
   }
 
   /**
