@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, of, throwError } from 'rxjs';
+import { Observable, throwError } from 'rxjs';
 import { delay, map } from 'rxjs/operators';
 import {
   Employee,
@@ -18,8 +18,6 @@ import {
   providedIn: 'root',
 })
 export class EmployeeService {
-  // In-memory storage for demo purposes (would be replaced with HTTP calls)
-  private employees: Employee[] = this.getMockEmployees();
   
   constructor(private http: HttpClient) {}
 
@@ -124,86 +122,20 @@ export class EmployeeService {
    * @returns Observable of void or error
    */
   deleteEmployee(id: number): Observable<void> {
-    const index = this.employees.findIndex((emp) => emp.id === id);
-
-    if (index === -1) {
-      return throwError(() => new Error(`Employee with ID ${id} not found`));
-    }
-
     try {
-      this.employees = [
-        ...this.employees.slice(0, index),
-        ...this.employees.slice(index + 1),
-      ];
-
-      return of(void 0).pipe(delay(300));
+      return this.deleteEmployeeFromApi(id);
     } catch (error) {
       return throwError(() => new Error('Failed to delete employee'));
     }
   }
 
   /**
-   * Get employees as table view models
-   * @returns Observable of employee table view models
+   * Delete employee from API
+   * @param id - Employee ID
+   * @returns Observable of void from backend
    */
-  getEmployeesForTable(): Observable<EmployeeTableViewModel[]> {
-    return this.getAllEmployees().pipe(
-      map((employees) => employees.map(this.mapToTableViewModel))
-    );
-  }
-
-  /**
-   * Map employee to table view model
-   * @param employee - Employee entity
-   * @returns Employee table view model
-   */
-  private mapToTableViewModel(employee: Employee): EmployeeTableViewModel {
-    return {
-      id: employee.id,
-      fullName: `${employee.firstName} ${employee.lastName}`,
-      dni: employee.dni,
-      phoneNumber: employee.phoneNumber,
-      email: employee.email,
-      position: employee.position,
-      status: employee.isActive,
-      createdAt: employee.createdAt.toLocaleDateString('es-PE'),
-    };
-  }
-
-  /**
-   * Generate unique employee ID
-   * @returns Unique employee ID
-   */
-  private generateEmployeeId(): number {
-    // Simulate auto-increment ID from database
-    const maxId = this.employees.length > 0 
-      ? Math.max(...this.employees.map(emp => emp.id))
-      : 0;
-    return maxId + 1;
-  }
-
-  /**
-   * Get mock employees for demo
-   * @returns Array of mock employees
-   */
-  private getMockEmployees(): Employee[] {
-    return [
-      {
-        id: 1,
-        firstName: 'Juan',
-        lastName: 'Pérez García',
-        dni: '12345678',
-        ruc: '10123456781',
-        gender: 'Masculino',
-        birthDate: '1990-05-15',
-        address: 'Av. Principal 123, Lima',
-        phoneNumber: '987654321',
-        email: 'juan.perez@empresa.com',
-        isActive: true,
-        position: 'Docente',
-        createdAt: new Date('2024-01-15'),
-        updatedAt: new Date('2024-01-15'),
-      },
-    ];
+  private deleteEmployeeFromApi(id: number): Observable<void> {
+    const url = `http://localhost:8000/employees/${id}`;
+    return this.http.delete<void>(url);
   }
 }

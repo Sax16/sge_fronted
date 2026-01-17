@@ -460,8 +460,9 @@ export class EmployeesComponent implements OnInit, OnDestroy {
    * @param employeeId - ID of deleted employee
    */
   private handleEmployeeDeleted(employeeId: number): void {
-    this.employees = this.employees.filter((emp) => emp.id !== employeeId);
+    this.employees = this.employees.filter(emp => emp.id !== employeeId);
     this.isLoading = false;
+    this.navigateToList();
   }
 
   /**

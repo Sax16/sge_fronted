@@ -13,12 +13,12 @@ export interface Employee {
   firstName: string;
   lastName: string;
   dni: string;
-  ruc?: string;
+  ruc?: string | null;
   gender: Gender;
-  birthDate: string | null;
-  address: string;
-  phoneNumber: string;
-  email: string;
+  birthDate?: string | null;
+  address?: string | null;
+  phoneNumber?: string | null;
+  email?: string | null;
   isActive: boolean;
   position: EmployeePosition;
   readonly createdAt: Date;
@@ -30,47 +30,29 @@ export interface CreateEmployeeDto {
   firstName: string;
   lastName: string;
   dni: string;
-  ruc?: string;
+  ruc?: string | null;
   gender: Gender;
-  birthDate: string | null;
-  address: string;
-  phoneNumber: string;
-  email: string;
+  birthDate?: string | null;
+  address?: string | null;
+  phoneNumber?: string | null;
+  email?: string | null;
   isActive: boolean;
   position: EmployeePosition;
 }
 
-// Data Transfer Object for viewing employees (all fields readonly) - NO SE USA AUN
-export interface ViewEmployeeDto {
-  readonly id: number;
-  readonly firstName: string;
-  readonly lastName: string;
-  readonly dni: string;
-  readonly ruc?: string;
-  readonly gender: Gender;
-  readonly birthDate: string | null;
-  readonly address: string;
-  readonly phoneNumber: string;
-  readonly email: string;
-  readonly isActive: boolean;
-  readonly position: EmployeePosition;
-  readonly createdAt: Date;
-  readonly updatedAt: Date;
-}
-
 // Data Transfer Object for updating employees (all fields optional except id)
 export interface UpdateEmployeeDto {
-  firstName?: string;
-  lastName?: string;
-  dni?: string;
-  ruc?: string;
-  gender?: Gender;
+  firstName: string;
+  lastName: string;
+  dni: string;
+  ruc?: string | null;
+  gender: Gender;
   birthDate?: string | null;
-  address?: string;
-  phoneNumber?: string;
-  email?: string;
-  isActive?: boolean;
-  position?: EmployeePosition;
+  address?: string | null;
+  phoneNumber?: string | null;
+  email?: string | null;
+  isActive: boolean;
+  position: EmployeePosition;
 }
 
 // View Model for table display
@@ -90,13 +72,13 @@ export interface EmployeeFormData {
   firstName: string;
   lastName: string;
   dni: string;
-  ruc: string;
-  gender: Gender | '';
-  birthDate: string;
-  phoneNumber: string;
-  email: string;
-  address: string;
-  position: EmployeePosition | '';
+  ruc?: string | null;
+  gender: Gender;
+  birthDate?: string | null;
+  phoneNumber?: string | null;
+  email?: string | null;
+  address?: string | null;
+  position: EmployeePosition;
   isActive: boolean;
 }
 
