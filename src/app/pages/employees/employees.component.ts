@@ -3,6 +3,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { Subject, takeUntil } from 'rxjs';
 import { PageBreadcrumbComponent } from '../../shared/components/common/page-breadcrumb/page-breadcrumb.component';
+import { AlertComponent } from '../../shared/components/ui/alert/alert.component';
 import { EmployeeTableComponent } from './components/employee-table/employee-table.component';
 import { EmployeeFormComponent } from './components/employee-form/employee-form.component';
 import { EmployeeDetailComponent } from './components/employee-detail/employee-detail.component';
@@ -28,7 +29,8 @@ type EmployeeViewMode = 'list' | 'create' | 'edit' | 'view';
     PageBreadcrumbComponent,
     EmployeeTableComponent,
     EmployeeFormComponent,
-    EmployeeDetailComponent
+    EmployeeDetailComponent,
+    AlertComponent,
   ],
   templateUrl: './employees.component.html',
   styles: ``
@@ -41,6 +43,7 @@ export class EmployeesComponent implements OnInit, OnDestroy {
   currentViewMode: EmployeeViewMode = 'list';
   isLoading = false;
   errorMessage: string | null = null;
+  errorTitle: string = 'Error ';
 
   constructor(
     private employeeService: EmployeeService,
@@ -235,6 +238,7 @@ export class EmployeesComponent implements OnInit, OnDestroy {
    * Clear error message
    */
   private clearErrorMessage(): void {
+    this.errorTitle = 'Error';
     this.errorMessage = null;
   }
 
@@ -244,6 +248,7 @@ export class EmployeesComponent implements OnInit, OnDestroy {
   private loadEmployees(): void {
     this.isLoading = true;
     this.errorMessage = null;
+    this.errorTitle = 'Error';
 
     this.employeeService
       .getAllEmployees()
@@ -413,8 +418,9 @@ export class EmployeesComponent implements OnInit, OnDestroy {
    * Handle error during employee update
    * @param error - Error object
    */
-  private handleUpdateError(error: Error): void {
-    this.errorMessage = 'Error al actualizar empleado. Por favor, intente nuevamente.';
+  private handleUpdateError(error: any): void {
+    this.errorMessage = error?.error?.errors[0]?.message || 'Error al actualizar empleado. Por favor, intente nuevamente.';
+    this.errorTitle = error?.error?.detail || 'Error de actualización'; 
     this.isLoading = false;
     console.error('Error updating employee:', error);
   }
