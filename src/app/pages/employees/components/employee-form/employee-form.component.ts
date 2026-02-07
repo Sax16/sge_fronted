@@ -189,12 +189,12 @@ export class EmployeeFormComponent implements OnInit, OnChanges {
       firstName: formValue.firstName.trim(),
       lastName: formValue.lastName.trim(),
       dni: formValue.dni.trim(),
-      ruc: formValue.ruc ? formValue.ruc.trim() : null,
+      ruc: formValue.ruc?.trim() ? formValue.ruc.trim() : null,
       gender: formValue.gender as Gender,
       birthDate: formValue.birthDate ? this.formatDateForApi(formValue.birthDate) : null,
-      address: formValue.address ? formValue.address.trim() : null,
-      phoneNumber: formValue.phoneNumber ? formValue.phoneNumber.trim() : null,
-      email: formValue.email ? formValue.email.trim() : null, 
+      address: formValue.address?.trim() ? formValue.address.trim() : null,
+      phoneNumber: formValue.phoneNumber?.trim() ? formValue.phoneNumber.trim() : null,
+      email: formValue.email?.trim() ? formValue.email.trim() : null, 
       isActive: formValue.isActive,
       position: formValue.position as EmployeePosition,
     };
@@ -258,7 +258,7 @@ export class EmployeeFormComponent implements OnInit, OnChanges {
     if (this.isLoading) {
       return this.isEditMode ? 'Actualizando...' : 'Guardando...';
     }
-    return this.isEditMode ? 'Actualizar Empleado' : 'Guardar Cambios';
+    return this.isEditMode ? 'Guardar Cambios' : 'Registrar Empleado';
   }
 
   // Getters for form controls (for template access)
