@@ -110,7 +110,7 @@ export class EmployeeFormComponent implements OnInit, OnChanges {
       firstName: employee.firstName,
       lastName: employee.lastName,
       dni: employee.dni,
-      ruc: employee.ruc || '',
+      ruc: employee.ruc,
       gender: employee.gender,
       birthDate: employee.birthDate ? this.formatDateForInput(employee.birthDate) : '',
       phoneNumber: employee.phoneNumber,
@@ -148,8 +148,6 @@ export class EmployeeFormComponent implements OnInit, OnChanges {
     const employeeData = this.isEditMode 
       ? this.buildUpdateDto() 
       : this.buildCreateDto();
-    
-      console.log(employeeData);
     
     this.submitForm.emit(employeeData);
     

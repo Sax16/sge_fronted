@@ -39,6 +39,7 @@ export class UserFormComponent implements OnInit, OnChanges {
   userForm!: FormGroup;
   isSubmitted = false;
   isLoading = false;
+  showPassword = false;
 
   readonly roleOptions: SelectOption[] = [
     { value: 'SUPER_ADMIN', label: 'Super Admin' },
@@ -86,7 +87,7 @@ export class UserFormComponent implements OnInit, OnChanges {
   private populateForm(user: User): void {
     this.userForm.patchValue({
       userName: user.userName,
-      // Password is not populated for security
+      password: user.password,
       role: user.role,
       employeeId: String(user.employeeId),
       isActive: user.isActive,

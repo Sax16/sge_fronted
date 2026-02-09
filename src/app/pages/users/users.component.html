@@ -22,6 +22,7 @@
   @if (isListView()) {
     <app-user-table
       [users]="users"
+      [employees]="employees"
       (newUser)="handleNewUserClick()"
       (editUser)="handleEditUserClick($event)"
       (deleteUser)="handleUserDelete($event)"
@@ -53,6 +54,7 @@
   @if (isViewView() && selectedUser) {
     <app-user-detail 
       [user]="selectedUser"
+      [employees]="employees"
       (editUser)="handleEditUserClick($event)"
     />
   }

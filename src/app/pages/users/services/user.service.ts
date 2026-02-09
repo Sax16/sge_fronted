@@ -67,29 +67,4 @@ export class UserService {
   deleteUser(id: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }
-
-  /** 
-   * Get users for table view
-   * @returns Observable of user table view model array
-   */
-  getUsersForTable(): Observable<UserTableViewModel[]> {
-    return this.getAllUsers().pipe(
-      map((users: User[]) => users.map(this.mapToTableViewModel))
-    );
-  }
-
-  /**
-   * Map User to UserTableViewModel
-   * @param user - User entity
-   * @returns UserTableViewModel
-   */
-  private mapToTableViewModel(user: User): UserTableViewModel {
-    return {
-      userName: user.userName,
-      employeeName: `Employee #${user.employeeId}`, // Placeholder for employee name
-      status: user.isActive,
-      createdAt: user.createdAt.toISOString().split('T')[0], // Format date as YYYY-MM-DD
-      role: user.role,
-    };
-  }
 }

@@ -4,6 +4,7 @@ import { BadgeComponent } from '../../../../shared/components/ui/badge/badge.com
 import { AvatarTextComponent } from '../../../../shared/components/ui/avatar/avatar-text.component';
 import { ButtonComponent } from '../../../../shared/components/ui/button/button.component';
 import { User } from '../../models/user.model';
+import { Employee } from '../../../employees/models/employee.model';
 
 /**
  * User Table Component
@@ -23,6 +24,7 @@ import { User } from '../../models/user.model';
 })
 export class UserTableComponent {
   @Input() users: User[] = [];
+  @Input() employees: Employee[] = [];
   @Output() newUser = new EventEmitter<void>();
   @Output() editUser = new EventEmitter<number>();
   @Output() deleteUser = new EventEmitter<number>();
@@ -96,6 +98,16 @@ export class UserTableComponent {
    */
   isUserListEmpty(): boolean {
     return this.users.length === 0;
+  }
+
+  /**
+   * Get employee name by ID
+   * @param employeeId - Employee ID
+   * @returns Employee name or Unknown
+   */
+  getEmployeeName(employeeId: number): string {
+    const employee = this.employees.find(e => e.id === employeeId);
+    return employee ? `${employee.firstName} ${employee.lastName}` : `#${employeeId}`;
   }
 
   /**

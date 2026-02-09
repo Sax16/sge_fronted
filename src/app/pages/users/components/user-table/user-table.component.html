@@ -30,7 +30,7 @@
         <tr>
           <th class="px-6 py-3 font-medium text-gray-500 sm:px-6 text-theme-xs dark:text-gray-400 text-start">Usuario</th>
           <th class="px-6 py-3 font-medium text-gray-500 sm:px-6 text-theme-xs dark:text-gray-400 text-start">Rol</th>
-          <th class="px-6 py-3 font-medium text-gray-500 sm:px-6 text-theme-xs dark:text-gray-400 text-start">Empleado ID</th>
+          <th class="px-6 py-3 font-medium text-gray-500 sm:px-6 text-theme-xs dark:text-gray-400 text-start">Empleado</th>
           <th class="px-6 py-3 font-medium text-gray-500 sm:px-6 text-theme-xs dark:text-gray-400 text-start">Fecha de Registro</th>
           <th class="px-6 py-3 font-medium text-gray-500 sm:px-6 text-theme-xs dark:text-gray-400 text-start">Estado</th>
           <th class="px-6 py-3 font-medium text-gray-500 sm:px-6 text-theme-xs dark:text-gray-400 text-start">Acción</th>
@@ -68,7 +68,7 @@
           </td>
           <td class="px-4 sm:px-6 py-3.5">
             <p class="text-gray-700 text-theme-sm dark:text-gray-400">
-              #{{ user.employeeId }}
+              {{ getEmployeeName(user.employeeId) }}
             </p>
           </td>
           <td class="px-4 sm:px-6 py-3.5">
