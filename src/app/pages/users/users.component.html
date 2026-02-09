@@ -1,4 +1,70 @@
 <div>
-  <app-page-breadcrumb pageTitle="Gestión de Usuarios" />
-  <app-user-table></app-user-table>
+  <app-page-breadcrumb [pageTitle]="'Gestión de Usuarios'" />
+
+  @if (errorMessage) {
+    <div class="mb-4">
+      <app-alert
+            variant="error"
+            [title]="this.errorTitle"
+            [message]="this.errorMessage"
+            [showLink]="false"
+          />
+    </div>
+  }
+
+  @if (isLoading) {
+    <div class="flex items-center justify-center p-8">
+      <div class="text-gray-500 dark:text-gray-400">Cargando...</div>
+    </div>
+  }
+
+  <!-- List View -->
+  @if (isListView()) {
+    <app-user-table
+      [users]="users"
+      (newUser)="handleNewUserClick()"
+      (editUser)="handleEditUserClick($event)"
+      (deleteUser)="handleUserDelete($event)"
+      (viewUser)="handleViewUserClick($event)"
+    />
+  }
+
+  <!-- Create View -->
+  @if (isCreateView()) {
+      <app-user-form 
+        [employees]="employees"
+        (submitForm)="handleUserCreate($any($event))"
+        (cancelForm)="handleFormCancel()"
+      />
+  }
+
+  <!-- Edit View -->
+  @if (isEditView() && selectedUser) {
+      <app-user-form 
+        [user]="selectedUser"
+        [isEditMode]="true"
+        [employees]="employees"
+        (submitForm)="handleUserUpdate($any($event))"
+        (cancelForm)="handleFormCancel()"
+      />
+  }
+
+  <!-- View View -->
+  @if (isViewView() && selectedUser) {
+    <app-user-detail 
+      [user]="selectedUser"
+      (editUser)="handleEditUserClick($event)"
+    />
+  }
+
+  <!-- Confirm Delete Modal -->
+  <app-confirm-modal
+    [isOpen]="isConfirmModalOpen"
+    title="Eliminar usuario"
+    message="¿Está seguro de que desea eliminar este usuario? Esta acción no se puede deshacer."
+    confirmText="Eliminar"
+    cancelText="Cancelar"
+    (confirm)="onConfirmDelete()"
+    (cancel)="onCancelDelete()"
+  />
 </div>

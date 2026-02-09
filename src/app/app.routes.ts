@@ -108,9 +108,33 @@ export const routes: Routes = [
       },
       {
         path:'users',
-        component:UsersComponent,
-        title:'Gestión de Usuarios | ELOHIM SGE',
         data: { breadcrumb: 'Gestión de Usuarios' },
+        children: [
+          {
+            path: '',
+            component: UsersComponent,
+            title: 'Gestión de Usuarios | ELOHIM SGE',
+            data: { breadcrumb: 'Gestión de Usuarios', mode: 'list' },
+          },
+          {
+            path: 'create',
+            component: UsersComponent,
+            title: 'Crear Usuario | ELOHIM SGE',
+            data: { breadcrumb: 'Crear Usuario', mode: 'create' },
+          },
+          {
+            path: 'edit/:id',
+            component: UsersComponent,
+            title: 'Editar Usuario | ELOHIM SGE',
+            data: { breadcrumb: 'Editar Usuario', mode: 'edit' },
+          },
+          {
+            path: 'view/:id',
+            component: UsersComponent,
+            title: 'Ver Usuario | ELOHIM SGE',
+            data: { breadcrumb: 'Ver Usuario', mode: 'view' },
+          }
+        ]
       },
       {
         path:'employees',

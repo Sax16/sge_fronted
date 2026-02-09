@@ -1,0 +1,91 @@
+<div
+  class="min-h-screen rounded-2xl border border-gray-200 bg-white px-5 py-7 dark:border-gray-800 dark:bg-white/[0.03] xl:px-10 xl:py-12"
+>
+  <div class="px-2 pr-14">
+    <h4 class="mb-2 text-2xl font-semibold text-gray-800 dark:text-white/90">
+      {{ getFormTitle() }}
+    </h4>
+    <p class="mb-6 text-sm text-gray-500 dark:text-gray-400 lg:mb-7">
+      Complete el siguiente formulario para {{ isEditMode ? 'actualizar el' : 'agregar un nuevo' }} usuario.
+    </p>
+  </div>
+  <form class="flex flex-col" [formGroup]="userForm">
+    <div class="px-2 pb-3 flex flex-col gap-5 lg:gap-6">
+      <div>
+        <div class="flex gap-1 mb-2">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-gray-500 dark:text-gray-400 -ml-1"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M8 7a4 4 0 1 0 8 0a4 4 0 0 0 -8 0" /><path d="M6 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2" /></svg>
+          <h5 class="text-lg font-medium text-gray-800 dark:text-white/90">
+            Información de Cuenta
+          </h5>
+        </div>
+        <div class="grid grid-cols-1 gap-x-6 gap-y-5 md:grid-cols-2">
+          <div>
+            <app-label for="userName">Usuario</app-label>
+            <app-input-field-reactive
+              type="text"
+              [id]="'userName'"
+              placeholder="Nombre de usuario"
+              formControlName="userName"
+              [error]="shouldShowError(userNameControl)"
+              [hint]="getUserNameHint()"
+            />
+          </div>
+          <div>
+            <app-label for="password">Contraseña</app-label>
+            <app-input-field-reactive
+              type="password"
+              [id]="'password'"
+              placeholder="********"
+              formControlName="password"
+              [error]="shouldShowError(passwordControl)"
+              [hint]="getPasswordHint()"
+            />
+          </div>
+          <div>
+            <app-label for="role">Rol</app-label>
+            <app-select-reactive
+              [options]="roleOptions"
+              [id]="'role'"
+              placeholder="Seleccionar Rol"
+              formControlName="role"
+            ></app-select-reactive>
+          </div>
+          <div>
+            <app-label for="employeeId">Empleado</app-label>
+            <app-select-reactive
+              [options]="employeeOptions"
+              [id]="'employeeId'"
+              placeholder="Seleccionar Empleado"
+              formControlName="employeeId"
+            ></app-select-reactive>
+          </div>
+          <div>
+            <app-label for="isActive">Estado</app-label>
+            <app-select-reactive
+              [options]="statusOptions"
+              [id]="'isActive'"
+              placeholder="Seleccionar Estado"
+              formControlName="isActive"
+            ></app-select-reactive>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="flex items-center gap-3 px-2 mt-6 justify-end">
+      <app-button 
+        size="sm" 
+        variant="outline"
+        (btnClick)="onCancel()"
+      >
+        Cancelar
+      </app-button>
+      <app-button 
+        size="sm" 
+        (btnClick)="onSubmit()"
+        [disabled]="isLoading"
+      >
+        {{ getSubmitButtonText() }}
+      </app-button>
+    </div>
+  </form>
+</div>
