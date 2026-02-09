@@ -120,24 +120,25 @@ export const routes: Routes = [
             path: '',
             component: EmployeesComponent,
             title: 'Gestión de Empleados | ELOHIM SGE',
+            data: { breadcrumb: 'Gestión de Empleados', mode: 'list' },
           },
           {
             path: 'create',
             component: EmployeesComponent,
             title: 'Crear Empleado | ELOHIM SGE',
-            data: { breadcrumb: 'Crear Empleado' },
+            data: { breadcrumb: 'Crear Empleado', mode: 'create' },
           },
           {
             path: 'edit/:id',
             component: EmployeesComponent,
             title: 'Editar Empleado | ELOHIM SGE',
-            data: { breadcrumb: 'Editar Empleado' },
+            data: { breadcrumb: 'Editar Empleado', mode: 'edit' },
           },
           {
             path: 'view/:id',
             component: EmployeesComponent,
             title: 'Ver Empleado | ELOHIM SGE',
-            data: { breadcrumb: 'Ver Empleado' },
+            data: { breadcrumb: 'Ver Empleado', mode: 'view' },
           }
         ],
       }

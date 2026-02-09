@@ -1,22 +1,22 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, throwError } from 'rxjs';
+import { Observable } from 'rxjs';
+import { environment } from '../../../../environments/environment';
 import {
   Employee,
   CreateEmployeeDto,
   UpdateEmployeeDto,
-  EmployeeTableViewModel,
 } from '../models/employee.model';
 
 /**
  * Employee Service
  * Implements Single Responsibility Principle (SRP) - Handles only employee data operations
- * Implements Dependency Inversion Principle (DIP) - Depends on abstractions (interfaces)
  */
 @Injectable({
   providedIn: 'root',
 })
 export class EmployeeService {
+  private readonly apiUrl = `${environment.apiBaseUrl}/employees`;
   
   constructor(private http: HttpClient) {}
 
@@ -25,116 +25,43 @@ export class EmployeeService {
    * @returns Observable of employee array
    */
   getAllEmployees(): Observable<Employee[]> {
-    return this.fetchEmployeesFromApi();
-  }
-
-  /**
-   * Fetch employees from API
-   * @returns Observable of employee array from backend
-   */
-  private fetchEmployeesFromApi(): Observable<Employee[]> {
-    const url = 'http://localhost:8000/employees';
-    return this.http.get<Employee[]>(url);
+    return this.http.get<Employee[]>(this.apiUrl);
   }
 
   /**
    * Get employee by ID
    * @param id - Employee ID
-   * @returns Observable of employee or error
+   * @returns Observable of employee
    */
   getEmployeeById(id: number): Observable<Employee> {
-    const employee = this.fetchEmployeeByIdFromApi(id);
-
-    if (!employee) {
-      return throwError(() => new Error(`Employee with ID ${id} not found`));
-    }
-
-    return employee;
-  }
-
-  /**
-   * Fetch employee by ID from API
-   * @param id - Employee ID
-   * @returns Observable of employee from backend
-   */
-  private fetchEmployeeByIdFromApi(id: number): Observable<Employee> {
-    const url = `http://localhost:8000/employees/${id}`;
-    return this.http.get<Employee>(url);
+    return this.http.get<Employee>(`${this.apiUrl}/${id}`);
   }
 
   /**
    * Create new employee
-   * @param dto - Create employee data transfer object
-   * @returns Observable of created employee or error
+   * @param newEmployee - Create employee data transfer object
+   * @returns Observable of created employee
    */
   createEmployee(newEmployee: CreateEmployeeDto): Observable<Employee> {
-    try {
-      return this.postEmployeeToApi(newEmployee);
-
-    } catch (error) {
-      return throwError(() => new Error('Failed to create employee'));
-    }
-  }
-
-  /**
-   * Post new employee to API
-   * @param dto - Create employee data transfer object
-   * @returns Observable of created employee from backend
-   */
-  private postEmployeeToApi(dto: CreateEmployeeDto): Observable<Employee> {
-    const url = 'http://localhost:8000/employees';
-    return this.http.post<Employee>(url, dto);
+    return this.http.post<Employee>(this.apiUrl, newEmployee);
   }
 
   /**
    * Update existing employee
    * @param id - Employee ID
    * @param dto - Update employee data transfer object
-   * @returns Observable of updated employee or error
+   * @returns Observable of updated employee
    */
-  updateEmployee(
-    id: number,
-    dto: UpdateEmployeeDto
-  ): Observable<Employee> {
-
-    try {
-      return this.putEmployeeToApi(id, dto);
-    } catch (error) {
-      return throwError(() => new Error('Failed to update employee'));
-    }
-  }
-
-  /**
-   * Put updated employee to API
-   * @param id - Employee ID
-   * @param dto - Update employee data transfer object
-   * @returns Observable of updated employee from backend
-   */
-  private putEmployeeToApi(id: number, dto: UpdateEmployeeDto): Observable<Employee> {
-    const url = `http://localhost:8000/employees/${id}`;
-    return this.http.put<Employee>(url, dto);
+  updateEmployee(id: number, dto: UpdateEmployeeDto): Observable<Employee> {
+    return this.http.put<Employee>(`${this.apiUrl}/${id}`, dto);
   }
 
   /**
    * Delete employee
    * @param id - Employee ID
-   * @returns Observable of void or error
+   * @returns Observable of void
    */
   deleteEmployee(id: number): Observable<void> {
-    try {
-      return this.deleteEmployeeFromApi(id);
-    } catch (error) {
-      return throwError(() => new Error('Failed to delete employee'));
-    }
-  }
-
-  /**
-   * Delete employee from API
-   * @param id - Employee ID
-   * @returns Observable of void from backend
-   */
-  private deleteEmployeeFromApi(id: number): Observable<void> {
-    const url = `http://localhost:8000/employees/${id}`;
-    return this.http.delete<void>(url);
+    return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }
 }

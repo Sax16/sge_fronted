@@ -54,4 +54,15 @@
       (editEmployee)="handleEditEmployeeClick($event)"
     />
   }
+
+  <!-- Confirm Delete Modal -->
+  <app-confirm-modal
+    [isOpen]="isConfirmModalOpen"
+    title="Eliminar empleado"
+    message="¿Está seguro de que desea eliminar este empleado? Esta acción no se puede deshacer."
+    confirmText="Eliminar"
+    cancelText="Cancelar"
+    (confirm)="onConfirmDelete()"
+    (cancel)="onCancelDelete()"
+  />
 </div>

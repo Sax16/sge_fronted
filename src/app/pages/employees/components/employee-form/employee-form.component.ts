@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, Input, Output, OnInit, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, EventEmitter, Input, Output, OnInit, OnChanges, SimpleChanges, ChangeDetectionStrategy } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators, AbstractControl } from '@angular/forms';
 import { LabelComponent } from '../../../../shared/components/form/label/label.component';
 import { ButtonComponent } from '../../../../shared/components/ui/button/button.component';
@@ -34,7 +34,8 @@ interface SelectOption {
     SelectReactiveComponent,
   ],
   templateUrl: './employee-form.component.html',
-  styles: ``
+  styles: ``,
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class EmployeeFormComponent implements OnInit, OnChanges {
   @Input() employee: Employee | null = null;
@@ -148,6 +149,8 @@ export class EmployeeFormComponent implements OnInit, OnChanges {
       ? this.buildUpdateDto() 
       : this.buildCreateDto();
     
+      console.log(employeeData);
+    
     this.submitForm.emit(employeeData);
     
     if (!this.isEditMode) {
@@ -207,16 +210,21 @@ export class EmployeeFormComponent implements OnInit, OnChanges {
   private buildUpdateDto(): UpdateEmployeeDto {
     const formValue = this.employeeForm.value as EmployeeFormData;
     
+    // Helper to safely get string or null
+    const getStringOrNull = (val: string | null | undefined) => {
+      return val && val.trim().length > 0 ? val.trim() : null;
+    };
+
     return {
       firstName: formValue.firstName.trim(),
       lastName: formValue.lastName.trim(),
       dni: formValue.dni.trim(),
-      ruc: formValue.ruc ? formValue.ruc.trim() : null,
+      ruc: getStringOrNull(formValue.ruc),
       gender: formValue.gender as Gender,
       birthDate: formValue.birthDate ? this.formatDateForApi(formValue.birthDate) : null,
-      address: formValue.address ? formValue.address.trim() : null,
-      phoneNumber: formValue.phoneNumber ? formValue.phoneNumber.trim() : null,
-      email: formValue.email ? formValue.email.trim() : null,
+      address: getStringOrNull(formValue.address),
+      phoneNumber: getStringOrNull(formValue.phoneNumber),
+      email: getStringOrNull(formValue.email),
       isActive: formValue.isActive,
       position: formValue.position as EmployeePosition,
     };

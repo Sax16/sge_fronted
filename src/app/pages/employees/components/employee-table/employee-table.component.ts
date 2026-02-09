@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output, ChangeDetectionStrategy } from '@angular/core';
 import { BadgeComponent } from '../../../../shared/components/ui/badge/badge.component';
 import { AvatarTextComponent } from '../../../../shared/components/ui/avatar/avatar-text.component';
 import { ButtonComponent } from '../../../../shared/components/ui/button/button.component';
@@ -19,7 +19,8 @@ import { Employee } from '../../models/employee.model';
     ButtonComponent,
   ],
   templateUrl: './employee-table.component.html',
-  styles: ``
+  styles: ``,
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class EmployeeTableComponent {
   @Input() employees: Employee[] = [];

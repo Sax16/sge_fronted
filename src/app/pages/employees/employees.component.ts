@@ -4,6 +4,7 @@ import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { Subject, takeUntil } from 'rxjs';
 import { PageBreadcrumbComponent } from '../../shared/components/common/page-breadcrumb/page-breadcrumb.component';
 import { AlertComponent } from '../../shared/components/ui/alert/alert.component';
+import { ConfirmModalComponent } from '../../shared/components/ui/confirm-modal/confirm-modal.component';
 import { EmployeeTableComponent } from './components/employee-table/employee-table.component';
 import { EmployeeFormComponent } from './components/employee-form/employee-form.component';
 import { EmployeeDetailComponent } from './components/employee-detail/employee-detail.component';
@@ -31,6 +32,7 @@ type EmployeeViewMode = 'list' | 'create' | 'edit' | 'view';
     EmployeeFormComponent,
     EmployeeDetailComponent,
     AlertComponent,
+    ConfirmModalComponent,
   ],
   templateUrl: './employees.component.html',
   styles: ``
@@ -42,8 +44,14 @@ export class EmployeesComponent implements OnInit, OnDestroy {
   selectedEmployee: Employee | null = null;
   currentViewMode: EmployeeViewMode = 'list';
   isLoading = false;
+  
+  // Alert state
   errorMessage: string | null = null;
-  errorTitle: string = 'Error ';
+  errorTitle: string = 'Error';
+  
+  // Confirm Modal state
+  isConfirmModalOpen = false;
+  employeeIdToDelete: number | null = null;
 
   constructor(
     private employeeService: EmployeeService,
@@ -65,104 +73,73 @@ export class EmployeesComponent implements OnInit, OnDestroy {
    * Subscribe to route changes to determine view mode
    */
   private subscribeToRouteChanges(): void {
-    this.route.url
+    // Listen to data changes for view mode
+    this.route.data
       .pipe(takeUntil(this.destroy$))
-      .subscribe(() => this.handleRouteChange());
+      .subscribe((data) => {
+        const mode = (data['mode'] as EmployeeViewMode) || 'list';
+        this.handleModeChange(mode);
+      });
+
+    // Listen to param changes for ID updates (e.g. navigating from edit/1 to edit/2)
+    this.route.paramMap
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((params) => {
+        // If we are already in a detail mode, reload data if ID changes
+        if (this.currentViewMode === 'edit' || this.currentViewMode === 'view') {
+          const idStr = params.get('id');
+          if (idStr) {
+            const id = Number(idStr);
+            if (!isNaN(id) && (!this.selectedEmployee || this.selectedEmployee.id !== id)) {
+              this.loadEmployee(id);
+            }
+          }
+        }
+      });
   }
 
   /**
-   * Handle route change and update view mode
+   * Handle mode change logic
    */
-  private handleRouteChange(): void {
-    const url = this.router.url;
-    
-    if (this.isCreateRoute(url)) {
-      this.setViewMode('create');
-      return;
+  private handleModeChange(mode: EmployeeViewMode): void {
+    this.currentViewMode = mode;
+    this.clearErrorMessage();
+
+    if (mode === 'edit' || mode === 'view') {
+      this.handleDetailRoute();
+    } else if (mode === 'create') {
+      this.selectedEmployee = null; // Clear selection for create
+    } else {
+      // List mode
+      this.selectedEmployee = null;
+      if (this.employees.length === 0) {
+        this.loadEmployees();
+      }
     }
-    
-    if (this.isEditRoute(url)) {
-      this.handleEditRoute();
-      this.setViewMode('edit');
-      return;
-    }
-
-    if (this.isViewRoute(url)) {
-      this.handleViewRoute();
-      this.setViewMode('view');
-      return;
-    }
-    
-    this.setViewMode('list');
   }
 
   /**
-   * Check if current route is create route
-   * @param url - Current URL
-   * @returns true if create route, false otherwise
+   * Handle detail route (edit/view) by loading employee data
    */
-  private isCreateRoute(url: string): boolean {
-    return url.includes('/employees/create');
-  }
-
-  /**
-   * Check if current route is edit route
-   * @param url - Current URL
-   * @returns true if edit route, false otherwise
-   */
-  private isEditRoute(url: string): boolean {
-    return url.includes('/employees/edit/');
-  }
-
-  /**
-   * Check if current route is view route
-   * @param url - Current URL
-   * @returns true if view route, false otherwise
-   */
-  private isViewRoute(url: string): boolean {
-    return url.includes('/employees/view/');
-  }
-
-  /**
-   * Handle edit route by loading employee data
-   */
-  private handleEditRoute(): void {
-    const employeeId = this.getEmployeeIdFromRoute();
-    
-    // Early return if no ID found
-    if (!employeeId) {
-      this.handleInvalidEmployeeId();
-      return;
-    }
-
-    this.loadEmployeeForEdit(employeeId);
-  }
-
-  /**
-   * Handle view route by loading employee data
-   */
-  private handleViewRoute(): void {
-    const employeeId = this.getEmployeeIdFromRoute();
-    
-    // Early return if no ID found
-    if (!employeeId) {
-      this.handleInvalidEmployeeId();
-      return;
-    }
-
-    this.loadEmployeeForView(employeeId);
-  }
-
-  /**
-   * Get employee ID from route parameters
-   * @returns Employee ID or null
-   */
-  private getEmployeeIdFromRoute(): number | null {
+  private handleDetailRoute(): void {
+    // Get ID from current route params
     const idParam = this.route.snapshot.paramMap.get('id');
-    if (!idParam) return null;
-    
-    const id = Number(idParam);
-    return isNaN(id) ? null : id;
+
+    if (!idParam) {
+      this.handleInvalidEmployeeId();
+      return;
+    }
+
+    const employeeId = Number(idParam);
+    if (isNaN(employeeId)) {
+      this.handleInvalidEmployeeId();
+      return;
+    }
+
+    // Load if not already loaded or different ID
+    if (!this.selectedEmployee || this.selectedEmployee.id !== employeeId) {
+      this.loadEmployee(employeeId);
+    }
   }
 
   /**
@@ -174,10 +151,10 @@ export class EmployeesComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Load employee for editing
+   * Load employee for editing/viewing
    * @param employeeId - Employee ID to load
    */
-  private loadEmployeeForEdit(employeeId: number): void {
+  private loadEmployee(employeeId: number): void {
     this.isLoading = true;
 
     this.employeeService
@@ -190,23 +167,7 @@ export class EmployeesComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Load employee for viewing
-   * @param employeeId - Employee ID to load
-  */
-  private loadEmployeeForView(employeeId: number): void {
-    this.isLoading = true;
-    
-    this.employeeService
-    .getEmployeeById(employeeId)
-    .pipe(takeUntil(this.destroy$))
-    .subscribe({
-      next: (employee) => this.handleEmployeeLoaded(employee),
-      error: (error) => this.handleEmployeeLoadError(error),
-     });
-   }
-
-  /**
-   * Handle employee loaded for editing
+   * Handle employee loaded
    * @param employee - Loaded employee
    */
   private handleEmployeeLoaded(employee: Employee): void {
@@ -225,15 +186,6 @@ export class EmployeesComponent implements OnInit, OnDestroy {
     this.navigateToList();
   }
   
-  /**
-   * Set current view mode
-   * @param mode - View mode to set
-  */
-  private setViewMode(mode: EmployeeViewMode): void {
-    this.currentViewMode = mode;
-    this.clearErrorMessage();
-  }
-
   /**
    * Clear error message
    */
@@ -388,7 +340,6 @@ export class EmployeesComponent implements OnInit, OnDestroy {
 
   /**
    * Handle successful employee creation
-   * @param employee - Created employee
    */
   private handleEmployeeCreated(): void {
     this.isLoading = false;
@@ -397,7 +348,6 @@ export class EmployeesComponent implements OnInit, OnDestroy {
 
   /**
    * Handle successful employee update
-   * @param employee - Updated employee
    */
   private handleEmployeeUpdated(): void {
     this.isLoading = false;
@@ -426,23 +376,37 @@ export class EmployeesComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Handle employee deletion request
+   * Handle employee deletion request - OPENS MODAL
    * @param employeeId - ID of employee to delete
    */
   handleEmployeeDelete(employeeId: number): void {
-    if (!this.confirmDelete()) {
-      return;
-    }
-
-    this.deleteEmployee(employeeId);
+    this.employeeIdToDelete = employeeId;
+    this.isConfirmModalOpen = true;
   }
 
   /**
-   * Confirm employee deletion
-   * @returns true if confirmed, false otherwise
+   * Confirm employee deletion (called from modal)
    */
-  private confirmDelete(): boolean {
-    return confirm('¿Está seguro de que desea eliminar este empleado?');
+  onConfirmDelete(): void {
+    if (this.employeeIdToDelete) {
+      this.deleteEmployee(this.employeeIdToDelete);
+    }
+    this.closeConfirmModal();
+  }
+
+  /**
+   * Cancel employee deletion (called from modal)
+   */
+  onCancelDelete(): void {
+    this.closeConfirmModal();
+  }
+
+  /**
+   * Close confirm modal
+   */
+  private closeConfirmModal(): void {
+    this.isConfirmModalOpen = false;
+    this.employeeIdToDelete = null;
   }
 
   /**
@@ -488,35 +452,9 @@ export class EmployeesComponent implements OnInit, OnDestroy {
     this.navigateToList();
   }
 
-  /**
-   * Check if should show list view
-   * @returns true if list view, false otherwise
-   */
-  isListView(): boolean {
-    return this.currentViewMode === 'list';
-  }
-
-  /**
-   * Check if should show create view
-   * @returns true if create view, false otherwise
-   */
-  isCreateView(): boolean {
-    return this.currentViewMode === 'create';
-  }
-
-  /**
-   * Check if should show edit view
-   * @returns true if edit view, false otherwise
-   */
-  isEditView(): boolean {
-    return this.currentViewMode === 'edit';
-  }
-
-  /**
-   * Check if should show view view
-   * @returns true if view view, false otherwise
-   */
-  isViewView(): boolean {
-    return this.currentViewMode === 'view';
-  }
+  // View helpers
+  isListView(): boolean { return this.currentViewMode === 'list'; }
+  isCreateView(): boolean { return this.currentViewMode === 'create'; }
+  isEditView(): boolean { return this.currentViewMode === 'edit'; }
+  isViewView(): boolean { return this.currentViewMode === 'view'; }
 }
