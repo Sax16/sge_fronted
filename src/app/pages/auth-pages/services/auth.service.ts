@@ -1,6 +1,6 @@
 import { Injectable } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
-import { Observable } from "rxjs";
+import { Observable, tap } from "rxjs";
 import { environment } from "../../../../environments/environment";
 import { SigninDto, AuthResponse } from "../models/auth.model";
 
@@ -12,7 +12,8 @@ import { SigninDto, AuthResponse } from "../models/auth.model";
   providedIn: "root",
 })
 export class AuthService {
-  private readonly apiUrl = `${environment.apiBaseUrl}/auth`; // Adjust endpoint according to your API structure
+  private readonly apiUrl = `${environment.apiBaseUrl}/auth`;
+  private readonly TOKEN_KEY = 'access_token';
 
   constructor(private http: HttpClient) {}
 
@@ -26,17 +27,38 @@ export class AuthService {
     // FastAPI's OAuth2PasswordRequestForm exactly expects 'username' and 'password'
     formData.append('username', credentials.username);
     formData.append('password', credentials.password);
-    
-    // RememberMe is not standard in OAuth2PasswordRequestForm but we can pass it if the backend supports it
-    if (credentials.rememberMe !== undefined && credentials.rememberMe !== null) {
-      formData.append('rememberMe', credentials.rememberMe.toString());
-    }
 
-    return this.http.post<AuthResponse>(`${this.apiUrl}/login`, formData);
+    return this.http.post<AuthResponse>(`${this.apiUrl}/login`, formData).pipe(
+      tap((response: AuthResponse) =>   {
+        this.saveToken(response.access_token, credentials.rememberMe || false);
+      })
+    );
   }
 
+  
   // Potential methods to add later:
   // signUp()
   // logout()
   // getCurrentUser()
+  
+  private saveToken(token: string, rememberMe?: boolean): void {
+    if (rememberMe) {
+      localStorage.setItem(this.TOKEN_KEY, token);
+    } else {
+      sessionStorage.setItem(this.TOKEN_KEY, token);
+    }
+  }
+
+  public getToken(): string | null {
+    return localStorage.getItem(this.TOKEN_KEY) || sessionStorage.getItem(this.TOKEN_KEY);
+  }
+
+  public isAuthenticated(): boolean {
+    return !!this.getToken();
+  }
+
+  public logout(): void {
+    localStorage.removeItem(this.TOKEN_KEY);
+    sessionStorage.removeItem(this.TOKEN_KEY);
+  }
 }
