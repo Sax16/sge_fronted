@@ -1,4 +1,6 @@
 import { Routes } from '@angular/router';
+import { authGuard } from './core/guards/auth.guard';
+import { roleGuard } from './core/guards/role.guard';
 import { EcommerceComponent } from './pages/dashboard/ecommerce/ecommerce.component';
 import { ProfileComponent } from './pages/profile/profile.component';
 import { FormElementsComponent } from './pages/forms/form-elements/form-elements.component';
@@ -25,6 +27,7 @@ export const routes: Routes = [
   {
     path: '',
     component: AppLayoutComponent,
+    canActivate: [authGuard],
     data: { breadcrumb: 'Inicio' },
     children: [
       {
@@ -108,7 +111,8 @@ export const routes: Routes = [
       },
       {
         path: 'users',
-        data: { breadcrumb: 'Gestión de Usuarios' },
+        canActivate: [roleGuard],
+        data: { breadcrumb: 'Gestión de Usuarios', roles: ['SUPER_ADMIN'] },
         children: [
           {
             path: '',
