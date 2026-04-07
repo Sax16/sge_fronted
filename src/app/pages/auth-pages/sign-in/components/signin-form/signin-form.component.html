@@ -78,14 +78,14 @@
     <!-- Form -->
     <form [formGroup]="signinForm" (ngSubmit)="onSignIn()" class="space-y-6">
       <div>
-        <app-label for="email">Email <span class="text-error-500">*</span></app-label>
+        <app-label for="username">Usuario <span class="text-error-500">*</span></app-label>
         <app-input-field-reactive
-          type="email"
-          [id]="'email'"
-          placeholder="info@gmail.com"
-          formControlName="email"
-          [error]="shouldShowError(emailControl)"
-          [hint]="shouldShowError(emailControl) ? 'Provide a valid email address' : ''"
+          type="text"
+          [id]="'username'"
+          placeholder="Ingresa tu usuario"
+          formControlName="username"
+          [error]="shouldShowError(usernameControl)"
+          [hint]="shouldShowError(usernameControl) ? 'El usuario es obligatorio' : ''"
         />
       </div>
 
