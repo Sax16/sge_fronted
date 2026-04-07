@@ -87,7 +87,6 @@ export class UserFormComponent implements OnInit, OnChanges {
   private populateForm(user: User): void {
     this.userForm.patchValue({
       userName: user.userName,
-      password: user.password,
       role: user.role,
       employeeId: String(user.employeeId),
       isActive: user.isActive,

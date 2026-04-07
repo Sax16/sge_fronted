@@ -22,21 +22,12 @@ export class UserDetailComponent {
   @Input() employees: Employee[] = [];
   @Output() editUser = new EventEmitter<number>();
   
-  showPassword = false;
-
   /**
    * Handle edit user button click
    * @param userId - ID of user to edit
    */
   handleEditClick(userId: number): void {
     this.editUser.emit(userId);
-  }
-
-  /**
-   * Toggle password visibility
-   */
-  togglePasswordVisibility(): void {
-    this.showPassword = !this.showPassword;
   }
 
   /**

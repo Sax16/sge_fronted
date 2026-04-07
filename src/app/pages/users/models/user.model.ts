@@ -7,7 +7,6 @@ export type Role = 'SUPER_ADMIN' | 'ADMIN';
 export interface User {
   readonly id: number;
   userName: string;
-  password: string;
   isActive: boolean;
   role: Role;
   readonly createdAt: Date;
