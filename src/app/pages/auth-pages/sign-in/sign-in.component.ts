@@ -45,8 +45,7 @@ export class SignInComponent implements OnDestroy {
         },
         error: (error) => {
           this.isLoading = false;
-          this.errorMessage = 'Login failed. Please check your credentials.';
-          console.error('Login error:', error);
+          this.errorMessage = error.error.detail;
         }
       });
   }

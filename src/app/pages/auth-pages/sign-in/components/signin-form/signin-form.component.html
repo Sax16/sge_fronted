@@ -136,6 +136,12 @@
       >
         Sign in
       </app-button>
+
+      @if (errorMessage) {
+        <p class="mt-1.5 text-sm text-center text-error-500">
+          {{ errorMessage }}
+        </p>
+      }
     </form>
 
     <div class="mt-5">

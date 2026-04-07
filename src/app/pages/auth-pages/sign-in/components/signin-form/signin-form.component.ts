@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, ChangeDetectionStrategy, Output, EventEmitter } from '@angular/core';
+import { Component, ChangeDetectionStrategy, Output, EventEmitter, Input } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators, AbstractControl } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 
@@ -29,6 +29,7 @@ export class SigninFormComponent {
   
   showPassword = false;
   isSubmitted = false;
+  @Input() errorMessage: string | null = null;
 
   signinForm = new FormGroup({
     username: new FormControl('', [Validators.required]),
