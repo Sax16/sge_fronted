@@ -64,7 +64,6 @@ export class UsersComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    this.loadUsers();
     this.loadEmployees();
     this.subscribeToRouteChanges();
   }
@@ -92,11 +91,19 @@ export class UsersComponent implements OnInit, OnDestroy {
       .subscribe((params) => {
         if (this.currentViewMode === 'edit' || this.currentViewMode === 'view') {
           const idStr = params.get('id');
-          if (idStr) {
-            const id = Number(idStr);
-            if (!isNaN(id) && (!this.selectedUser || this.selectedUser.id !== id)) {
-              this.loadUser(id);
-            }
+          if (!idStr) {
+            this.handleInvalidUserId();
+            return;
+          }
+          
+          const id = Number(idStr);
+          if (isNaN(id)) {
+            this.handleInvalidUserId();
+            return;
+          }
+          
+          if (!this.selectedUser || this.selectedUser.id !== id) {
+            this.loadUser(id);
           }
         }
       });
@@ -110,7 +117,7 @@ export class UsersComponent implements OnInit, OnDestroy {
     this.clearErrorMessage();
 
     if (mode === 'edit' || mode === 'view') {
-      this.handleDetailRoute();
+      // Data loading and validation is handled by route.paramMap subscription
     } else if (mode === 'create') {
       this.selectedUser = null;
     } else {
@@ -122,27 +129,7 @@ export class UsersComponent implements OnInit, OnDestroy {
     }
   }
 
-  /**
-   * Handle detail route (edit/view) by loading user data
-   */
-  private handleDetailRoute(): void {
-    const idParam = this.route.snapshot.paramMap.get('id');
 
-    if (!idParam) {
-      this.handleInvalidUserId();
-      return;
-    }
-
-    const userId = Number(idParam);
-    if (isNaN(userId)) {
-      this.handleInvalidUserId();
-      return;
-    }
-
-    if (!this.selectedUser || this.selectedUser.id !== userId) {
-      this.loadUser(userId);
-    }
-  }
 
   /**
    * Handle invalid user ID

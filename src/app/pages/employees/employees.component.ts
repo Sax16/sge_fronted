@@ -60,7 +60,6 @@ export class EmployeesComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    this.loadEmployees();
     this.subscribeToRouteChanges();
   }
 
@@ -85,14 +84,21 @@ export class EmployeesComponent implements OnInit, OnDestroy {
     this.route.paramMap
       .pipe(takeUntil(this.destroy$))
       .subscribe((params) => {
-        // If we are already in a detail mode, reload data if ID changes
         if (this.currentViewMode === 'edit' || this.currentViewMode === 'view') {
           const idStr = params.get('id');
-          if (idStr) {
-            const id = Number(idStr);
-            if (!isNaN(id) && (!this.selectedEmployee || this.selectedEmployee.id !== id)) {
-              this.loadEmployee(id);
-            }
+          if (!idStr) {
+            this.handleInvalidEmployeeId();
+            return;
+          }
+          
+          const id = Number(idStr);
+          if (isNaN(id)) {
+            this.handleInvalidEmployeeId();
+            return;
+          }
+          
+          if (!this.selectedEmployee || this.selectedEmployee.id !== id) {
+            this.loadEmployee(id);
           }
         }
       });
@@ -106,7 +112,7 @@ export class EmployeesComponent implements OnInit, OnDestroy {
     this.clearErrorMessage();
 
     if (mode === 'edit' || mode === 'view') {
-      this.handleDetailRoute();
+      // Data loading and validation is handled by route.paramMap subscription
     } else if (mode === 'create') {
       this.selectedEmployee = null; // Clear selection for create
     } else {
@@ -118,29 +124,7 @@ export class EmployeesComponent implements OnInit, OnDestroy {
     }
   }
 
-  /**
-   * Handle detail route (edit/view) by loading employee data
-   */
-  private handleDetailRoute(): void {
-    // Get ID from current route params
-    const idParam = this.route.snapshot.paramMap.get('id');
 
-    if (!idParam) {
-      this.handleInvalidEmployeeId();
-      return;
-    }
-
-    const employeeId = Number(idParam);
-    if (isNaN(employeeId)) {
-      this.handleInvalidEmployeeId();
-      return;
-    }
-
-    // Load if not already loaded or different ID
-    if (!this.selectedEmployee || this.selectedEmployee.id !== employeeId) {
-      this.loadEmployee(employeeId);
-    }
-  }
 
   /**
    * Handle invalid employee ID
