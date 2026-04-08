@@ -27,9 +27,8 @@ export class AuthService {
     if (this.isAuthenticated()) {
       this.getCurrentUser().subscribe({
         error: (err) => {
-          // Temporalmente comentado para depurar qué está fallando
-          console.error('El autocompletado del usuario falló. Error del servidor:', err);
-          // this.logout();
+          console.error('Error al restaurar la sesión del usuario:', err);
+          this.logout();
         }
       });
     }
@@ -55,11 +54,7 @@ export class AuthService {
     );
   }
 
-  
-  // Potential methods to add later:
-  // signUp()
-  // logout()
-  // getCurrentUser()
+
   
   private saveToken(token: string, rememberMe?: boolean): void {
     if (rememberMe) {
@@ -73,8 +68,35 @@ export class AuthService {
     return localStorage.getItem(this.TOKEN_KEY) || sessionStorage.getItem(this.TOKEN_KEY);
   }
 
+  /**
+   * Decodes the JWT payload and checks the `exp` claim against current time.
+   * No external library needed — JWT payload is plain base64-encoded JSON.
+   */
+  private isTokenExpired(token: string): boolean {
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      // `exp` is in seconds (Unix timestamp); Date.now() is in milliseconds
+      return payload.exp * 1000 < Date.now();
+    } catch {
+      // Malformed token → treat as expired
+      return true;
+    }
+  }
+
+  /**
+   * Returns true only if a token exists AND it has not yet expired.
+   * Auto-cleans storage when an expired token is found.
+   */
   public isAuthenticated(): boolean {
-    return !!this.getToken();
+    const token = this.getToken();
+    if (!token) return false;
+
+    if (this.isTokenExpired(token)) {
+      this.logout();
+      return false;
+    }
+
+    return true;
   }
 
   public logout(): void {
