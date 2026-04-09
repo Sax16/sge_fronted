@@ -25,4 +25,8 @@ export class UserDropdownComponent {
   closeDropdown() {
     this.isOpen = false;
   }
+
+  logout() {
+    this.authService.logout();
+  }
 }
