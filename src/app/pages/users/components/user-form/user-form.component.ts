@@ -72,7 +72,7 @@ export class UserFormComponent implements OnInit, OnChanges {
 
   private initializeForm(): void {
     this.userForm = new FormGroup({
-      userName: new FormControl('', [Validators.required, this.validationService.userNameValidator]),
+      username: new FormControl('', [Validators.required, this.validationService.usernameValidator]),
       password: new FormControl('', this.isEditMode ? [] : [Validators.required, this.validationService.passwordValidator]),
       role: new FormControl<Role | null>(null, [Validators.required]),
       employeeId: new FormControl<string | null>(null, [Validators.required]),
@@ -86,7 +86,7 @@ export class UserFormComponent implements OnInit, OnChanges {
 
   private populateForm(user: User): void {
     this.userForm.patchValue({
-      userName: user.userName,
+      username: user.username,
       role: user.role,
       employeeId: String(user.employeeId),
       isActive: user.isActive,
@@ -136,7 +136,7 @@ export class UserFormComponent implements OnInit, OnChanges {
     const formValue = this.userForm.value as UserFormModel;
     
     return {
-      userName: formValue.userName.trim(),
+      username: formValue.username.trim(),
       password: formValue.password,
       role: formValue.role,
       employeeId: Number(formValue.employeeId),
@@ -148,7 +148,7 @@ export class UserFormComponent implements OnInit, OnChanges {
     const formValue = this.userForm.value as UserFormModel;
     
     const dto: UpdateUserDto = {
-      userName: formValue.userName.trim(),
+      username: formValue.username.trim(),
       role: formValue.role,
       employeeId: Number(formValue.employeeId),
       isActive: formValue.isActive,
@@ -181,7 +181,7 @@ export class UserFormComponent implements OnInit, OnChanges {
   }
 
   // Getters
-  get userNameControl(): AbstractControl { return this.getControl('userName'); }
+  get usernameControl(): AbstractControl { return this.getControl('username'); }
   get passwordControl(): AbstractControl { return this.getControl('password'); }
   get roleControl(): AbstractControl { return this.getControl('role'); }
   get employeeIdControl(): AbstractControl { return this.getControl('employeeId'); }
@@ -197,8 +197,8 @@ export class UserFormComponent implements OnInit, OnChanges {
     return control.invalid && (control.touched || this.isSubmitted);
   }
 
-  getUserNameHint(): string | undefined {
-    return this.validationService.getErrorMessage('userName', this.userNameControl.errors);
+  getUsernameHint(): string | undefined {
+    return this.validationService.getErrorMessage('username', this.usernameControl.errors);
   }
   
   getPasswordHint(): string | undefined {

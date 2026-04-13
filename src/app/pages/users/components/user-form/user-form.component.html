@@ -20,14 +20,14 @@
         </div>
         <div class="grid grid-cols-1 gap-x-6 gap-y-5 md:grid-cols-2">
           <div>
-            <app-label for="userName">Usuario</app-label>
+            <app-label for="username">Usuario</app-label>
             <app-input-field-reactive
               type="text"
-              [id]="'userName'"
+              [id]="'username'"
               placeholder="Nombre de usuario"
-              formControlName="userName"
-              [error]="shouldShowError(userNameControl)"
-              [hint]="getUserNameHint()"
+              formControlName="username"
+              [error]="shouldShowError(usernameControl)"
+              [hint]="getUsernameHint()"
             />
           </div>
           <div>

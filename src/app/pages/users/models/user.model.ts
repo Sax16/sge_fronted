@@ -6,7 +6,7 @@ export type Role = 'SUPER_ADMIN' | 'ADMIN';
 // Main User interface with strict types
 export interface User {
   readonly id: number;
-  userName: string;
+  username: string;
   isActive: boolean;
   role: Role;
   readonly createdAt: Date;
@@ -15,7 +15,7 @@ export interface User {
 
 // Data Transfer Object for creating users (without id and createdAt)
 export interface CreateUserDto {
-  userName: string;
+  username: string;
   password: string;
   isActive: boolean;
   employeeId: number;
@@ -24,7 +24,7 @@ export interface CreateUserDto {
 
 // Data Transfer Object for updating users (all fields optional except id)
 export interface UpdateUserDto {
-  userName?: string;
+  username?: string;
   password?: string;
   isActive?: boolean;
   employeeId?: number;
@@ -33,7 +33,7 @@ export interface UpdateUserDto {
 
 // View Model for table display
 export interface UserTableViewModel {
-  userName: string;
+  username: string;
   employeeName: string;
   status: boolean;
   createdAt: string;
@@ -42,7 +42,7 @@ export interface UserTableViewModel {
 
 // Form Model for user forms
 export interface UserFormModel {
-  userName: string;
+  username: string;
   password: string;
   isActive: boolean;
   employeeId: string | number;

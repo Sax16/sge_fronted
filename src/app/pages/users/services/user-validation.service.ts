@@ -23,12 +23,12 @@ export class UserValidationService {
 
   /**
    * Validate username format
-   * @param userName - Username string
+   * @param username - username string
    * @returns true if valid, false otherwise
    */
-  isValidUserName(userName: string): boolean {
-    if (!userName) return false;
-    return userName.length >= 4;
+  isValidUsername(username: string): boolean {
+    if (!username) return false;
+    return username.length >= 4;
   }
 
   /**
@@ -55,15 +55,15 @@ export class UserValidationService {
    * @param control - Form control
    * @returns Validation errors or null
    */
-  userNameValidator = (control: AbstractControl): ValidationErrors | null => {
+  usernameValidator = (control: AbstractControl): ValidationErrors | null => {
     const value = control.value as string;
     
     if (!value) {
       return null;
     }
 
-    if (!this.isValidUserName(value)) {
-      return { invalidUserName: { value, message: 'El usuario debe tener al menos 4 caracteres' } };
+    if (!this.isValidUsername(value)) {
+      return { invalidUsername: { value, message: 'El usuario debe tener al menos 4 caracteres' } };
     }
 
     return null;
@@ -101,7 +101,7 @@ export class UserValidationService {
    */
   private getRequiredFieldMessage(fieldName: string): string {
     const fieldMessages: Record<string, string> = {
-      userName: 'El nombre de usuario es obligatorio',
+      username: 'El nombre de usuario es obligatorio',
       password: 'La contraseña es obligatoria',
       role: 'El rol es obligatorio',
       employeeId: 'El empleado es obligatorio',
