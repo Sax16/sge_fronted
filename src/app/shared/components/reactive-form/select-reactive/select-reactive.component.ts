@@ -77,26 +77,27 @@ export class SelectReactiveComponent implements ControlValueAccessor {
     this.onTouched();
   }
 
-  get selectClasses(): string {
-    let base = `
-      h-11 w-full appearance-none rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 pr-11 text-sm shadow-theme-xs focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:focus:border-brand-800
-      ${this.className}
-    `;
+  get selectClasses(): string[] {
+    const classes = [
+      'h-11 w-full appearance-none rounded-lg border bg-transparent px-4 py-2.5 pr-11 text-sm shadow-theme-xs focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:bg-gray-900'
+    ];
+
+    if (this.className) {
+      classes.push(this.className);
+    }
 
     if (this.error) {
-      return `${base} border-error-500 text-gray-800 focus:ring-error-500/20`;
+      classes.push('text-gray-400 dark:text-white/30 border-error-500 focus:border-error-300 focus:ring-error-500/20 dark:text-error-400 dark:border-error-500 dark:focus:border-error-800');
+    } else if (this.success) {
+      classes.push('border-success-500 focus:border-success-300 focus:ring-success-500/20 dark:text-success-400 dark:border-success-500 dark:focus:border-success-800');
+    } else if (this.isPlaceholder) {
+      classes.push('border-gray-300 text-gray-400 dark:text-white/30 dark:border-gray-700');
+    } else {
+      classes.push('border-gray-300 text-gray-800 dark:text-white/90 dark:border-gray-700 dark:focus:border-brand-800');
     }
 
-    if (this.success) {
-      return `${base} border-success-500 text-gray-800 focus:ring-success-500/20`;
-    }
-
-    if (this.isPlaceholder) {
-      return `${base} text-gray-400 dark:text-white/30`;
-    }
-
-    return `${base} text-gray-800 dark:text-white/90`;
-}
+    return classes;
+  }
 
   get isPlaceholder(): boolean {
     return this.value === null || this.value === '' || this.value === undefined;

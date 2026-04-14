@@ -88,7 +88,7 @@ export class EmployeeFormComponent implements OnInit, OnChanges {
       ruc: new FormControl('', [this.validationService.rucValidator]),
       gender: new FormControl<Gender | null>(null, [Validators.required]),
       birthDate: new FormControl('', [this.validationService.ageValidator]),
-      phoneNumber: new FormControl('', [this.validationService.phoneValidator]),
+      phoneNumber: new FormControl('', [Validators.required, this.validationService.phoneValidator]),
       email: new FormControl('', [Validators.email]),
       address: new FormControl('', []),
       position: new FormControl<EmployeePosition | null>(null, [Validators.required]),
@@ -150,10 +150,6 @@ export class EmployeeFormComponent implements OnInit, OnChanges {
       : this.buildCreateDto();
     
     this.submitForm.emit(employeeData);
-    
-    if (!this.isEditMode) {
-      this.resetForm();
-    }
   }
 
   /**
@@ -333,6 +329,81 @@ export class EmployeeFormComponent implements OnInit, OnChanges {
    */
   shouldShowError(control: AbstractControl): boolean {
     return control.invalid && (control.touched || this.isSubmitted);
+  }
+
+  /**
+   * Get error message for first name field
+   * @returns Error message or undefined
+   */
+  getFirstNameHint(): string | undefined {
+    const control = this.firstNameControl;
+
+    // Early return if no error to show
+    if (!this.shouldShowError(control)) {
+      return undefined;
+    }
+
+    return this.validationService.getErrorMessage('firstName', control.errors);
+  }
+
+  /**
+   * Get error message for last name field
+   * @returns Error message or undefined
+   */
+  getLastNameHint(): string | undefined {
+    const control = this.lastNameControl;
+
+    // Early return if no error to show
+    if (!this.shouldShowError(control)) {
+      return undefined;
+    }
+
+    return this.validationService.getErrorMessage('lastName', control.errors);
+  }
+
+  /**
+   * Get error message for gender field
+   * @returns Error message or undefined
+   */
+  getGenderHint(): string | undefined {
+    const control = this.genderControl;
+
+    // Early return if no error to show
+    if (!this.shouldShowError(control)) {
+      return undefined;
+    }
+
+    return this.validationService.getErrorMessage('gender', control.errors);
+  }
+
+  /**
+   * Get error message for position field
+   * @returns Error message or undefined
+   */
+  getPositionHint(): string | undefined {
+    const control = this.positionControl;
+
+    // Early return if no error to show
+    if (!this.shouldShowError(control)) {
+      return undefined;
+    }
+
+    return this.validationService.getErrorMessage('position', control.errors);
+  }
+
+  /**
+   * Get error message for status field
+   * @returns Error message or undefined
+   */
+  getStatusHint(): string | undefined {
+    const control = this.isActiveControl;
+
+    // Early return if no error to show
+    if (!this.shouldShowError(control)) {
+      return undefined;
+    }
+
+    return this.validationService.getErrorMessage('isActive', control.errors);
   }
 
   /**

@@ -253,12 +253,14 @@ export class EmployeeValidationService {
    */
   private getRequiredFieldMessage(fieldName: string): string {
     const fieldMessages: Record<string, string> = {
-      name: 'El nombre es obligatorio',
+      firstName: 'El nombre es obligatorio',
       lastName: 'El apellido es obligatorio',
       dni: 'El DNI es obligatorio',
       gender: 'El género es obligatorio',
+      phoneNumber: 'El número de celular es obligatorio',
       email: 'El correo es obligatorio',
       isActive: 'El estado es obligatorio',
+      position: 'La responsabilidad es obligatoria',
     };
 
     return fieldMessages[fieldName] || 'Este campo es obligatorio';

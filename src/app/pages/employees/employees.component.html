@@ -8,6 +8,8 @@
             [title]="this.errorTitle"
             [message]="this.errorMessage"
             [showLink]="false"
+            [showCloseButton]="true"
+            (alertClose)="errorMessage = null"
           />
     </div>
   }

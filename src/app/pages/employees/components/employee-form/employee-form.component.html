@@ -1,5 +1,5 @@
 <div
-  class="min-h-screen rounded-2xl border border-gray-200 bg-white px-5 py-7 dark:border-gray-800 dark:bg-white/[0.03] xl:px-10 xl:py-12"
+  class="min-h-screen rounded-2xl border border-gray-200 bg-white px-5 py-7 dark:border-gray-800 dark:bg-white/3 xl:px-10 xl:py-12"
 >
   <div class="px-2 pr-14">
     <h4 class="mb-2 text-2xl font-semibold text-gray-800 dark:text-white/90">
@@ -37,27 +37,29 @@
         </div>
         <div class="grid grid-cols-1 gap-x-6 gap-y-5 md:grid-cols-2">
           <div>
-            <app-label for="firstName">Nombres</app-label>
+            <app-label for="firstName">Nombres <span class="text-error-500">*</span></app-label>
             <app-input-field-reactive
               type="text"
               [id]="'firstName'"
               placeholder="Nombres"
               formControlName="firstName"
               [error]="shouldShowError(firstNameControl)"
+              [hint]="getFirstNameHint()"
             />
           </div>
           <div>
-            <app-label for="lastName">Apellidos</app-label>
+            <app-label for="lastName">Apellidos <span class="text-error-500">*</span></app-label>
             <app-input-field-reactive
               type="text"
               [id]="'lastName'"
               placeholder="Apellidos"
               formControlName="lastName"
               [error]="shouldShowError(lastNameControl)"
+              [hint]="getLastNameHint()"
             />
           </div>
           <div>
-            <app-label for="dni">DNI</app-label>
+            <app-label for="dni">DNI <span class="text-error-500">*</span></app-label>
             <app-input-field-reactive
               type="text"
               [id]="'dni'"
@@ -79,12 +81,14 @@
             />
           </div>
           <div>
-            <app-label for="gender">Género</app-label>
+            <app-label for="gender">Género <span class="text-error-500">*</span></app-label>
             <app-select-reactive
               [options]="genderOptions"
               [id]="'gender'"
               placeholder="Seleccionar Género"
               formControlName="gender"
+              [error]="shouldShowError(genderControl)"
+              [hint]="getGenderHint()"
             ></app-select-reactive>
           </div>
           <div>
@@ -133,7 +137,7 @@
         </div>
         <div class="grid grid-cols-1 gap-x-6 gap-y-5 md:grid-cols-2">
           <div>
-            <app-label for="phoneNumber">Teléfono</app-label>
+            <app-label for="phoneNumber">Teléfono <span class="text-error-500">*</span></app-label>
             <app-input-field-reactive
               type="text"
               [id]="'phoneNumber'"
@@ -185,21 +189,25 @@
         </div>
         <div class="grid grid-cols-1 gap-x-6 gap-y-5 md:grid-cols-2">
           <div>
-            <app-label for="position">Responsabilidad</app-label>
+            <app-label for="position">Responsabilidad <span class="text-error-500">*</span></app-label>
             <app-select-reactive
               [options]="positionOptions"
               [id]="'position'"
               placeholder="Seleccionar Responsabilidad"
               formControlName="position"
+              [error]="shouldShowError(positionControl)"
+              [hint]="getPositionHint()"
             ></app-select-reactive>
           </div>
           <div>
-            <app-label for="isActive">Estado</app-label>
+            <app-label for="isActive">Estado <span class="text-error-500">*</span></app-label>
             <app-select-reactive
               [options]="statusOptions"
               [id]="'isActive'"
               placeholder="Seleccionar Estado"
               formControlName="isActive"
+              [error]="shouldShowError(isActiveControl)"
+              [hint]="getStatusHint()"
             ></app-select-reactive>
           </div>
         </div>

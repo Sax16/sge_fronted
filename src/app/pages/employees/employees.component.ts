@@ -342,10 +342,11 @@ export class EmployeesComponent implements OnInit, OnDestroy {
    * Handle error during employee creation
    * @param error - Error object
    */
-  private handleCreateError(error: Error): void {
-    this.errorMessage = 'Error al crear empleado. Por favor, intente nuevamente.';
+  private handleCreateError(error: any): void {
+    this.errorMessage = error?.error?.detail || 'Error al crear empleado. Por favor, intente nuevamente.';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
     this.isLoading = false;
-    console.error('Error creating employee:', error);
+    console.error(error);
   }
 
   /**
