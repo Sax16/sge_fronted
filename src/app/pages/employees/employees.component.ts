@@ -1,5 +1,5 @@
+import { Component, OnInit, OnDestroy, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { Subject, takeUntil } from 'rxjs';
 import { PageBreadcrumbComponent } from '../../shared/components/common/page-breadcrumb/page-breadcrumb.component';
@@ -8,8 +8,9 @@ import { ConfirmModalComponent } from '../../shared/components/ui/confirm-modal/
 import { EmployeeTableComponent } from './components/employee-table/employee-table.component';
 import { EmployeeFormComponent } from './components/employee-form/employee-form.component';
 import { EmployeeDetailComponent } from './components/employee-detail/employee-detail.component';
-import { EmployeeService } from './services/employee.service';
-import { Employee, CreateEmployeeDto, UpdateEmployeeDto } from './models/employee.model';
+import { AlertService } from '../../shared/services/alert.service';
+import { EmployeesState } from './services/employees.state';
+import { UpdateEmployeeDto } from './models/employee.model';
 
 /**
  * Employee View Mode
@@ -20,7 +21,7 @@ type EmployeeViewMode = 'list' | 'create' | 'edit' | 'view';
 /**
  * Employees Component
  * Main container for employee management with routing
- * Implements Single Responsibility Principle (SRP) - Orchestrates employee management UI
+ * Implements Single Responsibility Principle (SRP) - Orchestrates employee management UI delegating logic to EmployeesState
  */
 @Component({
   selector: 'app-employees',
@@ -35,28 +36,18 @@ type EmployeeViewMode = 'list' | 'create' | 'edit' | 'view';
     ConfirmModalComponent,
   ],
   templateUrl: './employees.component.html',
-  styles: ``
+  styles: ``,
+  providers: [EmployeesState]
 })
 export class EmployeesComponent implements OnInit, OnDestroy {
+  public state = inject(EmployeesState);
+  public alertService = inject(AlertService);
+  private router = inject(Router);
+  private route = inject(ActivatedRoute);
+
   private readonly destroy$ = new Subject<void>();
   
-  employees: Employee[] = [];
-  selectedEmployee: Employee | null = null;
   currentViewMode: EmployeeViewMode = 'list';
-  isLoading = false;
-  
-  // Alert state
-  pageAlert: { variant: 'success' | 'error' | 'warning' | 'info'; title: string; message: string } | null = null;
-  
-  // Confirm Modal state
-  isConfirmModalOpen = false;
-  employeeIdToDelete: number | null = null;
-
-  constructor(
-    private employeeService: EmployeeService,
-    private router: Router,
-    private route: ActivatedRoute
-  ) {}
 
   ngOnInit(): void {
     this.subscribeToRouteChanges();
@@ -71,17 +62,30 @@ export class EmployeesComponent implements OnInit, OnDestroy {
    * Subscribe to route changes to determine view mode
    */
   private subscribeToRouteChanges(): void {
-    // Listen to data changes for view mode
     this.route.data
       .pipe(takeUntil(this.destroy$))
       .subscribe((data) => {
-        const mode = (data['mode'] as EmployeeViewMode) || 'list';
-        this.handleModeChange(mode);
-        // Check if there was any state passed in the recent navigation
+        this.currentViewMode = (data['mode'] as EmployeeViewMode) || 'list';
+        
+        // Verificamos de antemano si el state del router indica que haremos un reload forzado
+        const historyState = history.state;
+        const willReload = !!historyState?.reloadData;
+        
+        if (this.currentViewMode === 'create') {
+          this.state.clearSelection();
+        } else if (this.currentViewMode === 'list') {
+          this.state.clearSelection();
+          
+          // Solo cargamos por falta de datos si NO viene una orden de recarga por navegación
+          if (this.state.employees().length === 0 && !willReload) {
+            console.log('Loading employees data if length is 0');
+            this.state.loadEmployees();
+          }
+        }
+        
         this.checkHistoryState();
       });
 
-    // Listen to param changes for ID updates (e.g. navigating from edit/1 to edit/2)
     this.route.paramMap
       .pipe(takeUntil(this.destroy$))
       .subscribe((params) => {
@@ -98,8 +102,9 @@ export class EmployeesComponent implements OnInit, OnDestroy {
             return;
           }
           
-          if (!this.selectedEmployee || this.selectedEmployee.id !== id) {
-            this.loadEmployee(id);
+          const currentEmp = this.state.selectedEmployee();
+          if (!currentEmp || currentEmp.id !== id) {
+             this.state.loadEmployeeById(id);
           }
         }
       });
@@ -109,393 +114,63 @@ export class EmployeesComponent implements OnInit, OnDestroy {
    * Check for navigation state passed via Router
    */
   private checkHistoryState(): void {
-    const state = history.state;
+    const historyState = history.state;
     
     // Process passed alert if exists
-    if (state?.alert) {
-      this.setAlert(state.alert.variant, state.alert.title, state.alert.message);
+    if (historyState?.alert) {
+      this.alertService.showAlert(historyState.alert.variant, historyState.alert.title, historyState.alert.message);
     }
     
     // Process signal to reload data
-    if (state?.reloadData) {
-      // Small delay just to ensure we don't hit race conditions if backend is still committing
-      this.loadEmployees(true);
+    if (historyState?.reloadData) {
+      console.log('Reloading employees data');
+      this.state.loadEmployees(true);
     }
     
     // Clean up state so a literal page refresh doesn't replay the alert
-    if (state?.alert || state?.reloadData) {
-      const cleanState = { ...state };
+    if (historyState?.alert || historyState?.reloadData) {
+      const cleanState = { ...historyState };
       delete cleanState.alert;
       delete cleanState.reloadData;
       history.replaceState(cleanState, '');
     }
   }
 
-  /**
-   * Handle mode change logic
-   */
-  private handleModeChange(mode: EmployeeViewMode): void {
-    this.currentViewMode = mode;
-    // Don't clear alerts on mode change to preserve success/info messages after navigation
-    // this.clearAlert();
-
-    if (mode === 'edit' || mode === 'view') {
-      // Data loading and validation is handled by route.paramMap subscription
-    } else if (mode === 'create') {
-      this.selectedEmployee = null; // Clear selection for create
-    } else {
-      // List mode
-      this.selectedEmployee = null;
-      if (this.employees.length === 0) {
-        this.loadEmployees();
-      }
-    }
-  }
-
-
-
-  /**
-   * Handle invalid employee ID
-   */
   private handleInvalidEmployeeId(): void {
-    this.setAlert('error', 'Error', 'ID de empleado inválido');
+    this.alertService.showAlert('error', 'Error', 'ID de empleado inválido');
     this.navigateToList();
   }
 
-  /**
-   * Load employee for editing/viewing
-   * @param employeeId - Employee ID to load
-   */
-  private loadEmployee(employeeId: number): void {
-    this.isLoading = true;
+  // --- Navigation Methods ---
 
-    this.employeeService
-      .getEmployeeById(employeeId)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next: (employee) => this.handleEmployeeLoaded(employee),
-        error: (error) => this.handleEmployeeLoadError(error),
-      });
-  }
-
-  /**
-   * Handle employee loaded
-   * @param employee - Loaded employee
-   */
-  private handleEmployeeLoaded(employee: Employee): void {
-    this.selectedEmployee = employee;
-    this.isLoading = false;
-  }
-  
-  /**
-   * Handle error loading employee
-   * @param error - Error object
-   */
-  private handleEmployeeLoadError(error: Error): void {
-    this.setAlert('error', 'Error', 'Error al cargar empleado. Por favor, intente nuevamente.');
-    this.isLoading = false;
-    console.error('Error loading employee:', error);
-    this.navigateToList();
-  }
-  
-  /**
-   * Clear error message
-   */
-  private clearAlert(): void {
-    this.pageAlert = null;
-  }
-
-  /**
-   * Set alert message
-   */
-  private setAlert(variant: 'success' | 'error' | 'warning' | 'info', title: string, message: string): void {
-    this.pageAlert = { variant, title, message };
-    
-    // Auto-dismiss success and info alerts to improve UX
-    if (variant === 'success' || variant === 'info') {
-      setTimeout(() => {
-        // Only clear if the alert hasn't been replaced by a new one
-        if (this.pageAlert?.message === message) {
-          this.pageAlert = null;
-        }
-      }, 4000);
-    }
-  }
-
-  /**
-   * Load all employees from service
-   * @param keepAlert flag to prevent clearing the active alert
-   */
-  private loadEmployees(keepAlert = false): void {
-    this.isLoading = true;
-    if (!keepAlert) {
-      this.clearAlert();
-    }
-
-    this.employeeService
-      .getAllEmployees()
-      .pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next: (employees) => this.handleEmployeesLoaded(employees),
-        error: (error) => this.handleLoadError(error),
-      });
-  }
-
-  /**
-   * Handle successful employees load
-   * @param employees - Loaded employees
-   */
-  private handleEmployeesLoaded(employees: Employee[]): void {
-    this.employees = employees;
-    this.isLoading = false;
-  }
-
-  /**
-   * Handle error during employees load
-   * @param error - Error object
-   */
-  private handleLoadError(error: Error): void {
-    this.setAlert('error', 'Error', 'Error al cargar empleados. Por favor, intente nuevamente.');
-    this.isLoading = false;
-    console.error('Error loading employees:', error);
-  }
-
-  /**
-   * Navigate to create employee page
-   */
   navigateToCreate(): void {
     this.router.navigate(['employees', 'create']);
   }
 
-  /**
-   * Navigate to edit employee page
-   * @param employeeId - ID of employee to edit
-   */
   navigateToEdit(employeeId: number): void {
     this.router.navigate(['employees', 'edit', employeeId]);
   }
 
-  /**
-   * Navigate to view employee page
-   * @param employeeId - ID of employee to view
-   */
   navigateToView(employeeId: number): void {
     this.router.navigate(['employees', 'view', employeeId]);
   }
 
-  /**
-   * Navigate to employee list
-   */
   navigateToList(): void {
     this.router.navigate(['employees']);
   }
 
-  /**
-   * Handle new employee button click
-   */
-  handleNewEmployeeClick(): void {
-    this.navigateToCreate();
-  }
+  // --- Handlers ---
 
-  /**
-   * Handle edit employee button click
-   * @param employeeId - ID of employee to edit
-   */
-  handleEditEmployeeClick(employeeId: number): void {
-    this.navigateToEdit(employeeId);
-  }
-
-  /**
-   * Handle view employee button click
-   * @param employeeId - ID of employee to view
-   */
-  handleViewEmployeeClick(employeeId: number): void {
-    this.navigateToView(employeeId);
-  }
-
-  /**
-   * Handle employee form submission (create)
-   * @param employeeData - Employee data from form
-   */
-  handleEmployeeCreate(employeeData: CreateEmployeeDto): void {
-    this.createEmployee(employeeData);
-  }
-
-  /**
-   * Handle employee form submission (update)
-   * @param employeeData - Employee data from form
-   */
   handleEmployeeUpdate(employeeData: UpdateEmployeeDto): void {
-    // Early return if no selected employee
-    if (!this.selectedEmployee) {
-      this.setAlert('error', 'Error', 'No hay empleado seleccionado para actualizar');
+    const currentEmp = this.state.selectedEmployee();
+    if (!currentEmp) {
+      this.alertService.showAlert('error', 'Error', 'No hay empleado seleccionado para actualizar');
       return;
     }
-
-    this.updateEmployee(this.selectedEmployee.id, employeeData);
+    this.state.updateEmployee(currentEmp.id, employeeData);
   }
 
-  /**
-   * Create new employee
-   * @param employeeData - Employee data to create
-   */
-  private createEmployee(employeeData: CreateEmployeeDto): void {
-    this.isLoading = true;
-
-    this.employeeService
-      .createEmployee(employeeData)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next: () => this.handleEmployeeCreated(),
-        error: (error) => this.handleCreateError(error),
-      });
-  }
-
-  /**
-   * Update existing employee
-   * @param employeeId - Employee ID
-   * @param employeeData - Employee data to update
-   */
-  private updateEmployee(employeeId: number, employeeData: UpdateEmployeeDto): void {
-    this.isLoading = true;
-
-    this.employeeService
-      .updateEmployee(employeeId, employeeData)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next: () => this.handleEmployeeUpdated(),
-        error: (error) => this.handleUpdateError(error),
-      });
-  }
-
-  /**
-   * Handle successful employee creation
-   */
-  private handleEmployeeCreated(): void {
-    this.isLoading = false;
-    this.router.navigate(['/employees'], {
-      state: { 
-        alert: { variant: 'success', title: '¡Éxito!', message: 'Empleado creado correctamente.' },
-        reloadData: true
-      }
-    });
-  }
-
-  /**
-   * Handle successful employee update
-   */
-  private handleEmployeeUpdated(): void {
-    this.isLoading = false;
-    this.router.navigate(['/employees'], {
-      state: { 
-        alert: { variant: 'info', title: 'Actualizado', message: 'Empleado actualizado correctamente.' },
-        reloadData: true
-      }
-    });
-  }
-
-  /**
-   * Handle error during employee creation
-   * @param error - Error object
-   */
-  private handleCreateError(error: any): void {
-    const errorMsg = error?.error?.detail || 'Error al crear empleado. Por favor, intente nuevamente.';
-    this.setAlert('error', 'Error al crear', errorMsg);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-    this.isLoading = false;
-    console.error(error);
-  }
-
-  /**
-   * Handle error during employee update
-   * @param error - Error object
-   */
-  private handleUpdateError(error: any): void {
-    const errorMsg = error?.error?.errors?.[0]?.message || 'Error al actualizar empleado. Por favor, intente nuevamente.';
-    const errorTitle = error?.error?.detail || 'Error de actualización'; 
-    this.setAlert('error', errorTitle, errorMsg);
-    this.isLoading = false;
-    console.error('Error updating employee:', error);
-  }
-
-  /**
-   * Handle employee deletion request - OPENS MODAL
-   * @param employeeId - ID of employee to delete
-   */
-  handleEmployeeDelete(employeeId: number): void {
-    this.employeeIdToDelete = employeeId;
-    this.isConfirmModalOpen = true;
-  }
-
-  /**
-   * Confirm employee deletion (called from modal)
-   */
-  onConfirmDelete(): void {
-    if (this.employeeIdToDelete) {
-      this.deleteEmployee(this.employeeIdToDelete);
-    }
-    this.closeConfirmModal();
-  }
-
-  /**
-   * Cancel employee deletion (called from modal)
-   */
-  onCancelDelete(): void {
-    this.closeConfirmModal();
-  }
-
-  /**
-   * Close confirm modal
-   */
-  private closeConfirmModal(): void {
-    this.isConfirmModalOpen = false;
-    this.employeeIdToDelete = null;
-  }
-
-  /**
-   * Delete employee
-   * @param employeeId - ID of employee to delete
-   */
-  private deleteEmployee(employeeId: number): void {
-    this.isLoading = true;
-
-    this.employeeService
-      .deleteEmployee(employeeId)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next: () => this.handleEmployeeDeleted(employeeId),
-        error: (error) => this.handleDeleteError(error),
-      });
-  }
-
-  /**
-   * Handle successful employee deletion
-   * @param employeeId - ID of deleted employee
-   */
-  private handleEmployeeDeleted(employeeId: number): void {
-    this.employees = this.employees.filter(emp => emp.id !== employeeId);
-    this.isLoading = false;
-    this.setAlert('success', 'Eliminado', 'Empleado eliminado correctamente.');
-  }
-
-  /**
-   * Handle error during employee deletion
-   * @param error - Error object
-   */
-  private handleDeleteError(error: Error): void {
-    this.setAlert('error', 'Error', 'Error al eliminar empleado. Por favor, intente nuevamente.');
-    this.isLoading = false;
-    console.error('Error deleting employee:', error);
-  }
-
-  /**
-   * Handle form cancellation
-   */
-  handleFormCancel(): void {
-    this.navigateToList();
-  }
-
-  // View helpers
+  // --- View Helpers ---
   isListView(): boolean { return this.currentViewMode === 'list'; }
   isCreateView(): boolean { return this.currentViewMode === 'create'; }
   isEditView(): boolean { return this.currentViewMode === 'edit'; }

@@ -1,20 +1,20 @@
 <div>
   <app-page-breadcrumb [pageTitle]="'Gestión de Empleados'" />
 
-  @if (pageAlert) {
+  @if (alertService.alert(); as alert) {
     <div class="mb-4">
       <app-alert
-            [variant]="pageAlert.variant"
-            [title]="pageAlert.title"
-            [message]="pageAlert.message"
-            [showLink]="false"
-            [showCloseButton]="true"
-            (alertClose)="pageAlert = null"
-          />
+        [variant]="alert.variant"
+        [title]="alert.title"
+        [message]="alert.message"
+        [showLink]="false"
+        [showCloseButton]="true"
+        (alertClose)="alertService.clearAlert()"
+      />
     </div>
   }
 
-  @if (isLoading) {
+  @if (state.isLoading()) {
     <div class="flex items-center justify-center p-8">
       <div class="text-gray-500 dark:text-gray-400">Cargando...</div>
     </div>
@@ -23,48 +23,52 @@
   <!-- List View -->
   @if (isListView()) {
     <app-employee-table
-      [employees]="employees"
-      (newEmployee)="handleNewEmployeeClick()"
-      (editEmployee)="handleEditEmployeeClick($event)"
-      (deleteEmployee)="handleEmployeeDelete($event)"
-      (viewEmployee)="handleViewEmployeeClick($event)"
+      [employees]="state.employees()"
+      (newEmployee)="navigateToCreate()"
+      (editEmployee)="navigateToEdit($event)"
+      (deleteEmployee)="state.openDeleteConfirmModal($event)"
+      (viewEmployee)="navigateToView($event)"
     />
   }
 
   <!-- Create View -->
   @if (isCreateView()) {
       <app-employee-form 
-        (submitForm)="handleEmployeeCreate($any($event))"
-        (cancelForm)="handleFormCancel()"
+        (submitForm)="state.createEmployee($any($event))"
+        (cancelForm)="navigateToList()"
       />
   }
 
   <!-- Edit View -->
-  @if (isEditView() && selectedEmployee) {
+  @if (isEditView()) {
+    @if (state.selectedEmployee(); as employee) {
       <app-employee-form 
-        [employee]="selectedEmployee"
+        [employee]="employee"
         [isEditMode]="true"
         (submitForm)="handleEmployeeUpdate($any($event))"
-        (cancelForm)="handleFormCancel()"
+        (cancelForm)="navigateToList()"
       />
+    }
   }
 
   <!-- View View -->
-  @if (isViewView() && selectedEmployee) {
-    <app-employee-detail 
-      [employee]="selectedEmployee"
-      (editEmployee)="handleEditEmployeeClick($event)"
-    />
+  @if (isViewView()) {
+    @if (state.selectedEmployee(); as employee) {
+      <app-employee-detail 
+        [employee]="employee"
+        (editEmployee)="navigateToEdit($event)"
+      />
+    }
   }
 
   <!-- Confirm Delete Modal -->
   <app-confirm-modal
-    [isOpen]="isConfirmModalOpen"
+    [isOpen]="state.isConfirmModalOpen()"
     title="Eliminar empleado"
     message="¿Está seguro de que desea eliminar este empleado? Esta acción no se puede deshacer."
     confirmText="Eliminar"
     cancelText="Cancelar"
-    (confirm)="onConfirmDelete()"
-    (cancel)="onCancelDelete()"
+    (confirm)="state.deleteEmployee()"
+    (cancel)="state.closeConfirmModal()"
   />
 </div>
