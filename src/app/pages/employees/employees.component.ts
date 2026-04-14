@@ -46,8 +46,7 @@ export class EmployeesComponent implements OnInit, OnDestroy {
   isLoading = false;
   
   // Alert state
-  errorMessage: string | null = null;
-  errorTitle: string = 'Error';
+  pageAlert: { variant: 'success' | 'error' | 'warning' | 'info'; title: string; message: string } | null = null;
   
   // Confirm Modal state
   isConfirmModalOpen = false;
@@ -78,6 +77,8 @@ export class EmployeesComponent implements OnInit, OnDestroy {
       .subscribe((data) => {
         const mode = (data['mode'] as EmployeeViewMode) || 'list';
         this.handleModeChange(mode);
+        // Check if there was any state passed in the recent navigation
+        this.checkHistoryState();
       });
 
     // Listen to param changes for ID updates (e.g. navigating from edit/1 to edit/2)
@@ -105,11 +106,38 @@ export class EmployeesComponent implements OnInit, OnDestroy {
   }
 
   /**
+   * Check for navigation state passed via Router
+   */
+  private checkHistoryState(): void {
+    const state = history.state;
+    
+    // Process passed alert if exists
+    if (state?.alert) {
+      this.setAlert(state.alert.variant, state.alert.title, state.alert.message);
+    }
+    
+    // Process signal to reload data
+    if (state?.reloadData) {
+      // Small delay just to ensure we don't hit race conditions if backend is still committing
+      this.loadEmployees(true);
+    }
+    
+    // Clean up state so a literal page refresh doesn't replay the alert
+    if (state?.alert || state?.reloadData) {
+      const cleanState = { ...state };
+      delete cleanState.alert;
+      delete cleanState.reloadData;
+      history.replaceState(cleanState, '');
+    }
+  }
+
+  /**
    * Handle mode change logic
    */
   private handleModeChange(mode: EmployeeViewMode): void {
     this.currentViewMode = mode;
-    this.clearErrorMessage();
+    // Don't clear alerts on mode change to preserve success/info messages after navigation
+    // this.clearAlert();
 
     if (mode === 'edit' || mode === 'view') {
       // Data loading and validation is handled by route.paramMap subscription
@@ -130,7 +158,7 @@ export class EmployeesComponent implements OnInit, OnDestroy {
    * Handle invalid employee ID
    */
   private handleInvalidEmployeeId(): void {
-    this.errorMessage = 'ID de empleado inválido';
+    this.setAlert('error', 'Error', 'ID de empleado inválido');
     this.navigateToList();
   }
 
@@ -164,7 +192,7 @@ export class EmployeesComponent implements OnInit, OnDestroy {
    * @param error - Error object
    */
   private handleEmployeeLoadError(error: Error): void {
-    this.errorMessage = 'Error al cargar empleado. Por favor, intente nuevamente.';
+    this.setAlert('error', 'Error', 'Error al cargar empleado. Por favor, intente nuevamente.');
     this.isLoading = false;
     console.error('Error loading employee:', error);
     this.navigateToList();
@@ -173,18 +201,36 @@ export class EmployeesComponent implements OnInit, OnDestroy {
   /**
    * Clear error message
    */
-  private clearErrorMessage(): void {
-    this.errorTitle = 'Error';
-    this.errorMessage = null;
+  private clearAlert(): void {
+    this.pageAlert = null;
+  }
+
+  /**
+   * Set alert message
+   */
+  private setAlert(variant: 'success' | 'error' | 'warning' | 'info', title: string, message: string): void {
+    this.pageAlert = { variant, title, message };
+    
+    // Auto-dismiss success and info alerts to improve UX
+    if (variant === 'success' || variant === 'info') {
+      setTimeout(() => {
+        // Only clear if the alert hasn't been replaced by a new one
+        if (this.pageAlert?.message === message) {
+          this.pageAlert = null;
+        }
+      }, 4000);
+    }
   }
 
   /**
    * Load all employees from service
+   * @param keepAlert flag to prevent clearing the active alert
    */
-  private loadEmployees(): void {
+  private loadEmployees(keepAlert = false): void {
     this.isLoading = true;
-    this.errorMessage = null;
-    this.errorTitle = 'Error';
+    if (!keepAlert) {
+      this.clearAlert();
+    }
 
     this.employeeService
       .getAllEmployees()
@@ -209,7 +255,7 @@ export class EmployeesComponent implements OnInit, OnDestroy {
    * @param error - Error object
    */
   private handleLoadError(error: Error): void {
-    this.errorMessage = 'Error al cargar empleados. Por favor, intente nuevamente.';
+    this.setAlert('error', 'Error', 'Error al cargar empleados. Por favor, intente nuevamente.');
     this.isLoading = false;
     console.error('Error loading employees:', error);
   }
@@ -282,7 +328,7 @@ export class EmployeesComponent implements OnInit, OnDestroy {
   handleEmployeeUpdate(employeeData: UpdateEmployeeDto): void {
     // Early return if no selected employee
     if (!this.selectedEmployee) {
-      this.errorMessage = 'No hay empleado seleccionado para actualizar';
+      this.setAlert('error', 'Error', 'No hay empleado seleccionado para actualizar');
       return;
     }
 
@@ -327,7 +373,12 @@ export class EmployeesComponent implements OnInit, OnDestroy {
    */
   private handleEmployeeCreated(): void {
     this.isLoading = false;
-    this.navigateToList();
+    this.router.navigate(['/employees'], {
+      state: { 
+        alert: { variant: 'success', title: '¡Éxito!', message: 'Empleado creado correctamente.' },
+        reloadData: true
+      }
+    });
   }
 
   /**
@@ -335,7 +386,12 @@ export class EmployeesComponent implements OnInit, OnDestroy {
    */
   private handleEmployeeUpdated(): void {
     this.isLoading = false;
-    this.navigateToList();
+    this.router.navigate(['/employees'], {
+      state: { 
+        alert: { variant: 'info', title: 'Actualizado', message: 'Empleado actualizado correctamente.' },
+        reloadData: true
+      }
+    });
   }
 
   /**
@@ -343,7 +399,8 @@ export class EmployeesComponent implements OnInit, OnDestroy {
    * @param error - Error object
    */
   private handleCreateError(error: any): void {
-    this.errorMessage = error?.error?.detail || 'Error al crear empleado. Por favor, intente nuevamente.';
+    const errorMsg = error?.error?.detail || 'Error al crear empleado. Por favor, intente nuevamente.';
+    this.setAlert('error', 'Error al crear', errorMsg);
     window.scrollTo({ top: 0, behavior: 'smooth' });
     this.isLoading = false;
     console.error(error);
@@ -354,8 +411,9 @@ export class EmployeesComponent implements OnInit, OnDestroy {
    * @param error - Error object
    */
   private handleUpdateError(error: any): void {
-    this.errorMessage = error?.error?.errors[0]?.message || 'Error al actualizar empleado. Por favor, intente nuevamente.';
-    this.errorTitle = error?.error?.detail || 'Error de actualización'; 
+    const errorMsg = error?.error?.errors?.[0]?.message || 'Error al actualizar empleado. Por favor, intente nuevamente.';
+    const errorTitle = error?.error?.detail || 'Error de actualización'; 
+    this.setAlert('error', errorTitle, errorMsg);
     this.isLoading = false;
     console.error('Error updating employee:', error);
   }
@@ -417,7 +475,7 @@ export class EmployeesComponent implements OnInit, OnDestroy {
   private handleEmployeeDeleted(employeeId: number): void {
     this.employees = this.employees.filter(emp => emp.id !== employeeId);
     this.isLoading = false;
-    this.navigateToList();
+    this.setAlert('success', 'Eliminado', 'Empleado eliminado correctamente.');
   }
 
   /**
@@ -425,7 +483,7 @@ export class EmployeesComponent implements OnInit, OnDestroy {
    * @param error - Error object
    */
   private handleDeleteError(error: Error): void {
-    this.errorMessage = 'Error al eliminar empleado. Por favor, intente nuevamente.';
+    this.setAlert('error', 'Error', 'Error al eliminar empleado. Por favor, intente nuevamente.');
     this.isLoading = false;
     console.error('Error deleting employee:', error);
   }

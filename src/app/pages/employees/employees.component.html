@@ -1,15 +1,15 @@
 <div>
   <app-page-breadcrumb [pageTitle]="'Gestión de Empleados'" />
 
-  @if (errorMessage) {
+  @if (pageAlert) {
     <div class="mb-4">
       <app-alert
-            variant="error"
-            [title]="this.errorTitle"
-            [message]="this.errorMessage"
+            [variant]="pageAlert.variant"
+            [title]="pageAlert.title"
+            [message]="pageAlert.message"
             [showLink]="false"
             [showCloseButton]="true"
-            (alertClose)="errorMessage = null"
+            (alertClose)="pageAlert = null"
           />
     </div>
   }
