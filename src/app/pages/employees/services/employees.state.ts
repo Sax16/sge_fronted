@@ -86,6 +86,7 @@ export class EmployeesState {
         const errorMsg = err?.error?.errors?.[0]?.message || 'Error al actualizar empleado. Por favor, intente nuevamente.';
         const errorTitle = err?.error?.detail || 'Error de actualización';
         this.alertService.showAlert('error', errorTitle, errorMsg);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
         this.isLoading.set(false);
       }
     });

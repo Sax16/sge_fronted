@@ -6,12 +6,15 @@ import { ButtonComponent } from '../../../../shared/components/ui/button/button.
 import { InputFieldReactiveComponent } from '../../../../shared/components/reactive-form/input/input-field-reactive.component';
 import { DatePickerReactiveComponent } from '../../../../shared/components/reactive-form/date-picker-reactive/date-picker-reactive.component';
 import { SelectReactiveComponent } from '../../../../shared/components/reactive-form/select-reactive/select-reactive.component';
-import { EmployeeValidationService } from '../../services/employee-validation.service';
 import { CreateEmployeeDto, UpdateEmployeeDto, Employee, EmployeeFormData, Gender, EmployeePosition } from '../../models/employee.model';
+import { DocumentValidators } from '../../../../shared/validators/document.validator';
+import { ContactValidators } from '../../../../shared/validators/contact.validator';
+import { DateValidators } from '../../../../shared/validators/date.validator';
+import { FormValidationUtil } from '../../../../shared/utils/form-validation.util';
+import { DateFormatUtil } from '../../../../shared/utils/date-format.util';
+import { StringSanitizeUtil } from '../../../../shared/utils/string-sanitize.util';
 
-/**
- * Select option interface for dropdowns
- */
+
 interface SelectOption {
   value: string;
   label: string;
@@ -19,8 +22,8 @@ interface SelectOption {
 
 /**
  * Employee Form Component
- * Implements Single Responsibility Principle (SRP) - Handles only employee form logic
- * Implements Open/Closed Principle (OCP) - Extensible through validation service
+ * Handles employee create/edit form logic.
+ * Delegates: validation (validators/), date formatting (DateFormatUtil), string sanitization (StringSanitizeUtil).
  */
 @Component({
   selector: 'app-employee-form',
@@ -40,7 +43,7 @@ interface SelectOption {
 export class EmployeeFormComponent implements OnInit, OnChanges {
   @Input() employee: Employee | null = null;
   @Input() isEditMode = false;
-  
+
   @Output() submitForm = new EventEmitter<CreateEmployeeDto | UpdateEmployeeDto>();
   @Output() cancelForm = new EventEmitter<void>();
 
@@ -61,423 +64,121 @@ export class EmployeeFormComponent implements OnInit, OnChanges {
     { value: 'Femenino', label: 'Femenino' },
   ];
 
-  employeeForm!: FormGroup;
+  form!: FormGroup;
   isSubmitted = false;
   isLoading = false;
 
-  constructor(private validationService: EmployeeValidationService) {}
-
   ngOnInit(): void {
-    this.initializeForm();
-  }
-
-  ngOnChanges(changes: SimpleChanges): void {
-    if (changes['employee'] && this.employee && this.employeeForm) {
-      this.populateForm(this.employee);
-    }
-  }
-
-  /**
-   * Initialize employee form with validators
-   */
-  private initializeForm(): void {
-    this.employeeForm = new FormGroup({
-      firstName: new FormControl('', [Validators.required, Validators.minLength(2)]),
-      lastName: new FormControl('', [Validators.required, Validators.minLength(2)]),
-      dni: new FormControl('', [Validators.required, this.validationService.dniValidator]),
-      ruc: new FormControl('', [this.validationService.rucValidator]),
-      gender: new FormControl<Gender | null>(null, [Validators.required]),
-      birthDate: new FormControl('', [this.validationService.ageValidator]),
-      phoneNumber: new FormControl('', [Validators.required, this.validationService.phoneValidator]),
-      email: new FormControl('', [Validators.email]),
-      address: new FormControl('', []),
-      position: new FormControl<EmployeePosition | null>(null, [Validators.required]),
-      isActive: new FormControl<boolean | null>(null, [Validators.required]),
-    });
-
-    // Populate form if employee data exists
+    this.form = this.buildForm();
     if (this.employee) {
       this.populateForm(this.employee);
     }
   }
 
-  /**
-   * Populate form with employee data
-   * @param employee - Employee to populate form with
-   */
-  private populateForm(employee: Employee): void {
-    this.employeeForm.patchValue({
-      firstName: employee.firstName,
-      lastName: employee.lastName,
-      dni: employee.dni,
-      ruc: employee.ruc,
-      gender: employee.gender,
-      birthDate: employee.birthDate ? this.formatDateForInput(employee.birthDate) : '',
-      phoneNumber: employee.phoneNumber,
-      email: employee.email,
-      address: employee.address,
-      position: employee.position,
-      isActive: employee.isActive,
-    });
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['employee'] && this.employee && this.form) {
+      this.populateForm(this.employee);
+    }
   }
 
-  /**
-   * Format date for input field
-   * @param date - Date in format yyyy-MM-dd
-   * @returns Formatted date string in dd/MM/yyyy
-   */
-  private formatDateForInput(date: string): string {
-    const year = date.substring(0, 4);
-    const month = date.substring(5, 7);
-    const day = date.substring(8, 10);
-    return `${day}/${month}/${year}`;
-  }
-
-  /**
-   * Handle form submission
-   */
   onSubmit(): void {
     this.isSubmitted = true;
 
-    // Early return if form is invalid
-    if (!this.isFormValid()) {
-      this.showValidationError();
+    if (this.form.invalid) {
+      alert('Por favor, complete los campos obligatorios correctamente.');
       return;
     }
 
-    const employeeData = this.isEditMode 
-      ? this.buildUpdateDto() 
-      : this.buildCreateDto();
-    
-    this.submitForm.emit(employeeData);
+    const dto = this.isEditMode ? this.buildUpdateDto() : this.buildCreateDto();
+    this.submitForm.emit(dto);
   }
 
-  /**
-   * Handle form cancellation
-   */
   onCancel(): void {
-    this.resetForm();
+    this.form.reset();
+    this.isSubmitted = false;
     this.cancelForm.emit();
   }
 
   /**
-   * Check if form is valid
-   * @returns true if valid, false otherwise
-   */
-  private isFormValid(): boolean {
-    return this.employeeForm.valid;
-  }
-
-  /**
-   * Show validation error alert
-   */
-  private showValidationError(): void {
-    alert('Por favor, complete los campos obligatorios correctamente.');
-  }
-
-  /**
-   * Build CreateEmployeeDto from form data
-   * @returns CreateEmployeeDto object
-   */
-  private buildCreateDto(): CreateEmployeeDto {
-    const formValue = this.employeeForm.value as EmployeeFormData;
-    
-    return {
-      firstName: formValue.firstName.trim(),
-      lastName: formValue.lastName.trim(),
-      dni: formValue.dni.trim(),
-      ruc: formValue.ruc?.trim() ? formValue.ruc.trim() : null,
-      gender: formValue.gender as Gender,
-      birthDate: formValue.birthDate ? this.formatDateForApi(formValue.birthDate) : null,
-      address: formValue.address?.trim() ? formValue.address.trim() : null,
-      phoneNumber: formValue.phoneNumber?.trim() ? formValue.phoneNumber.trim() : null,
-      email: formValue.email?.trim() ? formValue.email.trim() : null, 
-      isActive: formValue.isActive,
-      position: formValue.position as EmployeePosition,
-    };
-  }
-
-  /**
-   * Build UpdateEmployeeDto from form data
-   * @returns UpdateEmployeeDto object
-   */
-  private buildUpdateDto(): UpdateEmployeeDto {
-    const formValue = this.employeeForm.value as EmployeeFormData;
-    
-    // Helper to safely get string or null
-    const getStringOrNull = (val: string | null | undefined) => {
-      return val && val.trim().length > 0 ? val.trim() : null;
-    };
-
-    return {
-      firstName: formValue.firstName.trim(),
-      lastName: formValue.lastName.trim(),
-      dni: formValue.dni.trim(),
-      ruc: getStringOrNull(formValue.ruc),
-      gender: formValue.gender as Gender,
-      birthDate: formValue.birthDate ? this.formatDateForApi(formValue.birthDate) : null,
-      address: getStringOrNull(formValue.address),
-      phoneNumber: getStringOrNull(formValue.phoneNumber),
-      email: getStringOrNull(formValue.email),
-      isActive: formValue.isActive,
-      position: formValue.position as EmployeePosition,
-    };
-  }
-
-  /**
-   * Reset form to initial state
-   */
-  private resetForm(): void {
-    this.employeeForm.reset();
-    this.isSubmitted = false;
-  }
-
-  /**
-   * Format date for post request to API
-   * @param date - Date in format dd/MM/yyyy
-   * @returns Formatted date string in yyyy-MM-dd
-   */
-  private formatDateForApi(date: string): string {
-    const year = date.substring(6, 10);
-    const month = date.substring(3, 5);
-    const day = date.substring(0, 2);
-    return `${year}-${month}-${day}`;
-  }
-
-  /**
-   * Get form title based on mode
-   * @returns Form title
-   */
-  getFormTitle(): string {
-    return this.isEditMode ? 'Editar Empleado' : 'Registrar Nuevo Empleado';
-  }
-
-  /**
-   * Get submit button text based on mode
-   * @returns Button text
-   */
-  getSubmitButtonText(): string {
-    if (this.isLoading) {
-      return this.isEditMode ? 'Actualizando...' : 'Guardando...';
-    }
-    return this.isEditMode ? 'Guardar Cambios' : 'Registrar Empleado';
-  }
-
-  // Getters for form controls (for template access)
-  
-  get firstNameControl(): AbstractControl {
-    return this.getControl('firstName');
-  }
-
-  get lastNameControl(): AbstractControl {
-    return this.getControl('lastName');
-  }
-
-  get dniControl(): AbstractControl {
-    return this.getControl('dni');
-  }
-
-  get rucControl(): AbstractControl {
-    return this.getControl('ruc');
-  }
-
-  get genderControl(): AbstractControl {
-    return this.getControl('gender');
-  }
-
-  get birthDateControl(): AbstractControl {
-    return this.getControl('birthDate');
-  }
-
-  get phoneNumberControl(): AbstractControl {
-    return this.getControl('phoneNumber');
-  }
-
-  get emailControl(): AbstractControl {
-    return this.getControl('email');
-  }
-
-  get addressControl(): AbstractControl {
-    return this.getControl('address');
-  }
-
-  get positionControl(): AbstractControl {
-    return this.getControl('position');
-  }
-
-  get isActiveControl(): AbstractControl {
-    return this.getControl('isActive');
-  }
-
-  /**
-   * Get form control by name
-   * @param controlName - Control name
-   * @returns Form control
-   */
-  private getControl(controlName: string): AbstractControl {
-    const control = this.employeeForm.get(controlName);
-    if (!control) {
-      throw new Error(`Control ${controlName} not found`);
-    }
-    return control;
-  }
-
-  /**
-   * Check if control has error and should show error message
-   * @param control - Form control
-   * @returns true if should show error, false otherwise
+   * Devuelve si un control debe mostrar su error.
+   * Reutilizable desde la plantilla: shouldShowError(form.get('dni')!)
    */
   shouldShowError(control: AbstractControl): boolean {
     return control.invalid && (control.touched || this.isSubmitted);
   }
 
-  /**
-   * Get error message for first name field
-   * @returns Error message or undefined
-   */
-  getFirstNameHint(): string | undefined {
-    const control = this.firstNameControl;
 
-    // Early return if no error to show
-    if (!this.shouldShowError(control)) {
-      return undefined;
-    }
-
-    return this.validationService.getErrorMessage('firstName', control.errors);
+  getHint(controlName: string): string | undefined {
+    const control = this.form.get(controlName);
+    if (!control || !this.shouldShowError(control)) return undefined;
+    return FormValidationUtil.getErrorMessage(controlName, control.errors);
   }
 
-  /**
-   * Get error message for last name field
-   * @returns Error message or undefined
-   */
-  getLastNameHint(): string | undefined {
-    const control = this.lastNameControl;
-
-    // Early return if no error to show
-    if (!this.shouldShowError(control)) {
-      return undefined;
-    }
-
-    return this.validationService.getErrorMessage('lastName', control.errors);
+  get formTitle(): string {
+    return this.isEditMode ? 'Editar Empleado' : 'Registrar Nuevo Empleado';
   }
 
-  /**
-   * Get error message for gender field
-   * @returns Error message or undefined
-   */
-  getGenderHint(): string | undefined {
-    const control = this.genderControl;
-
-    // Early return if no error to show
-    if (!this.shouldShowError(control)) {
-      return undefined;
-    }
-
-    return this.validationService.getErrorMessage('gender', control.errors);
+  get submitButtonText(): string {
+    if (this.isLoading) return this.isEditMode ? 'Actualizando...' : 'Guardando...';
+    return this.isEditMode ? 'Guardar Cambios' : 'Registrar Empleado';
   }
 
-  /**
-   * Get error message for position field
-   * @returns Error message or undefined
-   */
-  getPositionHint(): string | undefined {
-    const control = this.positionControl;
+  // --- Private helpers ---
 
-    // Early return if no error to show
-    if (!this.shouldShowError(control)) {
-      return undefined;
-    }
-
-    return this.validationService.getErrorMessage('position', control.errors);
+  private buildForm(): FormGroup {
+    return new FormGroup({
+      firstName:   new FormControl('', [Validators.required, Validators.minLength(2)]),
+      lastName:    new FormControl('', [Validators.required, Validators.minLength(2)]),
+      dni:         new FormControl('', [Validators.required, DocumentValidators.dni()]),
+      ruc:         new FormControl('', [DocumentValidators.ruc()]),
+      gender:      new FormControl<Gender | null>(null, [Validators.required]),
+      birthDate:   new FormControl('', [DateValidators.minAge(18)]),
+      phoneNumber: new FormControl('', [Validators.required, ContactValidators.phone()]),
+      email:       new FormControl('', [Validators.email]),
+      address:     new FormControl(''),
+      position:    new FormControl<EmployeePosition | null>(null, [Validators.required]),
+      isActive:    new FormControl<boolean | null>(null, [Validators.required]),
+    });
   }
 
-  /**
-   * Get error message for status field
-   * @returns Error message or undefined
-   */
-  getStatusHint(): string | undefined {
-    const control = this.isActiveControl;
-
-    // Early return if no error to show
-    if (!this.shouldShowError(control)) {
-      return undefined;
-    }
-
-    return this.validationService.getErrorMessage('isActive', control.errors);
+  private populateForm(employee: Employee): void {
+    this.form.patchValue({
+      ...employee,
+      birthDate: employee.birthDate ? DateFormatUtil.toInputFormat(employee.birthDate) : '',
+    });
   }
 
-  /**
-   * Get error message for email field
-   * @returns Error message or undefined
-   */
-  getEmailHint(): string | undefined {
-    const control = this.emailControl;
-
-    // Early return if no error to show
-    if (!this.shouldShowError(control)) {
-      return undefined;
-    }
-
-    return this.validationService.getErrorMessage('email', control.errors);
+  private buildCreateDto(): CreateEmployeeDto {
+    const v = this.form.value as EmployeeFormData;
+    return {
+      firstName:   v.firstName.trim(),
+      lastName:    v.lastName.trim(),
+      dni:         v.dni.trim(),
+      ruc:         StringSanitizeUtil.toStringOrNull(v.ruc),
+      gender:      v.gender as Gender,
+      birthDate:   v.birthDate ? DateFormatUtil.toApiFormat(v.birthDate) : null,
+      address:     StringSanitizeUtil.toStringOrNull(v.address),
+      phoneNumber: StringSanitizeUtil.toStringOrNull(v.phoneNumber),
+      email:       StringSanitizeUtil.toStringOrNull(v.email),
+      isActive:    v.isActive,
+      position:    v.position as EmployeePosition,
+    };
   }
 
-  /**
-   * Get error message for DNI field
-   * @returns Error message or undefined
-   */
-  getDniHint(): string | undefined {
-    const control = this.dniControl;
-
-    // Early return if no error to show
-    if (!this.shouldShowError(control)) {
-      return undefined;
-    }
-
-    return this.validationService.getErrorMessage('dni', control.errors);
-  }
-
-  /**
-   * Get error message for RUC field
-   * @returns Error message or undefined
-   */
-  getRucHint(): string | undefined {
-    const control = this.rucControl;
-
-    // Early return if no error to show
-    if (!this.shouldShowError(control)) {
-      return undefined;
-    }
-
-    return this.validationService.getErrorMessage('ruc', control.errors);
-  }
-
-  /**
-   * Get error message for phone field
-   * @returns Error message or undefined
-   */
-  getPhoneHint(): string | undefined {
-    const control = this.phoneNumberControl;
-
-    // Early return if no error to show
-    if (!this.shouldShowError(control)) {
-      return undefined;
-    }
-
-    return this.validationService.getErrorMessage('phoneNumber', control.errors);
-  }
-
-  /**
-   * Get error message for birth date field
-   * @returns Error message or undefined
-   */
-  getBirthDateHint(): string | undefined {
-    const control = this.birthDateControl;
-
-    // Early return if no error to show
-    if (!this.shouldShowError(control)) {
-      return undefined;
-    }
-
-    return this.validationService.getErrorMessage('birthDate', control.errors);
+  private buildUpdateDto(): UpdateEmployeeDto {
+    const v = this.form.value as EmployeeFormData;
+    return {
+      firstName:   v.firstName.trim(),
+      lastName:    v.lastName.trim(),
+      dni:         v.dni.trim(),
+      ruc:         StringSanitizeUtil.toStringOrNull(v.ruc),
+      gender:      v.gender as Gender,
+      birthDate:   v.birthDate ? DateFormatUtil.toApiFormat(v.birthDate) : null,
+      address:     StringSanitizeUtil.toStringOrNull(v.address),
+      phoneNumber: StringSanitizeUtil.toStringOrNull(v.phoneNumber),
+      email:       StringSanitizeUtil.toStringOrNull(v.email),
+      isActive:    v.isActive,
+      position:    v.position as EmployeePosition,
+    };
   }
 }

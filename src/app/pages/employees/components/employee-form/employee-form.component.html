@@ -3,13 +3,13 @@
 >
   <div class="px-2 pr-14">
     <h4 class="mb-2 text-2xl font-semibold text-gray-800 dark:text-white/90">
-      {{ getFormTitle() }}
+      {{ formTitle }}
     </h4>
     <p class="mb-6 text-sm text-gray-500 dark:text-gray-400 lg:mb-7">
       Complete el siguiente formulario para {{ isEditMode ? 'actualizar el' : 'agregar un nuevo' }} empleado.
     </p>
   </div>
-  <form class="flex flex-col" [formGroup]="employeeForm">
+  <form class="flex flex-col" [formGroup]="form">
     <div
       class="px-2 pb-3 flex flex-col gap-5 lg:gap-6"
     >
@@ -43,8 +43,8 @@
               [id]="'firstName'"
               placeholder="Nombres"
               formControlName="firstName"
-              [error]="shouldShowError(firstNameControl)"
-              [hint]="getFirstNameHint()"
+              [error]="shouldShowError(form.get('firstName')!)"
+              [hint]="getHint('firstName')"
             />
           </div>
           <div>
@@ -54,8 +54,8 @@
               [id]="'lastName'"
               placeholder="Apellidos"
               formControlName="lastName"
-              [error]="shouldShowError(lastNameControl)"
-              [hint]="getLastNameHint()"
+              [error]="shouldShowError(form.get('lastName')!)"
+              [hint]="getHint('lastName')"
             />
           </div>
           <div>
@@ -65,8 +65,8 @@
               [id]="'dni'"
               placeholder="DNI"
               formControlName="dni"
-              [error]="shouldShowError(dniControl)"
-              [hint]="getDniHint()"
+              [error]="shouldShowError(form.get('dni')!)"
+              [hint]="getHint('dni')"
             />
           </div>
           <div>
@@ -76,8 +76,8 @@
               [id]="'ruc'"
               placeholder="RUC (Opcional)"
               formControlName="ruc"
-              [error]="shouldShowError(rucControl)"
-              [hint]="getRucHint()"
+              [error]="shouldShowError(form.get('ruc')!)"
+              [hint]="getHint('ruc')"
             />
           </div>
           <div>
@@ -87,8 +87,8 @@
               [id]="'gender'"
               placeholder="Seleccionar Género"
               formControlName="gender"
-              [error]="shouldShowError(genderControl)"
-              [hint]="getGenderHint()"
+              [error]="shouldShowError(form.get('gender')!)"
+              [hint]="getHint('gender')"
             ></app-select-reactive>
           </div>
           <div>
@@ -106,8 +106,8 @@
               label="Fecha de Nacimiento"
               placeholder="Seleccionar fecha"
               formControlName="birthDate"
-              [error]="shouldShowError(birthDateControl)"
-              [hint]="getBirthDateHint()"
+              [error]="shouldShowError(form.get('birthDate')!)"
+              [hint]="getHint('birthDate')"
             />
           </div>
         </div>
@@ -144,8 +144,8 @@
               placeholder="+51 987654321"
               formControlName="phoneNumber"
               autocomplete="tel"
-              [error]="shouldShowError(phoneNumberControl)"
-              [hint]="getPhoneHint()"
+              [error]="shouldShowError(form.get('phoneNumber')!)"
+              [hint]="getHint('phoneNumber')"
             />
           </div>
           <div>
@@ -155,8 +155,8 @@
               [id]="'email'"
               placeholder="correo@ejemplo.com"
               formControlName="email"
-              [error]="shouldShowError(emailControl)"
-              [hint]="getEmailHint()"
+              [error]="shouldShowError(form.get('email')!)"
+              [hint]="getHint('email')"
             />
           </div>
         </div>
@@ -195,8 +195,8 @@
               [id]="'position'"
               placeholder="Seleccionar Responsabilidad"
               formControlName="position"
-              [error]="shouldShowError(positionControl)"
-              [hint]="getPositionHint()"
+              [error]="shouldShowError(form.get('position')!)"
+              [hint]="getHint('position')"
             ></app-select-reactive>
           </div>
           <div>
@@ -206,8 +206,8 @@
               [id]="'isActive'"
               placeholder="Seleccionar Estado"
               formControlName="isActive"
-              [error]="shouldShowError(isActiveControl)"
-              [hint]="getStatusHint()"
+              [error]="shouldShowError(form.get('isActive')!)"
+              [hint]="getHint('isActive')"
             ></app-select-reactive>
           </div>
         </div>
@@ -226,7 +226,7 @@
         (btnClick)="onSubmit()"
         [disabled]="isLoading"
       >
-        {{ getSubmitButtonText() }}
+        {{ submitButtonText }}
       </app-button>
     </div>
   </form>

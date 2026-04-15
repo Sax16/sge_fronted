@@ -78,7 +78,6 @@ export class EmployeesComponent implements OnInit, OnDestroy {
           
           // Solo cargamos por falta de datos si NO viene una orden de recarga por navegación
           if (this.state.employees().length === 0 && !willReload) {
-            console.log('Loading employees data if length is 0');
             this.state.loadEmployees();
           }
         }
@@ -123,7 +122,6 @@ export class EmployeesComponent implements OnInit, OnDestroy {
     
     // Process signal to reload data
     if (historyState?.reloadData) {
-      console.log('Reloading employees data');
       this.state.loadEmployees(true);
     }
     

@@ -1,5 +1,5 @@
 @if (employee) {
-  <div class="rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03] lg:p-6">
+  <div class="rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/3 lg:p-6">
     <div class="flex gap-5 flex-row items-center justify-between mb-5 lg:mb-6">
       <div class="flex items-center gap-2">
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="menu-item-icon-active"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M3 12a9 9 0 1 0 18 0a9 9 0 1 0 -18 0" /><path d="M9 10a3 3 0 1 0 6 0a3 3 0 1 0 -6 0" /><path d="M6.168 18.849a4 4 0 0 1 3.832 -2.849h4a4 4 0 0 1 3.834 2.855" /></svg>
@@ -13,7 +13,7 @@
     </div>
     <div class="space-y-6">
       <div>
-        <div class="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]">
+        <div class="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/3">
           <div class="px-6 py-5">
             <h4 class="text-lg font-semibold text-gray-800 dark:text-white/90">
               Información Personal
@@ -125,7 +125,7 @@
           </div>
         </div>
       </div>
-      <div class="overflow-hidden rounded-2xl border border-gray-200 bg-white dark:border-white/[0.05] dark:bg-white/[0.03]">
+      <div class="overflow-hidden rounded-2xl border border-gray-200 bg-white dark:border-white/5 dark:bg-white/3">
         <div class="px-4 pt-4 sm:px-6">
           <div class="flex flex-col gap-2 mb-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
@@ -137,7 +137,7 @@
             <div class="flex items-center gap-3">
               <select
                 (change)="handleYearChange($event)"
-                class=" appearance-none rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-theme-sm font-medium text-gray-700 shadow-theme-xs hover:bg-gray-50 hover:text-gray-800 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-white/[0.03] dark:hover:text-gray-200"
+                class=" appearance-none rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-theme-sm font-medium text-gray-700 shadow-theme-xs hover:bg-gray-50 hover:text-gray-800 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-white/3 dark:hover:text-gray-200"
               >
                 <!-- Default -->
                 <option value="0000" selected>
@@ -152,7 +152,7 @@
               </select>
               <button
                 (click)="handleSeeAll()"
-                class="inline-flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-theme-sm font-medium text-gray-700 shadow-theme-xs hover:bg-gray-50 hover:text-gray-800 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-white/[0.03] dark:hover:text-gray-200"
+                class="inline-flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-theme-sm font-medium text-gray-700 shadow-theme-xs hover:bg-gray-50 hover:text-gray-800 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-white/3 dark:hover:text-gray-200"
               >
                 Descargar Historial
               </button>
@@ -161,7 +161,7 @@
         </div>
         <div class="max-w-full overflow-x-auto">
           <table class="w-full">
-            <thead class="border-gray-100 border-y dark:border-white/[0.05]">
+            <thead class="border-gray-100 border-y dark:border-white/5">
               <tr>
                 <th scope="col" class="px-4 py-3 font-medium text-gray-500 sm:px-6 text-start text-theme-xs dark:text-gray-400">
                   Fecha
@@ -183,7 +183,7 @@
                 </th>
               </tr>
             </thead>
-            <tbody class="divide-y divide-gray-100 dark:divide-white/[0.05]">
+            <tbody class="divide-y divide-gray-100 dark:divide-white/5">
               @for (payment of tableData; track $index) {
               <tr>
                 <td class="px-4 py-3 font-medium text-gray-800 sm:px-6 text-start text-theme-sm dark:text-white/90">
