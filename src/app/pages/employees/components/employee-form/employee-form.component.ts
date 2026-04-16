@@ -6,19 +6,14 @@ import { ButtonComponent } from '../../../../shared/components/ui/button/button.
 import { InputFieldReactiveComponent } from '../../../../shared/components/reactive-form/input/input-field-reactive.component';
 import { DatePickerReactiveComponent } from '../../../../shared/components/reactive-form/date-picker-reactive/date-picker-reactive.component';
 import { SelectReactiveComponent } from '../../../../shared/components/reactive-form/select-reactive/select-reactive.component';
-import { CreateEmployeeDto, UpdateEmployeeDto, Employee, EmployeeFormData, Gender, EmployeePosition } from '../../models/employee.model';
+import { SelectOption } from '../../../../shared/models/select-option.model';
+import { CreateEmployeeDto, UpdateEmployeeDto, Employee, EmployeeFormData, Gender, EmployeePosition, EMPLOYEE_POSITIONS } from '../../models/employee.model';
 import { DocumentValidators } from '../../../../shared/validators/document.validator';
 import { ContactValidators } from '../../../../shared/validators/contact.validator';
 import { DateValidators } from '../../../../shared/validators/date.validator';
 import { FormValidationUtil } from '../../../../shared/utils/form-validation.util';
 import { DateFormatUtil } from '../../../../shared/utils/date-format.util';
 import { StringSanitizeUtil } from '../../../../shared/utils/string-sanitize.util';
-
-
-interface SelectOption {
-  value: string;
-  label: string;
-}
 
 /**
  * Employee Form Component
@@ -47,12 +42,8 @@ export class EmployeeFormComponent implements OnInit, OnChanges {
   @Output() submitForm = new EventEmitter<CreateEmployeeDto | UpdateEmployeeDto>();
   @Output() cancelForm = new EventEmitter<void>();
 
-  readonly positionOptions: SelectOption[] = [
-    { value: 'Docente', label: 'Docente' },
-    { value: 'Auxiliar', label: 'Auxiliar' },
-    { value: 'Administrativo', label: 'Administrativo' },
-    { value: 'Promotor', label: 'Promotor' },
-  ];
+  // Derived from EMPLOYEE_POSITIONS to guarantee TypeScript exhaustiveness
+  readonly positionOptions: SelectOption[] = EMPLOYEE_POSITIONS.map(p => ({ value: p, label: p }));
 
   readonly statusOptions = [
     { value: true, label: 'Activo' },
@@ -66,7 +57,6 @@ export class EmployeeFormComponent implements OnInit, OnChanges {
 
   form!: FormGroup;
   isSubmitted = false;
-  isLoading = false;
 
   ngOnInit(): void {
     this.form = this.buildForm();
@@ -85,12 +75,11 @@ export class EmployeeFormComponent implements OnInit, OnChanges {
     this.isSubmitted = true;
 
     if (this.form.invalid) {
-      alert('Por favor, complete los campos obligatorios correctamente.');
+      this.form.markAllAsTouched();
       return;
     }
 
-    const dto = this.isEditMode ? this.buildUpdateDto() : this.buildCreateDto();
-    this.submitForm.emit(dto);
+    this.submitForm.emit(this.buildDto());
   }
 
   onCancel(): void {
@@ -100,13 +89,12 @@ export class EmployeeFormComponent implements OnInit, OnChanges {
   }
 
   /**
-   * Devuelve si un control debe mostrar su error.
-   * Reutilizable desde la plantilla: shouldShowError(form.get('dni')!)
+   * Returns whether a control should show its error state.
+   * Reusable from template: shouldShowError(form.get('dni')!)
    */
   shouldShowError(control: AbstractControl): boolean {
     return control.invalid && (control.touched || this.isSubmitted);
   }
-
 
   getHint(controlName: string): string | undefined {
     const control = this.form.get(controlName);
@@ -119,7 +107,6 @@ export class EmployeeFormComponent implements OnInit, OnChanges {
   }
 
   get submitButtonText(): string {
-    if (this.isLoading) return this.isEditMode ? 'Actualizando...' : 'Guardando...';
     return this.isEditMode ? 'Guardar Cambios' : 'Registrar Empleado';
   }
 
@@ -148,24 +135,12 @@ export class EmployeeFormComponent implements OnInit, OnChanges {
     });
   }
 
-  private buildCreateDto(): CreateEmployeeDto {
-    const v = this.form.value as EmployeeFormData;
-    return {
-      firstName:   v.firstName.trim(),
-      lastName:    v.lastName.trim(),
-      dni:         v.dni.trim(),
-      ruc:         StringSanitizeUtil.toStringOrNull(v.ruc),
-      gender:      v.gender as Gender,
-      birthDate:   v.birthDate ? DateFormatUtil.toApiFormat(v.birthDate) : null,
-      address:     StringSanitizeUtil.toStringOrNull(v.address),
-      phoneNumber: StringSanitizeUtil.toStringOrNull(v.phoneNumber),
-      email:       StringSanitizeUtil.toStringOrNull(v.email),
-      isActive:    v.isActive,
-      position:    v.position as EmployeePosition,
-    };
-  }
-
-  private buildUpdateDto(): UpdateEmployeeDto {
+  /**
+   * Builds the DTO from form values.
+   * Note: CreateEmployeeDto and UpdateEmployeeDto are currently identical.
+   * If UpdateEmployeeDto diverges (e.g. removes 'dni'), split this back into two methods.
+   */
+  private buildDto(): CreateEmployeeDto {
     const v = this.form.value as EmployeeFormData;
     return {
       firstName:   v.firstName.trim(),

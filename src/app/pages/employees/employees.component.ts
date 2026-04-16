@@ -8,7 +8,7 @@ import { ConfirmModalComponent } from '../../shared/components/ui/confirm-modal/
 import { EmployeeTableComponent } from './components/employee-table/employee-table.component';
 import { EmployeeFormComponent } from './components/employee-form/employee-form.component';
 import { EmployeeDetailComponent } from './components/employee-detail/employee-detail.component';
-import { AlertService } from '../../shared/services/alert.service';
+import { AlertService, AlertVariant } from '../../shared/services/alert.service';
 import { EmployeesState } from './services/employees.state';
 import { UpdateEmployeeDto } from './models/employee.model';
 
@@ -17,6 +17,19 @@ import { UpdateEmployeeDto } from './models/employee.model';
  * Determines what to display in the component
  */
 type EmployeeViewMode = 'list' | 'create' | 'edit' | 'view';
+
+/**
+ * Shape of the navigation state passed via Router navigate({ state: ... })
+ * All fields are optional since history.state can carry anything.
+ */
+interface NavigationHistoryState {
+  alert?: {
+    variant: AlertVariant;
+    title: string;
+    message: string;
+  };
+  reloadData?: boolean;
+}
 
 /**
  * Employees Component
@@ -68,7 +81,7 @@ export class EmployeesComponent implements OnInit, OnDestroy {
         this.currentViewMode = (data['mode'] as EmployeeViewMode) || 'list';
         
         // Verificamos de antemano si el state del router indica que haremos un reload forzado
-        const historyState = history.state;
+        const historyState = history.state as NavigationHistoryState;
         const willReload = !!historyState?.reloadData;
         
         if (this.currentViewMode === 'create') {
@@ -82,7 +95,7 @@ export class EmployeesComponent implements OnInit, OnDestroy {
           }
         }
         
-        this.checkHistoryState();
+        this.checkHistoryState(historyState);
       });
 
     this.route.paramMap
@@ -110,11 +123,10 @@ export class EmployeesComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Check for navigation state passed via Router
+   * Check for navigation state passed via Router.
+   * Receives historyState as parameter to avoid reading history.state twice.
    */
-  private checkHistoryState(): void {
-    const historyState = history.state;
-    
+  private checkHistoryState(historyState: NavigationHistoryState): void {
     // Process passed alert if exists
     if (historyState?.alert) {
       this.alertService.showAlert(historyState.alert.variant, historyState.alert.title, historyState.alert.message);
@@ -172,5 +184,5 @@ export class EmployeesComponent implements OnInit, OnDestroy {
   isListView(): boolean { return this.currentViewMode === 'list'; }
   isCreateView(): boolean { return this.currentViewMode === 'create'; }
   isEditView(): boolean { return this.currentViewMode === 'edit'; }
-  isViewView(): boolean { return this.currentViewMode === 'view'; }
+  isDetailView(): boolean { return this.currentViewMode === 'view'; }
 }

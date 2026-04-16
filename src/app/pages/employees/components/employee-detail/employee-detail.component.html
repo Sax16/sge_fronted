@@ -31,7 +31,7 @@
               </div>
               <div>
                 <p class="mb-2 text-base leading-normal text-gray-500 dark:text-gray-400">
-                  Appellidos
+                  Apellidos
                 </p>
                 <p class="text-base font-medium text-gray-800 dark:text-white/90">
                   {{ employee.lastName }}
@@ -125,91 +125,9 @@
           </div>
         </div>
       </div>
-      <div class="overflow-hidden rounded-2xl border border-gray-200 bg-white dark:border-white/5 dark:bg-white/3">
-        <div class="px-4 pt-4 sm:px-6">
-          <div class="flex flex-col gap-2 mb-4 sm:flex-row sm:items-center sm:justify-between">
-            <div>
-              <h3 class="text-lg font-semibold text-gray-800 dark:text-white/90">
-                Historial de Pagos
-              </h3>
-            </div>
 
-            <div class="flex items-center gap-3">
-              <select
-                (change)="handleYearChange($event)"
-                class=" appearance-none rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-theme-sm font-medium text-gray-700 shadow-theme-xs hover:bg-gray-50 hover:text-gray-800 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-white/3 dark:hover:text-gray-200"
-              >
-                <!-- Default -->
-                <option value="0000" selected>
-                  Histórico
-                </option>
-
-                @for (option of yearOptions; track option.value) {
-                  <option [value]="option.value">
-                    {{ option.label }}
-                  </option>
-                }
-              </select>
-              <button
-                (click)="handleSeeAll()"
-                class="inline-flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-theme-sm font-medium text-gray-700 shadow-theme-xs hover:bg-gray-50 hover:text-gray-800 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-white/3 dark:hover:text-gray-200"
-              >
-                Descargar Historial
-              </button>
-            </div>
-          </div>
-        </div>
-        <div class="max-w-full overflow-x-auto">
-          <table class="w-full">
-            <thead class="border-gray-100 border-y dark:border-white/5">
-              <tr>
-                <th scope="col" class="px-4 py-3 font-medium text-gray-500 sm:px-6 text-start text-theme-xs dark:text-gray-400">
-                  Fecha
-                </th>
-                <th scope="col" class="px-4 py-3 font-medium text-gray-500 sm:px-6 text-start text-theme-xs dark:text-gray-400">
-                  Descripción            
-              </th>
-                <th scope="col" class="px-4 py-3 font-medium text-gray-500 sm:px-6 text-start text-theme-xs dark:text-gray-400">
-                  Remuneración
-                </th>
-                <th scope="col" class="px-4 py-3 font-medium text-gray-500 sm:px-6 text-start text-theme-xs dark:text-gray-400">
-                  Deducción
-                </th>
-                <th scope="col" class="px-4 py-3 font-medium text-gray-500 sm:px-6 text-start text-theme-xs dark:text-gray-400">
-                  Bonificación
-                </th>
-                <th scope="col" class="px-4 py-3 font-medium text-gray-500 sm:px-6 text-start text-theme-xs dark:text-gray-400">
-                  Total
-                </th>
-              </tr>
-            </thead>
-            <tbody class="divide-y divide-gray-100 dark:divide-white/5">
-              @for (payment of tableData; track $index) {
-              <tr>
-                <td class="px-4 py-3 font-medium text-gray-800 sm:px-6 text-start text-theme-sm dark:text-white/90">
-                  {{ payment.date | date:'shortDate' }}
-                </td>
-                <td class="px-4 py-3 font-medium text-gray-800 sm:px-6 text-start text-theme-sm dark:text-white/90">
-                  {{ payment.description }}
-                </td>
-                <td class="px-4 text-theme-sm sm:px-6 text-start text-success-600">
-                  S/ {{ payment.remuneration }}
-                </td>
-                <td class="px-4 text-theme-sm sm:px-6 text-start text-error-600">
-                  S/ {{ payment.deduction }}
-                </td>
-                <td class="px-4 text-theme-sm sm:px-6 text-start text-success-600">
-                  S/ {{ payment.bonus }}
-                </td>
-                <td class="px-4 text-theme-sm sm:px-6 text-start font-semibold text-gray-800 dark:text-white/90">
-                  S/ {{ payment.remuneration - payment.deduction + payment.bonus }}
-                </td>
-              </tr>
-              }
-            </tbody>
-          </table>
-        </div>
-      </div>
+      <!-- Payment history delegated to its own component (SRP) -->
+      <app-employee-payment-history [employeeId]="employee.id" />
     </div>
   </div>
 }

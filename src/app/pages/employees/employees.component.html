@@ -51,8 +51,8 @@
     }
   }
 
-  <!-- View View -->
-  @if (isViewView()) {
+  <!-- Detail View -->
+  @if (isDetailView()) {
     @if (state.selectedEmployee(); as employee) {
       <app-employee-detail 
         [employee]="employee"

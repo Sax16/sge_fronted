@@ -47,7 +47,7 @@
             </td>
           </tr>
         }
-        @for (employee of employees; track trackByEmployeeId($index, employee)) {
+        @for (employee of employees; track employee.id) {
         <tr>
           <td class="px-4 sm:px-6 py-3.5">
             <div class="flex items-center gap-3">

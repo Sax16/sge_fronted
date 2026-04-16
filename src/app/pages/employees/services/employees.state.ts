@@ -50,6 +50,7 @@ export class EmployeesState {
         this.isLoading.set(false);
       },
       error: (err) => {
+        // TODO: Log error detail once the API error structure is defined (e.g. err?.error?.detail)
         this.alertService.showAlert('error', 'Error', 'Error al cargar empleado. Por favor, intente nuevamente.');
         this.isLoading.set(false);
         this.router.navigate(['/employees']);

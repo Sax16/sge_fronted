@@ -7,6 +7,15 @@
 export type Gender = 'Masculino' | 'Femenino';
 export type EmployeePosition = 'Docente' | 'Auxiliar' | 'Secretaria' | 'Director' | 'Subdirector' | 'Psicologo' | 'Promotor' | 'Administrativo' | 'Otro';
 
+/**
+ * All valid employee positions as a runtime constant.
+ * Derive positionOptions from this to ensure TypeScript exhaustiveness.
+ */
+export const EMPLOYEE_POSITIONS: EmployeePosition[] = [
+  'Docente', 'Auxiliar', 'Secretaria', 'Director',
+  'Subdirector', 'Psicologo', 'Promotor', 'Administrativo', 'Otro',
+];
+
 // Main Employee interface with strict types
 export interface Employee {
   readonly id: number;
@@ -53,18 +62,6 @@ export interface UpdateEmployeeDto {
   email?: string | null;
   isActive: boolean;
   position: EmployeePosition;
-}
-
-// View Model for table display
-export interface EmployeeTableViewModel {
-  id: number;
-  fullName: string;
-  dni: string;
-  phoneNumber: string;
-  email: string;
-  position: string;
-  status: boolean;
-  createdAt: string;
 }
 
 // Form data interface
