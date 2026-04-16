@@ -3,6 +3,6 @@
  * Used across the application for select/dropdown components.
  */
 export interface SelectOption {
-  value: string;
+  value: string | boolean;
   label: string;
 }

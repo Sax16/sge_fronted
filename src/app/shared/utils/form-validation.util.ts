@@ -39,6 +39,7 @@ export class FormValidationUtil {
    */
   private static getRequiredFieldMessage(fieldName: string): string {
     const fieldMessages: Record<string, string> = {
+      // Employee fields
       firstName: 'El nombre es obligatorio',
       lastName: 'El apellido es obligatorio',
       dni: 'El DNI es obligatorio',
@@ -47,6 +48,11 @@ export class FormValidationUtil {
       email: 'El correo es obligatorio',
       isActive: 'El estado es obligatorio',
       position: 'La responsabilidad es obligatoria',
+      // User fields
+      username: 'El nombre de usuario es obligatorio',
+      password: 'La contraseña es obligatoria',
+      role: 'El rol es obligatorio',
+      employeeId: 'El empleado es obligatorio',
     };
 
     return fieldMessages[fieldName] || 'Este campo es obligatorio';

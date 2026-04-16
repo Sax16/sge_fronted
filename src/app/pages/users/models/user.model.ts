@@ -1,6 +1,11 @@
 
 export type Role = 'SUPER_ADMIN' | 'ADMIN';
 
+export const ROLES: {value: Role, label: string}[] = [
+  { value: 'SUPER_ADMIN', label: 'Super Admin' },
+  { value: 'ADMIN', label: 'Admin' },
+];
+
 /** User model interface */
 
 // Main User interface with strict types

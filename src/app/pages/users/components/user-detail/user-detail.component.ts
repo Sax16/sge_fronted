@@ -4,6 +4,8 @@ import { User } from '../../models/user.model';
 import { Employee } from '../../../employees/models/employee.model';
 import { ButtonComponent } from '../../../../shared/components/ui/button/button.component';
 import { BadgeComponent } from '../../../../shared/components/ui/badge/badge.component';
+import { getFullName } from '../../../../shared/utils/employee.util';
+import { getBadgeColor, getStatusLabel } from '../../../../shared/utils/status.util';
 
 @Component({
   selector: 'app-user-detail',
@@ -21,40 +23,20 @@ export class UserDetailComponent {
   @Input() user: User | null = null;
   @Input() employees: Employee[] = [];
   @Output() editUser = new EventEmitter<number>();
-  
-  /**
-   * Handle edit user button click
-   * @param userId - ID of user to edit
-   */
+
+  // Expose shared utils to the template
+  readonly getBadgeColor = getBadgeColor;
+  readonly getStatusLabel = getStatusLabel;
+
   handleEditClick(userId: number): void {
     this.editUser.emit(userId);
   }
 
-  /**
-   * Get employee name by ID
-   * @param employeeId - Employee ID
-   * @returns Employee name or Unknown
-   */
   getEmployeeName(employeeId: number): string {
-    const employee = this.employees.find(e => e.id === employeeId);
-    return employee ? `${employee.firstName} ${employee.lastName}` : `#${employeeId}`;
-  }
-
-  /**
-   * Get badge color based on status
-   * @param isActive - User status
-   * @returns Badge color
-   */
-  getBadgeColor(isActive: boolean): 'success' | 'light' {
-    return isActive ? 'success' : 'light';
-  }
-
-  /**
-   * Get status label
-   * @param isActive - User status
-   * @returns Status label
-   */
-  getStatusLabel(isActive: boolean): string {
-    return isActive ? 'Activo' : 'Inactivo';
+    let employee = this.employees.find(employee => employee.id === employeeId);
+    if (!employee) {
+      return '#Error';
+    }
+    return getFullName(employee);
   }
 }

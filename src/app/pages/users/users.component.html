@@ -1,18 +1,20 @@
 <div>
   <app-page-breadcrumb [pageTitle]="'Gestión de Usuarios'" />
 
-  @if (errorMessage) {
+  @if (alertService.alert(); as alert) {
     <div class="mb-4">
       <app-alert
-            variant="error"
-            [title]="this.errorTitle"
-            [message]="this.errorMessage"
-            [showLink]="false"
-          />
+        [variant]="alert.variant"
+        [title]="alert.title"
+        [message]="alert.message"
+        [showLink]="false"
+        [showCloseButton]="true"
+        (alertClose)="alertService.clearAlert()"
+      />
     </div>
   }
 
-  @if (isLoading) {
+  @if (state.isLoading()) {
     <div class="flex items-center justify-center p-8">
       <div class="text-gray-500 dark:text-gray-400">Cargando...</div>
     </div>
@@ -21,52 +23,56 @@
   <!-- List View -->
   @if (isListView()) {
     <app-user-table
-      [users]="users"
-      [employees]="employees"
-      (newUser)="handleNewUserClick()"
-      (editUser)="handleEditUserClick($event)"
-      (deleteUser)="handleUserDelete($event)"
-      (viewUser)="handleViewUserClick($event)"
+      [users]="state.users()"
+      [employees]="state.employees()"
+      (newUser)="navigateToCreate()"
+      (editUser)="navigateToEdit($event)"
+      (deleteUser)="state.openDeleteConfirmModal($event)"
+      (viewUser)="navigateToView($event)"
     />
   }
 
   <!-- Create View -->
   @if (isCreateView()) {
       <app-user-form 
-        [employees]="employees"
-        (submitForm)="handleUserCreate($any($event))"
-        (cancelForm)="handleFormCancel()"
+        [employees]="state.employees()"
+        (submitForm)="state.createUser($any($event))"
+        (cancelForm)="navigateToList()"
       />
   }
 
   <!-- Edit View -->
-  @if (isEditView() && selectedUser) {
+  @if (isEditView()) {
+    @if (state.selectedUser(); as user) {
       <app-user-form 
-        [user]="selectedUser"
+        [user]="user"
         [isEditMode]="true"
-        [employees]="employees"
+        [employees]="state.employees()"
         (submitForm)="handleUserUpdate($any($event))"
-        (cancelForm)="handleFormCancel()"
+        (cancelForm)="navigateToList()"
       />
+    }
   }
 
-  <!-- View View -->
-  @if (isViewView() && selectedUser) {
-    <app-user-detail 
-      [user]="selectedUser"
-      [employees]="employees"
-      (editUser)="handleEditUserClick($event)"
-    />
+  <!-- Detail View -->
+  @if (isDetailView()) {
+    @if (state.selectedUser(); as user) {
+      <app-user-detail 
+        [user]="user"
+        [employees]="state.employees()"
+        (editUser)="navigateToEdit($event)"
+      />
+    }
   }
 
   <!-- Confirm Delete Modal -->
   <app-confirm-modal
-    [isOpen]="isConfirmModalOpen"
+    [isOpen]="state.isConfirmModalOpen()"
     title="Eliminar usuario"
     message="¿Está seguro de que desea eliminar este usuario? Esta acción no se puede deshacer."
     confirmText="Eliminar"
     cancelText="Cancelar"
-    (confirm)="onConfirmDelete()"
-    (cancel)="onCancelDelete()"
+    (confirm)="state.deleteUser()"
+    (cancel)="state.closeConfirmModal()"
   />
 </div>

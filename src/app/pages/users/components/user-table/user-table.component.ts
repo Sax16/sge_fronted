@@ -5,10 +5,12 @@ import { AvatarTextComponent } from '../../../../shared/components/ui/avatar/ava
 import { ButtonComponent } from '../../../../shared/components/ui/button/button.component';
 import { User } from '../../models/user.model';
 import { Employee } from '../../../employees/models/employee.model';
+import { getFullName } from '../../../../shared/utils/employee.util';
+import { getBadgeColor, getStatusLabel, formatDate } from '../../../../shared/utils/status.util';
 
 /**
  * User Table Component
- * Handles user table display
+ * Presentational component — handles user table display.
  */
 @Component({
   selector: 'app-user-table',
@@ -30,93 +32,36 @@ export class UserTableComponent {
   @Output() deleteUser = new EventEmitter<number>();
   @Output() viewUser = new EventEmitter<number>();
 
-  /**
-   * Handle new user button click
-   */
+  // Expose shared utils to the template
+  readonly getBadgeColor = getBadgeColor;
+  readonly getStatusLabel = getStatusLabel;
+  readonly formatDate = formatDate;
+
   handleNewUserClick(): void {
     this.newUser.emit();
   }
 
-  /**
-   * Handle edit user button click
-   * @param userId - ID of user to edit
-   */
   handleEditClick(userId: number): void {
     this.editUser.emit(userId);
   }
 
-  /**
-   * Handle delete user button click
-   * @param userId - ID of user to delete
-   */
   handleDeleteClick(userId: number): void {
     this.deleteUser.emit(userId);
   }
 
-  /**
-   * Handle view user button click
-   * @param userId - ID of user to view
-   */
   handleViewClick(userId: number): void {
     this.viewUser.emit(userId);
   }
 
-  /**
-   * Get status label in Spanish
-   * @param isActive - User status
-   * @returns Status label
-   */
-  getStatusLabel(isActive: boolean): 'Activo' | 'Inactivo' {
-    return isActive ? 'Activo' : 'Inactivo';
+  getEmployeeName(employeeId: number): string {
+    let employee = this.employees.find(employee => employee.id === employeeId);
+    if (!employee) {
+      return '#Error';
+    }
+    return getFullName(employee);
   }
 
-  /**
-   * Get badge color based on status
-   * @param isActive - User status
-   * @returns Badge color
-   */
-  getBadgeColor(isActive: boolean): 'success' | 'light' {
-    return isActive ? 'success' : 'light';
-  }
-
-  /**
-   * Format date to DD-MM-YYYY
-   * @param date - Date object or string
-   * @returns Formatted date string
-   */
-  formatDate(date: Date | string): string {
-    return new Date(date).toLocaleDateString('es-PE', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric',
-    });
-  }
-
-  /**
-   * Check if user list is empty
-   * @returns true if empty, false otherwise
-   */
   isUserListEmpty(): boolean {
     return this.users.length === 0;
-  }
-
-  /**
-   * Get employee name by ID
-   * @param employeeId - Employee ID
-   * @returns Employee name or Unknown
-   */
-  getEmployeeName(employeeId: number): string {
-    const employee = this.employees.find(e => e.id === employeeId);
-    return employee ? `${employee.firstName} ${employee.lastName}` : `#${employeeId}`;
-  }
-
-  /**
-   * Track by function for ngFor optimization
-   * @param index - Index of item
-   * @param user - User object
-   * @returns Unique identifier
-   */
-  trackByUserId(index: number, user: User): number {
-    return user.id;
   }
 }

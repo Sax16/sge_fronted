@@ -1,6 +1,5 @@
 /**
  * Utilidades para el formateo de fechas entre el API (ISO 8601) y los inputs del usuario (DD/MM/YYYY)
- * Reutilizable en cualquier formulario de la aplicación.
  */
 export class DateFormatUtil {
   /**

@@ -1,15 +1,15 @@
 <div
-  class="min-h-screen rounded-2xl border border-gray-200 bg-white px-5 py-7 dark:border-gray-800 dark:bg-white/[0.03] xl:px-10 xl:py-12"
+  class="min-h-screen rounded-2xl border border-gray-200 bg-white px-5 py-7 dark:border-gray-800 dark:bg-white/3 xl:px-10 xl:py-12"
 >
   <div class="px-2 pr-14">
     <h4 class="mb-2 text-2xl font-semibold text-gray-800 dark:text-white/90">
-      {{ getFormTitle() }}
+      {{ formTitle }}
     </h4>
     <p class="mb-6 text-sm text-gray-500 dark:text-gray-400 lg:mb-7">
       Complete el siguiente formulario para {{ isEditMode ? 'actualizar el' : 'agregar un nuevo' }} usuario.
     </p>
   </div>
-  <form class="flex flex-col" [formGroup]="userForm">
+  <form class="flex flex-col" [formGroup]="form">
     <div class="px-2 pb-3 flex flex-col gap-5 lg:gap-6">
       <div>
         <div class="flex gap-1 mb-2">
@@ -26,8 +26,8 @@
               [id]="'username'"
               placeholder="Nombre de usuario"
               formControlName="username"
-              [error]="shouldShowError(usernameControl)"
-              [hint]="getUsernameHint()"
+              [error]="shouldShowError(form.get('username')!)"
+              [hint]="getHint('username')"
             />
           </div>
           <div>
@@ -38,8 +38,8 @@
                 [id]="'password'"
                 placeholder="********"
                 formControlName="password"
-                [error]="shouldShowError(passwordControl)"
-                [hint]="getPasswordHint()"
+                [error]="shouldShowError(form.get('password')!)"
+                [hint]="getHint('password')"
               />
               <button
                 type="button"
@@ -121,9 +121,8 @@
       <app-button 
         size="sm" 
         (btnClick)="onSubmit()"
-        [disabled]="isLoading"
       >
-        {{ getSubmitButtonText() }}
+        {{ submitButtonText }}
       </app-button>
     </div>
   </form>

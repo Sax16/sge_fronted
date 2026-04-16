@@ -1,5 +1,5 @@
+import { Component, OnInit, OnDestroy, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { Subject, takeUntil } from 'rxjs';
 import { PageBreadcrumbComponent } from '../../shared/components/common/page-breadcrumb/page-breadcrumb.component';
@@ -8,21 +8,18 @@ import { ConfirmModalComponent } from '../../shared/components/ui/confirm-modal/
 import { UserTableComponent } from './components/user-table/user-table.component';
 import { UserFormComponent } from './components/user-form/user-form.component';
 import { UserDetailComponent } from './components/user-detail/user-detail.component';
-import { UserService } from './services/user.service';
-import { EmployeeService } from '../employees/services/employee.service';
-import { User, CreateUserDto, UpdateUserDto } from './models/user.model';
-import { Employee } from '../employees/models/employee.model';
+import { AlertService } from '../../shared/services/alert.service';
+import { NavigationHistoryState } from '../../shared/models/navigation-history-state.model';
+import { UsersState } from './services/users.state';
+import { UpdateUserDto } from './models/user.model';
 
-/**
- * User View Mode
- * Determines what to display in the component
- */
+
 type UserViewMode = 'list' | 'create' | 'edit' | 'view';
 
 /**
  * Users Component
  * Main container for user management with routing
- * Implements Single Responsibility Principle (SRP) - Orchestrates user management UI
+ * Implements Single Responsibility Principle (SRP) - Orchestrates user management UI delegating logic to UsersState
  */
 @Component({
   selector: 'app-users',
@@ -37,34 +34,21 @@ type UserViewMode = 'list' | 'create' | 'edit' | 'view';
     ConfirmModalComponent,
   ],
   templateUrl: './users.component.html',
-  styles: ``
+  styles: ``,
+  providers: [UsersState]
 })
 export class UsersComponent implements OnInit, OnDestroy {
-  private readonly destroy$ = new Subject<void>();
-  
-  users: User[] = [];
-  employees: Employee[] = [];
-  selectedUser: User | null = null;
-  currentViewMode: UserViewMode = 'list';
-  isLoading = false;
-  
-  // Alert state
-  errorMessage: string | null = null;
-  errorTitle: string = 'Error';
-  
-  // Confirm Modal state
-  isConfirmModalOpen = false;
-  userIdToDelete: number | null = null;
+  public state = inject(UsersState);
+  public alertService = inject(AlertService);
+  private router = inject(Router);
+  private route = inject(ActivatedRoute);
 
-  constructor(
-    private userService: UserService,
-    private employeeService: EmployeeService,
-    private router: Router,
-    private route: ActivatedRoute
-  ) {}
+  private readonly destroy$ = new Subject<void>();
+
+  currentViewMode: UserViewMode = 'list';
 
   ngOnInit(): void {
-    this.loadEmployees();
+    this.state.loadEmployees();
     this.subscribeToRouteChanges();
   }
 
@@ -77,15 +61,29 @@ export class UsersComponent implements OnInit, OnDestroy {
    * Subscribe to route changes to determine view mode
    */
   private subscribeToRouteChanges(): void {
-    // Listen to data changes for view mode
     this.route.data
       .pipe(takeUntil(this.destroy$))
       .subscribe((data) => {
-        const mode = (data['mode'] as UserViewMode) || 'list';
-        this.handleModeChange(mode);
+        this.currentViewMode = (data['mode'] as UserViewMode) || 'list';
+
+        // Check if history.state indicates a forced reload
+        const historyState = history.state as NavigationHistoryState;
+        const willReload = !!historyState?.reloadData;
+
+        if (this.currentViewMode === 'create') {
+          this.state.clearSelection();
+        } else if (this.currentViewMode === 'list') {
+          this.state.clearSelection();
+
+          // Only load if no data and no reload signal coming
+          if (this.state.users().length === 0 && !willReload) {
+            this.state.loadUsers();
+          }
+        }
+
+        this.checkHistoryState(historyState);
       });
 
-    // Listen to param changes for ID updates
     this.route.paramMap
       .pipe(takeUntil(this.destroy$))
       .subscribe((params) => {
@@ -95,298 +93,82 @@ export class UsersComponent implements OnInit, OnDestroy {
             this.handleInvalidUserId();
             return;
           }
-          
+
           const id = Number(idStr);
           if (isNaN(id)) {
             this.handleInvalidUserId();
             return;
           }
-          
-          if (!this.selectedUser || this.selectedUser.id !== id) {
-            this.loadUser(id);
+
+          const currentUser = this.state.selectedUser();
+          if (!currentUser || currentUser.id !== id) {
+            this.state.loadUserById(id);
           }
         }
       });
   }
 
   /**
-   * Handle mode change logic
+   * Check for navigation state passed via Router.
+   * Receives historyState as parameter to avoid reading history.state twice.
    */
-  private handleModeChange(mode: UserViewMode): void {
-    this.currentViewMode = mode;
-    this.clearErrorMessage();
+  private checkHistoryState(historyState: NavigationHistoryState): void {
+    // Process passed alert if exists
+    if (historyState?.alert) {
+      this.alertService.showAlert(historyState.alert.variant, historyState.alert.title, historyState.alert.message);
+    }
 
-    if (mode === 'edit' || mode === 'view') {
-      // Data loading and validation is handled by route.paramMap subscription
-    } else if (mode === 'create') {
-      this.selectedUser = null;
-    } else {
-      // List mode
-      this.selectedUser = null;
-      if (this.users.length === 0) {
-        this.loadUsers();
-      }
+    // Process signal to reload data
+    if (historyState?.reloadData) {
+      this.state.loadUsers(true);
+    }
+
+    // Clean up state so a literal page refresh doesn't replay the alert
+    if (historyState?.alert || historyState?.reloadData) {
+      const cleanState = { ...historyState };
+      delete cleanState.alert;
+      delete cleanState.reloadData;
+      history.replaceState(cleanState, '');
     }
   }
 
-
-
-  /**
-   * Handle invalid user ID
-   */
   private handleInvalidUserId(): void {
-    this.errorMessage = 'ID de usuario inválido';
+    this.alertService.showAlert('error', 'Error', 'ID de usuario inválido');
     this.navigateToList();
   }
 
-  /**
-   * Load user for editing/viewing
-   * @param userId - User ID to load
-   */
-  private loadUser(userId: number): void {
-    this.isLoading = true;
+  // --- Navigation Methods ---
 
-    this.userService
-      .getUserById(userId)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next: (user) => this.handleUserLoaded(user),
-        error: (error) => this.handleUserLoadError(error),
-      });
-  }
-
-  /**
-   * Handle user loaded
-   * @param user - Loaded user
-   */
-  private handleUserLoaded(user: User): void {
-    this.selectedUser = user;
-    this.isLoading = false;
-  }
-  
-  /**
-   * Handle error loading user
-   * @param error - Error object
-   */
-  private handleUserLoadError(error: Error): void {
-    this.errorMessage = 'Error al cargar usuario. Por favor, intente nuevamente.';
-    this.isLoading = false;
-    console.error('Error loading user:', error);
-    this.navigateToList();
-  }
-  
-  /**
-   * Clear error message
-   */
-  private clearErrorMessage(): void {
-    this.errorTitle = 'Error';
-    this.errorMessage = null;
-  }
-
-  /**
-   * Load all users from service
-   */
-  private loadUsers(): void {
-    this.isLoading = true;
-    this.errorMessage = null;
-
-    this.userService
-      .getAllUsers()
-      .pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next: (users) => this.handleUsersLoaded(users),
-        error: (error) => this.handleLoadError(error),
-      });
-  }
-
-  /**
-   * Load all employees for dropdown
-   */
-  private loadEmployees(): void {
-    this.employeeService.getAllEmployees()
-      .pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next: (employees) => {
-          this.employees = employees;
-        },
-        error: (error) => {
-          console.error('Error loading employees:', error);
-        }
-      });
-  }
-
-  /**
-   * Handle successful users load
-   * @param users - Loaded users
-   */
-  private handleUsersLoaded(users: User[]): void {
-    this.users = users;
-    this.isLoading = false;
-  }
-
-  /**
-   * Handle error during users load
-   * @param error - Error object
-   */
-  private handleLoadError(error: Error): void {
-    this.errorMessage = 'Error al cargar usuarios. Por favor, intente nuevamente.';
-    this.isLoading = false;
-    console.error('Error loading users:', error);
-  }
-
-  /**
-   * Navigate to create user page
-   */
   navigateToCreate(): void {
     this.router.navigate(['users', 'create']);
   }
 
-  /**
-   * Navigate to edit user page
-   * @param userId - ID of user to edit
-   */
   navigateToEdit(userId: number): void {
     this.router.navigate(['users', 'edit', userId]);
   }
 
-  /**
-   * Navigate to view user page
-   * @param userId - ID of user to view
-   */
   navigateToView(userId: number): void {
     this.router.navigate(['users', 'view', userId]);
   }
 
-  /**
-   * Navigate to user list
-   */
   navigateToList(): void {
     this.router.navigate(['users']);
   }
 
-  handleNewUserClick(): void {
-    this.navigateToCreate();
-  }
-
-  handleEditUserClick(userId: number): void {
-    this.navigateToEdit(userId);
-  }
-
-  handleViewUserClick(userId: number): void {
-    this.navigateToView(userId);
-  }
-
-  handleUserCreate(userData: CreateUserDto): void {
-    this.createUser(userData);
-  }
+  // --- Handlers ---
 
   handleUserUpdate(userData: UpdateUserDto): void {
-    if (!this.selectedUser) {
-      this.errorMessage = 'No hay usuario seleccionado para actualizar';
+    const currentUser = this.state.selectedUser();
+    if (!currentUser) {
+      this.alertService.showAlert('error', 'Error', 'No hay usuario seleccionado para actualizar');
       return;
     }
-    this.updateUser(this.selectedUser.id, userData);
+    this.state.updateUser(currentUser.id, userData);
   }
 
-  private createUser(userData: CreateUserDto): void {
-    this.isLoading = true;
-
-    this.userService
-      .createUser(userData)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next: () => this.handleUserCreated(),
-        error: (error) => this.handleCreateError(error),
-      });
-  }
-
-  private updateUser(userId: number, userData: UpdateUserDto): void {
-    this.isLoading = true;
-
-    this.userService
-      .updateUser(userId, userData)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next: () => this.handleUserUpdated(),
-        error: (error) => this.handleUpdateError(error),
-      });
-  }
-
-  private handleUserCreated(): void {
-    this.isLoading = false;
-    this.navigateToList();
-  }
-
-  private handleUserUpdated(): void {
-    this.isLoading = false;
-    this.navigateToList();
-  }
-
-  private handleCreateError(error: Error): void {
-    this.errorMessage = 'Error al crear usuario. Por favor, intente nuevamente.';
-    this.isLoading = false;
-    console.error('Error creating user:', error);
-  }
-
-  private handleUpdateError(error: any): void {
-    this.errorMessage = error?.error?.errors[0]?.message || 'Error al actualizar usuario. Por favor, intente nuevamente.';
-    this.errorTitle = error?.error?.detail || 'Error de actualización';
-    this.isLoading = false;
-    console.error('Error updating user:', error);
-  }
-
-  handleUserDelete(userId: number): void {
-    this.userIdToDelete = userId;
-    this.isConfirmModalOpen = true;
-  }
-
-  onConfirmDelete(): void {
-    if (this.userIdToDelete) {
-      this.deleteUser(this.userIdToDelete);
-    }
-    this.closeConfirmModal();
-  }
-
-  onCancelDelete(): void {
-    this.closeConfirmModal();
-  }
-
-  private closeConfirmModal(): void {
-    this.isConfirmModalOpen = false;
-    this.userIdToDelete = null;
-  }
-
-  private deleteUser(userId: number): void {
-    this.isLoading = true;
-
-    this.userService
-      .deleteUser(userId)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next: () => this.handleUserDeleted(userId),
-        error: (error) => this.handleDeleteError(error),
-      });
-  }
-
-  private handleUserDeleted(userId: number): void {
-    this.users = this.users.filter(u => u.id !== userId);
-    this.isLoading = false;
-    this.navigateToList();
-  }
-
-  private handleDeleteError(error: Error): void {
-    this.errorMessage = 'Error al eliminar usuario. Por favor, intente nuevamente.';
-    this.isLoading = false;
-    console.error('Error deleting user:', error);
-  }
-
-  handleFormCancel(): void {
-    this.navigateToList();
-  }
-
-  // View helpers
+  // --- View Helpers ---
   isListView(): boolean { return this.currentViewMode === 'list'; }
   isCreateView(): boolean { return this.currentViewMode === 'create'; }
   isEditView(): boolean { return this.currentViewMode === 'edit'; }
-  isViewView(): boolean { return this.currentViewMode === 'view'; }
+  isDetailView(): boolean { return this.currentViewMode === 'view'; }
 }

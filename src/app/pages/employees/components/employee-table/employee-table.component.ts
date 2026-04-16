@@ -4,7 +4,8 @@ import { BadgeComponent } from '../../../../shared/components/ui/badge/badge.com
 import { AvatarTextComponent } from '../../../../shared/components/ui/avatar/avatar-text.component';
 import { ButtonComponent } from '../../../../shared/components/ui/button/button.component';
 import { Employee } from '../../models/employee.model';
-import { getFullName, getBadgeColor } from '../../../../shared/utils/employee.util';
+import { getFullName } from '../../../../shared/utils/employee.util';
+import { getBadgeColor, getStatusLabel, formatDate } from '../../../../shared/utils/status.util';
 
 @Component({
   selector: 'app-employee-table',
@@ -28,6 +29,8 @@ export class EmployeeTableComponent {
   // Expose shared utils to the template
   readonly getFullName = getFullName;
   readonly getBadgeColor = getBadgeColor;
+  readonly getStatusLabel = getStatusLabel;
+  readonly formatDate = formatDate;
 
   handleNewEmployeeClick(): void {
     this.newEmployee.emit();
@@ -43,18 +46,6 @@ export class EmployeeTableComponent {
 
   handleViewClick(employeeId: number): void {
     this.viewEmployee.emit(employeeId);
-  }
-
-  getStatusLabel(isActive: boolean): 'Activo' | 'Inactivo' {
-    return isActive ? 'Activo' : 'Inactivo';
-  }
-
-  formatDate(date: Date): string {
-    return new Date(date).toLocaleDateString('es-PE', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric',
-    });
   }
 
   isEmployeeListEmpty(): boolean {

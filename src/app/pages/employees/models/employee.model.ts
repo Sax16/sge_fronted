@@ -11,9 +11,16 @@ export type EmployeePosition = 'Docente' | 'Auxiliar' | 'Secretaria' | 'Director
  * All valid employee positions as a runtime constant.
  * Derive positionOptions from this to ensure TypeScript exhaustiveness.
  */
-export const EMPLOYEE_POSITIONS: EmployeePosition[] = [
-  'Docente', 'Auxiliar', 'Secretaria', 'Director',
-  'Subdirector', 'Psicologo', 'Promotor', 'Administrativo', 'Otro',
+export const EMPLOYEE_POSITIONS: {value:EmployeePosition, label:EmployeePosition}[] = [
+  { value: 'Docente', label: 'Docente' },
+  { value: 'Auxiliar', label: 'Auxiliar' },
+  { value: 'Secretaria', label: 'Secretaria' },
+  { value: 'Director', label: 'Director' },
+  { value: 'Subdirector', label: 'Subdirector' },
+  { value: 'Psicologo', label: 'Psicologo' },
+  { value: 'Promotor', label: 'Promotor' },
+  { value: 'Administrativo', label: 'Administrativo' },
+  { value: 'Otro', label: 'Otro' },
 ];
 
 // Main Employee interface with strict types

@@ -14,6 +14,7 @@ import { DateValidators } from '../../../../shared/validators/date.validator';
 import { FormValidationUtil } from '../../../../shared/utils/form-validation.util';
 import { DateFormatUtil } from '../../../../shared/utils/date-format.util';
 import { StringSanitizeUtil } from '../../../../shared/utils/string-sanitize.util';
+import { STATUS_OPTIONS, GENDER_OPTIONS } from '../../../../shared/constants/status-options.constant';
 
 /**
  * Employee Form Component
@@ -43,17 +44,11 @@ export class EmployeeFormComponent implements OnInit, OnChanges {
   @Output() cancelForm = new EventEmitter<void>();
 
   // Derived from EMPLOYEE_POSITIONS to guarantee TypeScript exhaustiveness
-  readonly positionOptions: SelectOption[] = EMPLOYEE_POSITIONS.map(p => ({ value: p, label: p }));
+  readonly positionOptions: SelectOption[] = EMPLOYEE_POSITIONS;
 
-  readonly statusOptions = [
-    { value: true, label: 'Activo' },
-    { value: false, label: 'Inactivo' },
-  ];
+  readonly statusOptions: SelectOption[] = STATUS_OPTIONS;
 
-  readonly genderOptions: SelectOption[] = [
-    { value: 'Masculino', label: 'Masculino' },
-    { value: 'Femenino', label: 'Femenino' },
-  ];
+  readonly genderOptions: SelectOption[] = GENDER_OPTIONS;
 
   form!: FormGroup;
   isSubmitted = false;

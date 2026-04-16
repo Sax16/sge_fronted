@@ -4,7 +4,8 @@ import { Employee } from '../../models/employee.model';
 import { ButtonComponent } from '../../../../shared/components/ui/button/button.component';
 import { BadgeComponent } from '../../../../shared/components/ui/badge/badge.component';
 import { EmployeePaymentHistoryComponent } from '../employee-payment-history/employee-payment-history.component';
-import { getFullName, getBadgeColor } from '../../../../shared/utils/employee.util';
+import { getFullName } from '../../../../shared/utils/employee.util';
+import { getBadgeColor } from '../../../../shared/utils/status.util';
 
 /**
  * Employee Detail Component

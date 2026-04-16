@@ -8,7 +8,8 @@ import { ConfirmModalComponent } from '../../shared/components/ui/confirm-modal/
 import { EmployeeTableComponent } from './components/employee-table/employee-table.component';
 import { EmployeeFormComponent } from './components/employee-form/employee-form.component';
 import { EmployeeDetailComponent } from './components/employee-detail/employee-detail.component';
-import { AlertService, AlertVariant } from '../../shared/services/alert.service';
+import { AlertService } from '../../shared/services/alert.service';
+import { NavigationHistoryState } from '../../shared/models/navigation-history-state.model';
 import { EmployeesState } from './services/employees.state';
 import { UpdateEmployeeDto } from './models/employee.model';
 
@@ -17,19 +18,6 @@ import { UpdateEmployeeDto } from './models/employee.model';
  * Determines what to display in the component
  */
 type EmployeeViewMode = 'list' | 'create' | 'edit' | 'view';
-
-/**
- * Shape of the navigation state passed via Router navigate({ state: ... })
- * All fields are optional since history.state can carry anything.
- */
-interface NavigationHistoryState {
-  alert?: {
-    variant: AlertVariant;
-    title: string;
-    message: string;
-  };
-  reloadData?: boolean;
-}
 
 /**
  * Employees Component
