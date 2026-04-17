@@ -1,10 +1,11 @@
-import { Injectable, inject, signal } from '@angular/core';
+import { Injectable, inject, signal, computed } from '@angular/core';
 import { Router } from '@angular/router';
 import { UserService } from './user.service';
 import { EmployeeService } from '../../employees/services/employee.service';
 import { User, CreateUserDto, UpdateUserDto } from '../models/user.model';
 import { Employee } from '../../employees/models/employee.model';
 import { AlertService } from '../../../shared/services/alert.service';
+import { getFullName } from '../../../shared/utils/employee.util';
 
 /**
  * Users State Service
@@ -22,6 +23,18 @@ export class UsersState {
   readonly users = signal<User[]>([]);
   readonly employees = signal<Employee[]>([]);
   readonly selectedUser = signal<User | null>(null);
+  readonly selectedEmployee = computed<Employee | null>(() => {
+    const user = this.selectedUser();
+    if (!user) return null;
+    return this.employees().find(e => e.id === user.employeeId) ?? null;
+  });
+
+  readonly selectedEmployeeFullName = computed<string>(() => {
+    const employee = this.selectedEmployee();
+    if (!employee) return '';
+    return getFullName(employee);
+  });
+
   readonly isLoading = signal<boolean>(false);
 
   // Estado Local (UI - Modal)

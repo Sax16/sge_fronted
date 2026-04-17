@@ -35,6 +35,7 @@ export class UserFormComponent implements OnInit, OnChanges {
   @Input() user: User | null = null;
   @Input() isEditMode = false;
   @Input() employees: Employee[] = [];
+  @Input() employeeFullName = '';
   
   @Output() submitForm = new EventEmitter<CreateUserDto | UpdateUserDto>();
   @Output() cancelForm = new EventEmitter<void>();
@@ -65,6 +66,12 @@ export class UserFormComponent implements OnInit, OnChanges {
       value: String(emp.id),
       label: `${emp.firstName} ${emp.lastName}`
     }));
+  }
+
+  get employeePlaceholder(): string {
+    return this.isEditMode && this.employeeFullName
+      ? this.employeeFullName
+      : 'Seleccionar Empleado';
   }
 
   onSubmit(): void {
@@ -129,11 +136,18 @@ export class UserFormComponent implements OnInit, OnChanges {
       isActive: user.isActive,
     });
     
-    // In edit mode, password is optional — only validate format if entered
     if (this.isEditMode) {
+      // In edit mode, password is optional — only validate format if entered
       this.form.get('password')?.clearValidators();
       this.form.get('password')?.setValidators([UserValidators.password()]);
       this.form.get('password')?.updateValueAndValidity();
+
+      // Employee cannot be changed via API — disable control and show name as placeholder
+      const employeeCtrl = this.form.get('employeeId');
+      employeeCtrl?.setValue(null);
+      employeeCtrl?.clearValidators();
+      employeeCtrl?.updateValueAndValidity();
+      employeeCtrl?.disable();
     }
   }
 
@@ -155,7 +169,6 @@ export class UserFormComponent implements OnInit, OnChanges {
     const dto: UpdateUserDto = {
       username: formValue.username.trim(),
       role: formValue.role,
-      employeeId: Number(formValue.employeeId),
       isActive: formValue.isActive,
     };
 

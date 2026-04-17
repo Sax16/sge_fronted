@@ -1,10 +1,8 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, Output, ChangeDetectionStrategy } from '@angular/core';
 import { User } from '../../models/user.model';
-import { Employee } from '../../../employees/models/employee.model';
 import { ButtonComponent } from '../../../../shared/components/ui/button/button.component';
 import { BadgeComponent } from '../../../../shared/components/ui/badge/badge.component';
-import { getFullName } from '../../../../shared/utils/employee.util';
 import { getBadgeColor, getStatusLabel } from '../../../../shared/utils/status.util';
 
 @Component({
@@ -21,7 +19,7 @@ import { getBadgeColor, getStatusLabel } from '../../../../shared/utils/status.u
 export class UserDetailComponent {
 
   @Input() user: User | null = null;
-  @Input() employees: Employee[] = [];
+  @Input() employeeFullName: string | null = null;
   @Output() editUser = new EventEmitter<number>();
 
   // Expose shared utils to the template
@@ -30,13 +28,5 @@ export class UserDetailComponent {
 
   handleEditClick(userId: number): void {
     this.editUser.emit(userId);
-  }
-
-  getEmployeeName(employeeId: number): string {
-    let employee = this.employees.find(employee => employee.id === employeeId);
-    if (!employee) {
-      return '#Error';
-    }
-    return getFullName(employee);
   }
 }

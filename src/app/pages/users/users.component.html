@@ -47,7 +47,7 @@
       <app-user-form 
         [user]="user"
         [isEditMode]="true"
-        [employees]="state.employees()"
+        [employeeFullName]="state.selectedEmployeeFullName()"
         (submitForm)="handleUserUpdate($any($event))"
         (cancelForm)="navigateToList()"
       />
@@ -59,7 +59,7 @@
     @if (state.selectedUser(); as user) {
       <app-user-detail 
         [user]="user"
-        [employees]="state.employees()"
+        [employeeFullName]="state.selectedEmployeeFullName()"
         (editUser)="navigateToEdit($event)"
       />
     }

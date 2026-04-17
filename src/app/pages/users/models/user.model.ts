@@ -32,7 +32,6 @@ export interface UpdateUserDto {
   username?: string;
   password?: string;
   isActive?: boolean;
-  employeeId?: number;
   role?: Role;
 }
 

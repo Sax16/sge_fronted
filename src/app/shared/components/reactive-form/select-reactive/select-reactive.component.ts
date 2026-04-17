@@ -86,6 +86,11 @@ export class SelectReactiveComponent implements ControlValueAccessor {
       classes.push(this.className);
     }
 
+    if (this.disabled) {
+      classes.push('cursor-not-allowed opacity-60 bg-gray-100 dark:bg-gray-800 border-gray-200 text-gray-500 dark:text-gray-400 dark:border-gray-700');
+      return classes;
+    }
+
     if (this.error) {
       classes.push('text-gray-400 dark:text-white/30 border-error-500 focus:border-error-300 focus:ring-error-500/20 dark:text-error-400 dark:border-error-500 dark:focus:border-error-800');
     } else if (this.success) {
