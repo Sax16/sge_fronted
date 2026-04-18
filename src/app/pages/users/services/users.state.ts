@@ -6,6 +6,7 @@ import { User, CreateUserDto, UpdateUserDto } from '../models/user.model';
 import { Employee } from '../../employees/models/employee.model';
 import { AlertService } from '../../../shared/services/alert.service';
 import { getFullName } from '../../../shared/utils/employee.util';
+import { parseApiError } from '../../../shared/utils/api-error.util';
 
 /**
  * Users State Service
@@ -52,7 +53,8 @@ export class UsersState {
         this.isLoading.set(false);
       },
       error: (err) => {
-        this.alertService.showAlert('error', 'Error', 'Error al cargar usuarios. Por favor, intente nuevamente.');
+        const errorMsg = parseApiError(err, 'Error al cargar usuarios. Por favor, intente nuevamente.');
+        this.alertService.showAlert('error', 'Error al cargar', errorMsg);
         this.isLoading.set(false);
         console.error('Error loading users:', err);
       }
@@ -67,7 +69,8 @@ export class UsersState {
         this.isLoading.set(false);
       },
       error: (err) => {
-        this.alertService.showAlert('error', 'Error', 'Error al cargar usuario. Por favor, intente nuevamente.');
+        const errorMsg = parseApiError(err, 'Error al cargar usuario. Por favor, intente nuevamente.');
+        this.alertService.showAlert('error', 'Error al cargar', errorMsg);
         this.isLoading.set(false);
         console.error('Error loading user:', err);
         this.router.navigate(['/users']);
@@ -95,8 +98,9 @@ export class UsersState {
         this.router.navigate(['/users'], { state: { reloadData: true } });
       },
       error: (err) => {
-        const errorMsg = err?.error?.detail || 'Error al crear usuario. Por favor, intente nuevamente.';
+        const errorMsg = parseApiError(err, 'Error al crear usuario. Por favor, intente nuevamente.');
         this.alertService.showAlert('error', 'Error al crear', errorMsg);
+        console.log(err);
         window.scrollTo({ top: 0, behavior: 'smooth' });
         this.isLoading.set(false);
       }
@@ -112,9 +116,9 @@ export class UsersState {
         this.router.navigate(['/users'], { state: { reloadData: true } });
       },
       error: (err) => {
-        const errorMsg = err?.error?.errors?.[0]?.message || 'Error al actualizar usuario. Por favor, intente nuevamente.';
-        const errorTitle = err?.error?.detail || 'Error de actualización';
-        this.alertService.showAlert('error', errorTitle, errorMsg);
+        const errorMsg = parseApiError(err, 'Error al actualizar usuario. Por favor, intente nuevamente.');
+        this.alertService.showAlert('error', 'Error al actualizar', errorMsg);
+        console.log(err);
         window.scrollTo({ top: 0, behavior: 'smooth' });
         this.isLoading.set(false);
       }
@@ -144,7 +148,8 @@ export class UsersState {
         this.closeConfirmModal();
       },
       error: (err) => {
-        this.alertService.showAlert('error', 'Error', 'Error al eliminar usuario. Por favor, intente nuevamente.');
+        const errorMsg = parseApiError(err, 'Error al eliminar usuario. Por favor, intente nuevamente.');
+        this.alertService.showAlert('error', 'Error al eliminar', errorMsg);
         this.isLoading.set(false);
         this.closeConfirmModal();
         console.error('Error deleting user:', err);

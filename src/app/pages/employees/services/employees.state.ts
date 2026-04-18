@@ -3,6 +3,7 @@ import { EmployeeService } from './employee.service';
 import { Employee, CreateEmployeeDto, UpdateEmployeeDto } from '../models/employee.model';
 import { AlertService } from '../../../shared/services/alert.service';
 import { Router } from '@angular/router';
+import { parseApiError } from '../../../shared/utils/api-error.util';
 
 /**
  * Employees State Service
@@ -35,7 +36,8 @@ export class EmployeesState {
         this.isLoading.set(false);
       },
       error: (err) => {
-        this.alertService.showAlert('error', 'Error', 'Error al cargar empleados. Por favor, intente nuevamente.');
+        const errorMsg = parseApiError(err, 'Error al cargar empleados. Por favor, intente nuevamente.');
+        this.alertService.showAlert('error', 'Error al cargar', errorMsg);
         this.isLoading.set(false);
         console.error('Error loading employees:', err);
       }
@@ -50,8 +52,8 @@ export class EmployeesState {
         this.isLoading.set(false);
       },
       error: (err) => {
-        // TODO: Log error detail once the API error structure is defined (e.g. err?.error?.detail)
-        this.alertService.showAlert('error', 'Error', 'Error al cargar empleado. Por favor, intente nuevamente.');
+        const errorMsg = parseApiError(err, 'Error al cargar empleado. Por favor, intente nuevamente.');
+        this.alertService.showAlert('error', 'Error al cargar', errorMsg);
         this.isLoading.set(false);
         this.router.navigate(['/employees']);
       }
@@ -67,8 +69,9 @@ export class EmployeesState {
         this.router.navigate(['/employees'], { state: { reloadData: true } });
       },
       error: (err) => {
-        const errorMsg = err?.error?.detail || 'Error al crear empleado. Por favor, intente nuevamente.';
+        const errorMsg = parseApiError(err, 'Error al crear empleado. Por favor, intente nuevamente.');
         this.alertService.showAlert('error', 'Error al crear', errorMsg);
+        console.error(err)
         window.scrollTo({ top: 0, behavior: 'smooth' });
         this.isLoading.set(false);
       }
@@ -84,9 +87,9 @@ export class EmployeesState {
         this.router.navigate(['/employees'], { state: { reloadData: true } });
       },
       error: (err) => {
-        const errorMsg = err?.error?.errors?.[0]?.message || 'Error al actualizar empleado. Por favor, intente nuevamente.';
-        const errorTitle = err?.error?.detail || 'Error de actualización';
-        this.alertService.showAlert('error', errorTitle, errorMsg);
+        const errorMsg = parseApiError(err, 'Error al actualizar empleado. Por favor, intente nuevamente.');
+        this.alertService.showAlert('error', 'Error al actualizar', errorMsg);
+        console.log(err)
         window.scrollTo({ top: 0, behavior: 'smooth' });
         this.isLoading.set(false);
       }
@@ -116,7 +119,8 @@ export class EmployeesState {
         this.closeConfirmModal();
       },
       error: (err) => {
-        this.alertService.showAlert('error', 'Error', 'Error al eliminar empleado. Por favor, intente nuevamente.');
+        const errorMsg = parseApiError(err, 'Error al eliminar empleado. Por favor, intente nuevamente.');
+        this.alertService.showAlert('error', 'Error al eliminar', errorMsg);
         this.isLoading.set(false);
         this.closeConfirmModal();
         console.error('Error deleting employee:', err);
