@@ -62,7 +62,7 @@ export class UserFormComponent implements OnInit, OnChanges {
   }
 
   get employeeOptions(): SelectOption[] {
-    return this.employees.map(emp => ({
+    return this.employees.filter(emp => emp.isActive).map(emp => ({
       value: String(emp.id),
       label: `${emp.firstName} ${emp.lastName}`
     }));
