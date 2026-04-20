@@ -8,7 +8,7 @@
       [ngClass]="selectClasses"
     >
       <!-- Placeholder -->
-      <option [ngValue]="null" disabled>
+      <option [ngValue]="null" [disabled]="!allowClear">
         {{ placeholder }}
       </option>
 

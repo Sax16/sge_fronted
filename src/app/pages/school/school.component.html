@@ -1,0 +1,221 @@
+<div>
+  <app-page-breadcrumb [pageTitle]="'Datos de la Institución'" />
+
+  @if (alertService.alert(); as alert) {
+    <div class="mb-4">
+      <app-alert
+        [variant]="alert.variant"
+        [title]="alert.title"
+        [message]="alert.message"
+        [showLink]="false"
+        [showCloseButton]="true"
+        (alertClose)="alertService.clearAlert()"
+      />
+    </div>
+  }
+
+  @if (isLoading) {
+    <div class="flex items-center justify-center p-8">
+      <div class="text-gray-500 dark:text-gray-400">Cargando...</div>
+    </div>
+  } @else {
+    <div class="h-fit rounded-2xl border border-gray-200 bg-white px-5 py-7 dark:border-gray-800 dark:bg-white/3 xl:px-10 xl:py-12">
+      <div class="px-2 pr-14">
+        <h4 class="mb-2 text-2xl font-semibold text-gray-800 dark:text-white/90">
+          Perfil de Institución
+        </h4>
+        <p class="mb-6 text-sm text-gray-500 dark:text-gray-400 lg:mb-7">
+          Actualice los datos de registro de la institución.
+        </p>
+      </div>
+
+      <form class="flex flex-col" [formGroup]="form">
+        <div class="px-2 pb-3 flex flex-col gap-5 lg:gap-6">
+          <!-- General Información -->
+          <div>
+            <div class="flex gap-1 mb-2">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-gray-500 dark:text-gray-400 -ml-1">
+                <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                <path d="M19 4v16H5V4z" />
+                <path d="M9 12v-2" />
+                <path d="M15 12v-2" />
+                <path d="M9 16v-2" />
+                <path d="M15 16v-2" />
+                <path d="M9 8v-2" />
+                <path d="M15 8v-2" />
+              </svg>
+              <h5 class="text-lg font-medium text-gray-800 dark:text-white/90">
+                Información General
+              </h5>
+            </div>
+            <div class="grid grid-cols-1 gap-x-6 gap-y-5 md:grid-cols-2">
+              <div>
+                <app-label for="companyName">Razón Social <span class="text-error-500">*</span></app-label>
+                <app-input-field-reactive
+                  type="text"
+                  [id]="'companyName'"
+                  placeholder="Razón Social"
+                  formControlName="companyName"
+                  [error]="shouldShowError(form.get('companyName')!)"
+                  [hint]="getHint('companyName')"
+                />
+              </div>
+              <div>
+                <app-label for="businessName">Nombre Comercial <span class="text-error-500">*</span></app-label>
+                <app-input-field-reactive
+                  type="text"
+                  [id]="'businessName'"
+                  placeholder="Nombre Comercial"
+                  formControlName="businessName"
+                  [error]="shouldShowError(form.get('businessName')!)"
+                  [hint]="getHint('businessName')"
+                />
+              </div>
+              <div>
+                <app-label for="ruc">RUC <span class="text-error-500">*</span></app-label>
+                <app-input-field-reactive
+                  type="text"
+                  [id]="'ruc'"
+                  placeholder="RUC"
+                  formControlName="ruc"
+                  [error]="shouldShowError(form.get('ruc')!)"
+                  [hint]="getHint('ruc')"
+                />
+              </div>
+              <div>
+                <app-label for="management">Gestión <span class="text-error-500">*</span></app-label>
+                <app-select-reactive
+                  [options]="managementOptions"
+                  [id]="'management'"
+                  placeholder="Seleccionar Gestión"
+                  formControlName="management"
+                  [error]="shouldShowError(form.get('management')!)"
+                  [hint]="getHint('management')"
+                ></app-select-reactive>
+              </div>
+            </div>
+          </div>
+
+          <!-- Contacto Información -->
+          <div>
+            <div class="flex gap-1 mb-2">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-gray-500 dark:text-gray-400 -ml-1">
+                <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                <path d="M5 4h4l2 5l-2.5 1.5a11 11 0 0 0 5 5l1.5 -2.5l5 2v4a2 2 0 0 1 -2 2a16 16 0 0 1 -15 -15a2 2 0 0 1 2 -2" />
+              </svg>
+              <h5 class="text-lg font-medium text-gray-800 dark:text-white/90">
+                Contacto y Dirección
+              </h5>
+            </div>
+            <div class="grid grid-cols-1 gap-x-6 gap-y-5 md:grid-cols-2">
+              <div>
+                <app-label for="address">Dirección Fiscal <span class="text-error-500">*</span></app-label>
+                <app-input-field-reactive
+                  type="text"
+                  [id]="'address'"
+                  placeholder="Dirección Fiscal"
+                  formControlName="address"
+                  [error]="shouldShowError(form.get('address')!)"
+                  [hint]="getHint('address')"
+                />
+              </div>
+              <div>
+                <app-label for="email">Correo Electrónico <span class="text-error-500">*</span></app-label>
+                <app-input-field-reactive
+                  type="email"
+                  [id]="'email'"
+                  placeholder="correo@ejemplo.com"
+                  formControlName="email"
+                  [error]="shouldShowError(form.get('email')!)"
+                  [hint]="getHint('email')"
+                />
+              </div>
+              <div>
+                <app-label for="phoneNumber">Teléfono <span class="text-error-500">*</span></app-label>
+                <app-input-field-reactive
+                  type="text"
+                  [id]="'phoneNumber'"
+                  placeholder="+51 987654321"
+                  formControlName="phoneNumber"
+                  [error]="shouldShowError(form.get('phoneNumber')!)"
+                  [hint]="getHint('phoneNumber')"
+                />
+              </div>
+            </div>
+          </div>
+
+          <!-- Información Educativa -->
+          <div>
+            <div class="flex gap-1 mb-2">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-gray-500 dark:text-gray-400 -ml-1">
+                <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                <path d="M22 9l-10 -4l-10 4l10 4l10 -4v6" />
+                <path d="M6 10.6v5.4a6 3 0 0 0 12 0v-5.4" />
+              </svg>
+              <h5 class="text-lg font-medium text-gray-800 dark:text-white/90">
+                Administración Educativa
+              </h5>
+            </div>
+            <div class="grid grid-cols-1 gap-x-6 gap-y-5 md:grid-cols-2">
+              <div>
+                <app-label for="dre">DRE</app-label>
+                <app-input-field-reactive
+                  type="text"
+                  [id]="'dre'"
+                  placeholder="DRE (Opcional)"
+                  formControlName="dre"
+                  [error]="shouldShowError(form.get('dre')!)"
+                  [hint]="getHint('dre')"
+                />
+              </div>
+              <div>
+                <app-label for="ugel">UGEL</app-label>
+                <app-select-reactive
+                  [options]="ugelOptions"
+                  [id]="'ugel'"
+                  placeholder="Ninguna (Opcional)"
+                  formControlName="ugel"
+                  [allowClear]="true"
+                  [error]="shouldShowError(form.get('ugel')!)"
+                  [hint]="getHint('ugel')"
+                ></app-select-reactive>
+              </div>
+              <div>
+                <app-label for="headmasterId">Director(a) <span class="text-error-500">*</span></app-label>
+                <app-select-reactive
+                  [options]="headmasterOptions"
+                  [id]="'headmasterId'"
+                  placeholder="Seleccionar Director(a)"
+                  formControlName="headmasterId"
+                  [error]="shouldShowError(form.get('headmasterId')!)"
+                  [hint]="getHint('headmasterId')"
+                ></app-select-reactive>
+              </div>
+              <div>
+                <app-label for="deputyDirectorId">Subdirector(a)</app-label>
+                <app-select-reactive
+                  [options]="deputyDirectorOptions"
+                  [id]="'deputyDirectorId'"
+                  placeholder="Ninguno (Opcional)"
+                  formControlName="deputyDirectorId"
+                  [allowClear]="true"
+                  [error]="shouldShowError(form.get('deputyDirectorId')!)"
+                  [hint]="getHint('deputyDirectorId')"
+                ></app-select-reactive>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="flex items-center gap-3 px-2 mt-6 justify-end">
+          <app-button 
+            size="sm" 
+            (btnClick)="onSubmit()"
+          >
+            Actualizar
+          </app-button>
+        </div>
+      </form>
+    </div>
+  }
+</div>

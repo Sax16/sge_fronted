@@ -86,7 +86,7 @@ export interface EmployeeFormData {
   isActive: boolean;
 }
 
-// Validation result
+// TODO: Delete this interfaces
 export interface ValidationResult {
   isValid: boolean;
   errors: ValidationError[];

@@ -22,6 +22,7 @@ import { SignUpComponent } from './pages/auth-pages/sign-up/sign-up.component';
 import { CalenderComponent } from './pages/calender/calender.component';
 import { UsersComponent } from './pages/users/users.component';
 import { EmployeesComponent } from './pages/employees/employees.component';
+import { SchoolComponent } from './pages/school/school.component';
 
 export const routes: Routes = [
   {
@@ -108,6 +109,13 @@ export const routes: Routes = [
         path: 'videos',
         component: VideosComponent,
         title: 'Angular Videos Dashboard | TailAdmin - Angular Admin Dashboard Template'
+      },
+      {
+        path: 'school',
+        canActivate: [roleGuard],
+        data: { breadcrumb: 'Datos de la Institución', roles: ['SUPER_ADMIN'] },
+        component: SchoolComponent,
+        title: 'Datos Institucionales | ELOHIM SGE',
       },
       {
         path: 'users',

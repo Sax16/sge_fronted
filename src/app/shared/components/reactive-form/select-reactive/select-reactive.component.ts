@@ -3,7 +3,7 @@ import { Component, Input, forwardRef } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR, FormsModule } from '@angular/forms';
 
 export interface Option {
-  value: string | boolean;
+  value: string | boolean | number;
   label: string;
 }
 
@@ -31,6 +31,7 @@ export class SelectReactiveComponent implements ControlValueAccessor {
   @Input() error = false;
   @Input() success = false;
   @Input() hint?: string;
+  @Input() allowClear = false;
 
   value: any = null;
   disabled = false;
