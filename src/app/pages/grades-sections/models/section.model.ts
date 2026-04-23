@@ -3,7 +3,6 @@ export interface Section {
   name: string;
   tag: string;
   gradeId: number;
-  updatedAt: string;
 }
 
 export interface SectionCreate extends Omit<Section, 'updatedAt'> {}
