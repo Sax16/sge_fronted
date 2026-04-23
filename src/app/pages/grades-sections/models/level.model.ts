@@ -1,6 +1,6 @@
 export enum LevelAcademicType {
   REGULAR = 'Regular',
-  EXTRAORDINARIO = 'Extraordinario',
+  EXTRAORDINARIA = 'Extraordinaria',
 }
 
 export interface Level {
