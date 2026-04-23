@@ -23,6 +23,7 @@ import { CalenderComponent } from './pages/calender/calender.component';
 import { UsersComponent } from './pages/users/users.component';
 import { EmployeesComponent } from './pages/employees/employees.component';
 import { SchoolComponent } from './pages/school/school.component';
+import { GradesSectionsComponent } from './pages/grades-sections/grades-sections.component';
 
 export const routes: Routes = [
   {
@@ -109,6 +110,17 @@ export const routes: Routes = [
         path: 'videos',
         component: VideosComponent,
         title: 'Angular Videos Dashboard | TailAdmin - Angular Admin Dashboard Template'
+      },
+      {
+        path: 'grades-sections',
+        children: [
+          {
+            path: '',
+            component: GradesSectionsComponent,
+            title: 'Grados y Secciones | ELOHIM SGE',
+            data: { breadcrumb: 'Grados y Secciones' },
+          }
+        ]
       },
       {
         path: 'school',
