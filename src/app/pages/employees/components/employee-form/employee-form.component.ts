@@ -1,17 +1,18 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, Output, OnInit, OnChanges, SimpleChanges, ChangeDetectionStrategy } from '@angular/core';
-import { FormControl, FormGroup, ReactiveFormsModule, Validators, AbstractControl } from '@angular/forms';
+import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { LabelComponent } from '../../../../shared/components/form/label/label.component';
 import { ButtonComponent } from '../../../../shared/components/ui/button/button.component';
 import { InputFieldReactiveComponent } from '../../../../shared/components/reactive-form/input/input-field-reactive.component';
 import { DatePickerReactiveComponent } from '../../../../shared/components/reactive-form/date-picker-reactive/date-picker-reactive.component';
 import { SelectReactiveComponent } from '../../../../shared/components/reactive-form/select-reactive/select-reactive.component';
 import { SelectOption } from '../../../../shared/models/select-option.model';
-import { CreateEmployeeDto, UpdateEmployeeDto, Employee, EmployeeFormData, Gender, EmployeePosition, EMPLOYEE_POSITIONS } from '../../models/employee.model';
+import { CreateEmployeeDto, UpdateEmployeeDto, Employee, EmployeeFormData, EmployeePosition, EMPLOYEE_POSITIONS } from '../../models/employee.model';
+import { Gender } from '../../../../shared/models/person.model';
 import { DocumentValidators } from '../../../../shared/validators/document.validator';
 import { ContactValidators } from '../../../../shared/validators/contact.validator';
 import { DateValidators } from '../../../../shared/validators/date.validator';
-import { FormValidationUtil } from '../../../../shared/utils/form-validation.util';
+import { FormErrorHelper } from '../../../../shared/utils/form-error.helper';
 import { DateFormatUtil } from '../../../../shared/utils/date-format.util';
 import { StringSanitizeUtil } from '../../../../shared/utils/string-sanitize.util';
 import { STATUS_OPTIONS, GENDER_OPTIONS } from '../../../../shared/constants/status-options.constant';
@@ -51,10 +52,12 @@ export class EmployeeFormComponent implements OnInit, OnChanges {
   readonly genderOptions: SelectOption[] = GENDER_OPTIONS;
 
   form!: FormGroup;
+  formErrors!: FormErrorHelper;
   isSubmitted = false;
 
   ngOnInit(): void {
     this.form = this.buildForm();
+    this.formErrors = new FormErrorHelper(this.form, () => this.isSubmitted);
     if (this.employee) {
       this.populateForm(this.employee);
     }
@@ -83,19 +86,6 @@ export class EmployeeFormComponent implements OnInit, OnChanges {
     this.cancelForm.emit();
   }
 
-  /**
-   * Returns whether a control should show its error state.
-   * Reusable from template: shouldShowError(form.get('dni')!)
-   */
-  shouldShowError(control: AbstractControl): boolean {
-    return control.invalid && (control.touched || this.isSubmitted);
-  }
-
-  getHint(controlName: string): string | undefined {
-    const control = this.form.get(controlName);
-    if (!control || !this.shouldShowError(control)) return undefined;
-    return FormValidationUtil.getErrorMessage(controlName, control.errors);
-  }
 
   get formTitle(): string {
     return this.isEditMode ? 'Editar Empleado' : 'Registrar Nuevo Empleado';

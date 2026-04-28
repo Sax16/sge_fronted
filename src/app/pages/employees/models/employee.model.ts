@@ -1,12 +1,7 @@
-/**
- * Employee Model with strict typing
- * Represents an employee entity with all required and optional fields
- */
+import { Gender } from '../../../shared/models/person.model';
 
 // Type aliases for better readability and type safety
-export type Gender = 'Masculino' | 'Femenino';
 export type EmployeePosition = 'Docente' | 'Auxiliar' | 'Secretaria' | 'Director' | 'Subdirector' | 'Psicologo' | 'Promotor' | 'Administrativo' | 'Otro';
-
 /**
  * All valid employee positions as a runtime constant.
  * Derive positionOptions from this to ensure TypeScript exhaustiveness.

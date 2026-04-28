@@ -43,8 +43,8 @@
               [id]="'firstName'"
               placeholder="Nombres"
               formControlName="firstName"
-              [error]="shouldShowError(form.get('firstName')!)"
-              [hint]="getHint('firstName')"
+              [error]="formErrors.shouldShowError('firstName')"
+              [hint]="formErrors.getHint('firstName')"
             />
           </div>
           <div>
@@ -54,8 +54,8 @@
               [id]="'lastName'"
               placeholder="Apellidos"
               formControlName="lastName"
-              [error]="shouldShowError(form.get('lastName')!)"
-              [hint]="getHint('lastName')"
+              [error]="formErrors.shouldShowError('lastName')"
+              [hint]="formErrors.getHint('lastName')"
             />
           </div>
           <div>
@@ -65,8 +65,8 @@
               [id]="'dni'"
               placeholder="DNI"
               formControlName="dni"
-              [error]="shouldShowError(form.get('dni')!)"
-              [hint]="getHint('dni')"
+              [error]="formErrors.shouldShowError('dni')"
+              [hint]="formErrors.getHint('dni')"
             />
           </div>
           <div>
@@ -76,8 +76,8 @@
               [id]="'ruc'"
               placeholder="RUC (Opcional)"
               formControlName="ruc"
-              [error]="shouldShowError(form.get('ruc')!)"
-              [hint]="getHint('ruc')"
+              [error]="formErrors.shouldShowError('ruc')"
+              [hint]="formErrors.getHint('ruc')"
             />
           </div>
           <div>
@@ -87,8 +87,8 @@
               [id]="'gender'"
               placeholder="Seleccionar Género"
               formControlName="gender"
-              [error]="shouldShowError(form.get('gender')!)"
-              [hint]="getHint('gender')"
+              [error]="formErrors.shouldShowError('gender')"
+              [hint]="formErrors.getHint('gender')"
             ></app-select-reactive>
           </div>
           <div>
@@ -106,8 +106,8 @@
               label="Fecha de Nacimiento"
               placeholder="Seleccionar fecha"
               formControlName="birthDate"
-              [error]="shouldShowError(form.get('birthDate')!)"
-              [hint]="getHint('birthDate')"
+              [error]="formErrors.shouldShowError('birthDate')"
+              [hint]="formErrors.getHint('birthDate')"
             />
           </div>
         </div>
@@ -144,8 +144,8 @@
               placeholder="+51 987654321"
               formControlName="phoneNumber"
               autocomplete="tel"
-              [error]="shouldShowError(form.get('phoneNumber')!)"
-              [hint]="getHint('phoneNumber')"
+              [error]="formErrors.shouldShowError('phoneNumber')"
+              [hint]="formErrors.getHint('phoneNumber')"
             />
           </div>
           <div>
@@ -155,8 +155,8 @@
               [id]="'email'"
               placeholder="correo@ejemplo.com"
               formControlName="email"
-              [error]="shouldShowError(form.get('email')!)"
-              [hint]="getHint('email')"
+              [error]="formErrors.shouldShowError('email')"
+              [hint]="formErrors.getHint('email')"
             />
           </div>
         </div>
@@ -195,8 +195,8 @@
               [id]="'position'"
               placeholder="Seleccionar Responsabilidad"
               formControlName="position"
-              [error]="shouldShowError(form.get('position')!)"
-              [hint]="getHint('position')"
+              [error]="formErrors.shouldShowError('position')"
+              [hint]="formErrors.getHint('position')"
             ></app-select-reactive>
           </div>
           <div>
@@ -206,8 +206,8 @@
               [id]="'isActive'"
               placeholder="Seleccionar Estado"
               formControlName="isActive"
-              [error]="shouldShowError(form.get('isActive')!)"
-              [hint]="getHint('isActive')"
+              [error]="formErrors.shouldShowError('isActive')"
+              [hint]="formErrors.getHint('isActive')"
             ></app-select-reactive>
           </div>
         </div>

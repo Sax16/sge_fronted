@@ -1,7 +1,8 @@
-import { Component, OnInit, OnDestroy, inject } from '@angular/core';
+import { Component, OnInit, inject, DestroyRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { Subject, takeUntil } from 'rxjs';
+import { ActivatedRoute, NavigationStart, Router, RouterModule } from '@angular/router';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { filter, take } from 'rxjs';
 import { PageBreadcrumbComponent } from '../../shared/components/common/page-breadcrumb/page-breadcrumb.component';
 import { AlertComponent } from '../../shared/components/ui/alert/alert.component';
 import { ConfirmModalComponent } from '../../shared/components/ui/confirm-modal/confirm-modal.component';
@@ -40,23 +41,24 @@ type EmployeeViewMode = 'list' | 'create' | 'edit' | 'view';
   styles: ``,
   providers: [EmployeesState]
 })
-export class EmployeesComponent implements OnInit, OnDestroy {
+export class EmployeesComponent implements OnInit {
   public state = inject(EmployeesState);
   public alertService = inject(AlertService);
   private router = inject(Router);
   private route = inject(ActivatedRoute);
 
-  private readonly destroy$ = new Subject<void>();
+  private readonly destroyRef = inject(DestroyRef);
   
   currentViewMode: EmployeeViewMode = 'list';
 
   ngOnInit(): void {
+    this.router.events.pipe(
+      filter(e => e instanceof NavigationStart),
+      filter((e: NavigationStart) => !e.url.startsWith('/employees')),
+      take(1),
+      takeUntilDestroyed(this.destroyRef)
+    ).subscribe(() => this.alertService.clearAlert());
     this.subscribeToRouteChanges();
-  }
-
-  ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
   }
 
   /**
@@ -64,7 +66,7 @@ export class EmployeesComponent implements OnInit, OnDestroy {
    */
   private subscribeToRouteChanges(): void {
     this.route.data
-      .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((data) => {
         this.currentViewMode = (data['mode'] as EmployeeViewMode) || 'list';
         
@@ -87,7 +89,7 @@ export class EmployeesComponent implements OnInit, OnDestroy {
       });
 
     this.route.paramMap
-      .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((params) => {
         if (this.currentViewMode === 'edit' || this.currentViewMode === 'view') {
           const idStr = params.get('id');
