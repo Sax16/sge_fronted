@@ -26,8 +26,8 @@
               [id]="'username'"
               placeholder="Nombre de usuario"
               formControlName="username"
-              [error]="shouldShowError(form.get('username')!)"
-              [hint]="getHint('username')"
+              [error]="formErrors.shouldShowError('username')"
+              [hint]="formErrors.getHint('username')"
             />
           </div>
           <div>
@@ -38,8 +38,8 @@
                 [id]="'password'"
                 placeholder="********"
                 formControlName="password"
-                [error]="shouldShowError(form.get('password')!)"
-                [hint]="getHint('password')"
+                [error]="formErrors.shouldShowError('password')"
+                [hint]="formErrors.getHint('password')"
               />
               <button
                 type="button"

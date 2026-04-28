@@ -1,13 +1,13 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, Output, OnInit, OnChanges, SimpleChanges, ChangeDetectionStrategy } from '@angular/core';
-import { FormControl, FormGroup, ReactiveFormsModule, Validators, AbstractControl } from '@angular/forms';
+import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { LabelComponent } from '../../../../shared/components/form/label/label.component';
 import { ButtonComponent } from '../../../../shared/components/ui/button/button.component';
 import { InputFieldReactiveComponent } from '../../../../shared/components/reactive-form/input/input-field-reactive.component';
 import { SelectReactiveComponent } from '../../../../shared/components/reactive-form/select-reactive/select-reactive.component';
 import { SelectOption } from '../../../../shared/models/select-option.model';
 import { UserValidators } from '../../../../shared/validators/user.validator';
-import { FormValidationUtil } from '../../../../shared/utils/form-validation.util';
+import { FormErrorHelper } from '../../../../shared/utils/form-error.helper';
 import { User, CreateUserDto, UpdateUserDto, Role, UserFormModel, ROLES } from '../../models/user.model';
 import { Employee } from '../../../employees/models/employee.model';
 import { STATUS_OPTIONS } from '../../../../shared/constants/status-options.constant';
@@ -41,6 +41,7 @@ export class UserFormComponent implements OnInit, OnChanges {
   @Output() cancelForm = new EventEmitter<void>();
 
   form!: FormGroup;
+  formErrors!: FormErrorHelper;
   isSubmitted = false;
   showPassword = false;
 
@@ -50,6 +51,7 @@ export class UserFormComponent implements OnInit, OnChanges {
 
   ngOnInit(): void {
     this.form = this.buildForm();
+    this.formErrors = new FormErrorHelper(this.form, () => this.isSubmitted);
     if (this.user) {
       this.populateForm(this.user);
     }
@@ -95,18 +97,7 @@ export class UserFormComponent implements OnInit, OnChanges {
     this.cancelForm.emit();
   }
 
-  /**
-   * Returns whether a control should show its error state.
-   */
-  shouldShowError(control: AbstractControl): boolean {
-    return control.invalid && (control.touched || this.isSubmitted);
-  }
 
-  getHint(controlName: string): string | undefined {
-    const control = this.form.get(controlName);
-    if (!control || !this.shouldShowError(control)) return undefined;
-    return FormValidationUtil.getErrorMessage(controlName, control.errors);
-  }
 
   get formTitle(): string {
     return this.isEditMode ? 'Editar Usuario' : 'Registrar Nuevo Usuario';
