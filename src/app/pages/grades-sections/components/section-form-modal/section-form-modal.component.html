@@ -11,6 +11,11 @@
       <p class="mb-6 text-sm text-gray-500 dark:text-gray-400 lg:mb-7">
         {{ sectionToEdit() ? 'Actualice' : 'Complete' }} los datos de la sección en {{ grade()?.name }}.
       </p>
+      @if (sectionToEdit()) {
+        <span class="mb-3 inline-flex items-center  gap-1.5 rounded-full bg-gray-100 px-3 py-1 text-xs font-mono font-semibold text-gray-600 dark:bg-white/10 dark:text-gray-300">
+          <span class="text-gray-400 dark:text-gray-500">#</span>{{ sectionToEdit()!.id }}
+        </span>
+      }
     </div>
     <form class="flex flex-col" [formGroup]="form" (ngSubmit)="onSubmit()">
       <div class="px-2 pb-3">

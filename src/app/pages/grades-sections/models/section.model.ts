@@ -1,5 +1,5 @@
 export interface Section {
-  id: string; // e.g., '1A', '2B'
+  id: string; // e.g., SR-001, SE-002
   name: string;
   tag: string;
   gradeId: number;
