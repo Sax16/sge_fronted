@@ -5,6 +5,8 @@ export interface Section {
   gradeId: number;
 }
 
-export interface SectionCreate extends Omit<Section, 'updatedAt'> {}
+/** Backend generates the id — only name, tag, gradeId are sent on creation */
+export interface SectionCreate extends Omit<Section, 'id'> {}
 
-export interface SectionUpdate extends Partial<SectionCreate> {}
+/** Only name and tag can be updated — id and gradeId are immutable */
+export interface SectionUpdate extends Partial<Omit<Section, 'id' | 'gradeId'>> {}

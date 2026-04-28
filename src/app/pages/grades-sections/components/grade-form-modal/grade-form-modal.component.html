@@ -1,0 +1,50 @@
+<app-modal
+  [isOpen]="isOpen()"
+  (close)="closed.emit()"
+  className="max-w-[500px] m-4"
+>
+  <div class="relative w-full max-w-[500px] rounded-3xl bg-white p-4 dark:bg-gray-900 lg:p-9">
+    <div class="px-2 pr-14">
+      <h4 class="mb-2 text-2xl font-semibold text-gray-800 dark:text-white/90">
+        {{ gradeToEdit() ? 'Editar Grado' : 'Crear Nuevo Grado' }}
+      </h4>
+      <p class="mb-6 text-sm text-gray-500 dark:text-gray-400 lg:mb-7">
+        {{ gradeToEdit() ? 'Actualice' : 'Complete' }} los datos del grado en {{ levelName() }}.
+      </p>
+    </div>
+    <form class="flex flex-col" [formGroup]="form" (ngSubmit)="onSubmit()">
+      <div class="px-2 pb-3">
+        <div class="grid grid-cols-1 gap-x-6 gap-y-5">
+          <div>
+            <app-label for="name">Nombre <span class="text-error-500">*</span></app-label>
+            <app-input-field-reactive
+              type="text"
+              [id]="'name'"
+              placeholder="Ej. Primer Ciclo"
+              formControlName="name"
+              [error]="formErrors.shouldShowError('name')"
+              [hint]="formErrors.getHint('name')"
+            />
+          </div>
+          <div>
+            <app-label for="tag">Etiqueta <span class="text-error-500">*</span></app-label>
+            <app-input-field-reactive
+              type="text"
+              [id]="'tag'"
+              placeholder="Ej. CICLO 1"
+              formControlName="tag"
+              [error]="formErrors.shouldShowError('tag')"
+              [hint]="formErrors.getHint('tag')"
+            />
+          </div>
+        </div>
+      </div>
+      <div class="mt-6 flex items-center justify-end gap-3 px-2">
+        <app-button size="sm" variant="outline" (btnClick)="closed.emit()">Cancelar</app-button>
+        <app-button size="sm" type="submit" [disabled]="isSubmitting()">
+          {{ isSubmitting() ? 'Guardando...' : (gradeToEdit() ? 'Actualizar Grado' : 'Guardar Grado') }}
+        </app-button>
+      </div>
+    </form>
+  </div>
+</app-modal>

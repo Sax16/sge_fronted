@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../../environments/environment';
@@ -13,8 +13,7 @@ import { Section, SectionCreate, SectionUpdate } from '../models/section.model';
 })
 export class SectionService {
   private readonly apiUrl = `${environment.apiBaseUrl}/sections`;
-  
-  constructor(private http: HttpClient) {}
+  private readonly http = inject(HttpClient);
 
   /**
    * Get all sections

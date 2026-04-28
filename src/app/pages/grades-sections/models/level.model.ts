@@ -11,6 +11,15 @@ export interface Level {
   type: LevelAcademicType;
 }
 
-export interface LevelCreate extends Omit<Level, 'id'> {}
+export interface LevelCreate {
+  name: string;
+  modularCode?: string | null;
+  tag: string;
+  type: LevelAcademicType;
+}
 
-export interface LevelUpdate extends Partial<LevelCreate> {}
+export interface LevelUpdate {
+  name?: string;
+  modularCode?: string | null;
+  tag?: string;
+}

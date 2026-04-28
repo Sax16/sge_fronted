@@ -1,9 +1,22 @@
 <div>
   <app-page-breadcrumb [pageTitle]="'Grados y Secciones'" />
 
+  @if (alertService.alert(); as alert) {
+    <div class="mb-4">
+      <app-alert
+        [variant]="alert.variant"
+        [title]="alert.title"
+        [message]="alert.message"
+        [showLink]="false"
+        [showCloseButton]="true"
+        (alertClose)="alertService.clearAlert()"
+      />
+    </div>
+  }
+
   <!-- Tab selector -->
   <div class="mb-5">
-    <app-tab [options]="tabOptions" [(selectedValue)]="activeTab" />
+    <app-tab [options]="tabOptions" [(selectedValue)]="selectedAcademicType" />
   </div>
 
   <!-- Content -->
@@ -32,7 +45,9 @@
     <app-level-list
       [levels]="filteredLevels()"
       [grades]="grades()"
-      [type]="activeTab() === LevelAcademicType.REGULAR ? LevelAcademicType.REGULAR : LevelAcademicType.EXTRAORDINARIA"
+      [sections]="sections()"
+      [type]="$any(selectedAcademicType())"
+      (dataChanged)="loadData()"
     />
   }
 </div>

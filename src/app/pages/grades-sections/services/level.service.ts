@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../../environments/environment';
@@ -13,8 +13,7 @@ import { Level, LevelCreate, LevelUpdate } from '../models/level.model';
 })
 export class LevelService {
   private readonly apiUrl = `${environment.apiBaseUrl}/levels`;
-  
-  constructor(private http: HttpClient) {}
+  private readonly http = inject(HttpClient);
 
   /**
    * Get all levels
