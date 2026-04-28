@@ -1,13 +1,13 @@
 import { Component, OnInit, inject, DestroyRef } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
-import { FormControl, FormGroup, ReactiveFormsModule, Validators, AbstractControl } from '@angular/forms';
+import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { SchoolService } from './services/school.service';
 import { AlertService } from '../../shared/services/alert.service';
 import { School, SchoolDto, MANAGEMENT_OPTIONS, UGEL, Management, Ugel } from './models/school.model';
 import { DocumentValidators } from '../../shared/validators/document.validator';
 import { ContactValidators } from '../../shared/validators/contact.validator';
-import { FormValidationUtil } from '../../shared/utils/form-validation.util';
+import { FormErrorHelper } from '../../shared/utils/form-error.helper';
 import { StringSanitizeUtil } from '../../shared/utils/string-sanitize.util';
 import { PageBreadcrumbComponent } from '../../shared/components/common/page-breadcrumb/page-breadcrumb.component';
 import { AlertComponent } from '../../shared/components/ui/alert/alert.component';
@@ -42,6 +42,7 @@ export class SchoolComponent implements OnInit {
   private readonly destroyRef = inject(DestroyRef);
 
   form!: FormGroup;
+  formErrors!: FormErrorHelper;
   isSubmitted = false;
   isLoading = false;
   schoolData: School = {} as School;
@@ -56,8 +57,14 @@ export class SchoolComponent implements OnInit {
 
   ngOnInit(): void {
     this.form = this.buildForm();
+    this.formErrors = new FormErrorHelper(this.form, () => this.isSubmitted);
     this.loadEmployees();
     this.loadSchoolData();
+
+    this.destroyRef.onDestroy(() => {
+      this.alertService.clearAlert();
+    });
+    
   }
 
   loadSchoolData(): void {
@@ -95,6 +102,7 @@ export class SchoolComponent implements OnInit {
         next: (updatedSchool) => {
           this.schoolData = updatedSchool;
           this.alertService.showAlert('success', 'Éxito', '¡Datos actualizados correctamente!');
+          window.scrollTo({ top: 0, behavior: 'smooth' });
         },
         error: (err) => {
           const errorMsg = parseApiError(err, 'Error al actualizar datos de la institución. Por favor, recargue la página.');
@@ -103,17 +111,6 @@ export class SchoolComponent implements OnInit {
           console.error('Error updating school data:', err);
         }
       });
-  }
-
-  shouldShowError(control: AbstractControl): boolean {
-    return control.invalid && (control.touched || this.isSubmitted);
-  }
-
-  getHint(controlName: string): string | undefined {
-    const control = this.form.get(controlName);
-    if (!control || !this.shouldShowError(control)) return undefined;
-    
-    return FormValidationUtil.getErrorMessage(controlName, control.errors);
   }
 
   private buildForm(): FormGroup {

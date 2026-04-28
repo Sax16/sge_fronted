@@ -56,8 +56,8 @@
                   [id]="'companyName'"
                   placeholder="Razón Social"
                   formControlName="companyName"
-                  [error]="shouldShowError(form.get('companyName')!)"
-                  [hint]="getHint('companyName')"
+                  [error]="formErrors.shouldShowError('companyName')"
+                  [hint]="formErrors.getHint('companyName')"
                 />
               </div>
               <div>
@@ -67,8 +67,8 @@
                   [id]="'businessName'"
                   placeholder="Nombre Comercial"
                   formControlName="businessName"
-                  [error]="shouldShowError(form.get('businessName')!)"
-                  [hint]="getHint('businessName')"
+                  [error]="formErrors.shouldShowError('businessName')"
+                  [hint]="formErrors.getHint('businessName')"
                 />
               </div>
               <div>
@@ -78,8 +78,8 @@
                   [id]="'ruc'"
                   placeholder="RUC"
                   formControlName="ruc"
-                  [error]="shouldShowError(form.get('ruc')!)"
-                  [hint]="getHint('ruc')"
+                  [error]="formErrors.shouldShowError('ruc')"
+                  [hint]="formErrors.getHint('ruc')"
                 />
               </div>
               <div>
@@ -89,8 +89,8 @@
                   [id]="'management'"
                   placeholder="Seleccionar Gestión"
                   formControlName="management"
-                  [error]="shouldShowError(form.get('management')!)"
-                  [hint]="getHint('management')"
+                  [error]="formErrors.shouldShowError('management')"
+                  [hint]="formErrors.getHint('management')"
                 ></app-select-reactive>
               </div>
             </div>
@@ -115,8 +115,8 @@
                   [id]="'address'"
                   placeholder="Dirección Fiscal"
                   formControlName="address"
-                  [error]="shouldShowError(form.get('address')!)"
-                  [hint]="getHint('address')"
+                  [error]="formErrors.shouldShowError('address')"
+                  [hint]="formErrors.getHint('address')"
                 />
               </div>
               <div>
@@ -126,8 +126,8 @@
                   [id]="'email'"
                   placeholder="correo@ejemplo.com"
                   formControlName="email"
-                  [error]="shouldShowError(form.get('email')!)"
-                  [hint]="getHint('email')"
+                  [error]="formErrors.shouldShowError('email')"
+                  [hint]="formErrors.getHint('email')"
                 />
               </div>
               <div>
@@ -137,8 +137,8 @@
                   [id]="'phoneNumber'"
                   placeholder="+51 987654321"
                   formControlName="phoneNumber"
-                  [error]="shouldShowError(form.get('phoneNumber')!)"
-                  [hint]="getHint('phoneNumber')"
+                  [error]="formErrors.shouldShowError('phoneNumber')"
+                  [hint]="formErrors.getHint('phoneNumber')"
                 />
               </div>
             </div>
@@ -164,8 +164,8 @@
                   [id]="'dre'"
                   placeholder="DRE (Opcional)"
                   formControlName="dre"
-                  [error]="shouldShowError(form.get('dre')!)"
-                  [hint]="getHint('dre')"
+                  [error]="formErrors.shouldShowError('dre')"
+                  [hint]="formErrors.getHint('dre')"
                 />
               </div>
               <div>
@@ -176,8 +176,8 @@
                   placeholder="Ninguna (Opcional)"
                   formControlName="ugel"
                   [allowClear]="true"
-                  [error]="shouldShowError(form.get('ugel')!)"
-                  [hint]="getHint('ugel')"
+                  [error]="formErrors.shouldShowError('ugel')"
+                  [hint]="formErrors.getHint('ugel')"
                 ></app-select-reactive>
               </div>
               <div>
@@ -187,8 +187,8 @@
                   [id]="'headmasterId'"
                   placeholder="Seleccionar Director(a)"
                   formControlName="headmasterId"
-                  [error]="shouldShowError(form.get('headmasterId')!)"
-                  [hint]="getHint('headmasterId')"
+                  [error]="formErrors.shouldShowError('headmasterId')"
+                  [hint]="formErrors.getHint('headmasterId')"
                 ></app-select-reactive>
               </div>
               <div>
@@ -199,8 +199,8 @@
                   placeholder="Ninguno (Opcional)"
                   formControlName="deputyDirectorId"
                   [allowClear]="true"
-                  [error]="shouldShowError(form.get('deputyDirectorId')!)"
-                  [hint]="getHint('deputyDirectorId')"
+                  [error]="formErrors.shouldShowError('deputyDirectorId')"
+                  [hint]="formErrors.getHint('deputyDirectorId')"
                 ></app-select-reactive>
               </div>
             </div>
