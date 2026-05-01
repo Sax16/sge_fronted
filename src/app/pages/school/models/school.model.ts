@@ -1,5 +1,5 @@
 export type Management = 'Pública' | 'Privada';
-export type Ugel = 'Satipo' | 'Rio Negro' | 'Mazamari' | 'Pangoa' | 'Pichanaki' | 'Rio Tambo' | 'La Merced' | 'Concepcion' | 'Jauja' | 'Huancayo' | 'Otro';
+export type Ugel = 'Satipo' | 'Río Negro' | 'Mazamari' | 'Pangoa' | 'Pichanaki' | 'Río Tambo' | 'La Merced' | 'Concepción' | 'Jauja' | 'Huancayo' | 'Otro';
 
 
 export const MANAGEMENT_OPTIONS: {value: Management, label: Management}[] = [
@@ -9,13 +9,13 @@ export const MANAGEMENT_OPTIONS: {value: Management, label: Management}[] = [
 
 export const UGEL: {value: Ugel, label: string}[] = [
     {value: 'Satipo', label:'UGEL - Satipo'},
-    {value: 'Rio Negro', label:'UGEL - Rio Negro'},
+    {value: 'Río Negro', label:'UGEL - Río Negro'},
     {value: 'Mazamari', label:'UGEL - Mazamari'},
     {value: 'Pangoa', label:'UGEL - Pangoa'},
     {value: 'Pichanaki', label:'UGEL - Pichanaki'},
-    {value: 'Rio Tambo', label:'UGEL - Rio Tambo'},
+    {value: 'Río Tambo', label:'UGEL - Río Tambo'},
     {value: 'La Merced', label:'UGEL - La Merced'},
-    {value: 'Concepcion', label:'UGEL - Concepcion'},
+    {value: 'Concepción', label:'UGEL - Concepción'},
     {value: 'Jauja', label:'UGEL - Jauja'},
     {value: 'Huancayo', label:'UGEL - Huancayo'},
     {value: 'Otro', label:'UGEL - Otro'},
@@ -33,7 +33,7 @@ export interface School {
     logoPath?: string | null;
     ruc: string;
     dre?: string | null;
-    ugel?: string | null;
+    ugel?: Ugel | null;
     headmasterId: number;
     deputyDirectorId?: number | null;
     readonly createdAt: Date;
@@ -50,7 +50,7 @@ export interface SchoolDto {
     logoPath?: string | null;
     ruc: string;
     dre?: string | null;
-    ugel?: string | null;
+    ugel?: Ugel | null;
     headmasterId: number;
     deputyDirectorId?: number | null;
 }

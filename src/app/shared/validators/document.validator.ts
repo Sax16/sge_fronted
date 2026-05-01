@@ -33,9 +33,9 @@ export class DocumentValidators {
         return null;
       }
 
-      const isValid = /^\d{11}$/.test(value);
+      const isValid = /^(10|20)\d{9}$/.test(value);
       if (!isValid) {
-        return { invalidRuc: { value, message: 'El RUC debe tener 11 dígitos' } };
+        return { invalidRuc: { value, message: 'El RUC debe tener 11 dígitos y comenzar con 10 o 20' } };
       }
 
       return null;

@@ -115,14 +115,14 @@ export class SchoolComponent implements OnInit {
 
   private buildForm(): FormGroup {
     return new FormGroup({
-      companyName: new FormControl('', [Validators.required, Validators.minLength(2)]),
-      businessName: new FormControl('', [Validators.required, Validators.minLength(2)]),
+      companyName: new FormControl('', [Validators.required, Validators.minLength(2), Validators.maxLength(255)]),
+      businessName: new FormControl('', [Validators.required, Validators.minLength(2), Validators.maxLength(255)]),
       management: new FormControl<Management | null>(null, [Validators.required]),
-      address: new FormControl('', [Validators.required]),
-      email: new FormControl('', [Validators.required, Validators.email]),
+      address: new FormControl('', [Validators.required, Validators.minLength(2), Validators.maxLength(150)]),
+      email: new FormControl('', [Validators.required, Validators.email, Validators.maxLength(50)]),
       phoneNumber: new FormControl('', [Validators.required, ContactValidators.phone()]),
       ruc: new FormControl('', [Validators.required, DocumentValidators.ruc()]),
-      dre: new FormControl(''),
+      dre: new FormControl('', [Validators.minLength(2), Validators.maxLength(50)]),
       ugel: new FormControl<Ugel | null>(null),
       headmasterId: new FormControl<number | null>(null, [Validators.required]),
       deputyDirectorId: new FormControl<number | null>(null)
