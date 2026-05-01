@@ -7,17 +7,29 @@ import { AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms';
  */
 export class UserValidators {
 
+  private static readonly USERNAME_MIN = 4;
+  private static readonly USERNAME_MAX = 15;
+  private static readonly USERNAME_PATTERN = /^[a-zA-Z0-9_]+$/;
+
+  private static readonly PASSWORD_MIN = 6;
+  private static readonly PASSWORD_MAX = 15;
+
   /**
-   * Validates username format (minimum 4 characters).
-   * @returns ValidatorFn
+   * Validates username format:
+   * - Between 4 and 15 characters
+   * - Only alphanumeric characters and underscores (a-z, A-Z, 0-9, _)
    */
-  static username(minLength = 4): ValidatorFn {
+  static username(): ValidatorFn {
     return (control: AbstractControl): ValidationErrors | null => {
       const value = control.value as string;
       if (!value) return null; // Required validator handles empty
 
-      if (value.length < minLength) {
-        return { invalidUsername: { value, message: `El usuario debe tener al menos ${minLength} caracteres` } };
+      if (value.length < this.USERNAME_MIN || value.length > this.USERNAME_MAX) {
+        return { invalidUsername: { value, message: `El usuario debe tener entre ${this.USERNAME_MIN} y ${this.USERNAME_MAX} caracteres` } };
+      }
+
+      if (!this.USERNAME_PATTERN.test(value)) {
+        return { invalidUsername: { value, message: 'El usuario solo puede contener letras, números y guiones bajos' } };
       }
 
       return null;
@@ -25,16 +37,16 @@ export class UserValidators {
   }
 
   /**
-   * Validates password strength (minimum 6 characters).
-   * @returns ValidatorFn
+   * Validates password length:
+   * - Between 6 and 15 characters
    */
-  static password(minLength = 6): ValidatorFn {
+  static password(): ValidatorFn {
     return (control: AbstractControl): ValidationErrors | null => {
       const value = control.value as string;
       if (!value) return null; // Required validator handles empty
 
-      if (value.length < minLength) {
-        return { invalidPassword: { value, message: `La contraseña debe tener al menos ${minLength} caracteres` } };
+      if (value.length < this.PASSWORD_MIN || value.length > this.PASSWORD_MAX) {
+        return { invalidPassword: { value, message: `La contraseña debe tener entre ${this.PASSWORD_MIN} y ${this.PASSWORD_MAX} caracteres` } };
       }
 
       return null;
