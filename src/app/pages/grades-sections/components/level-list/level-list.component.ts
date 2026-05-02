@@ -58,9 +58,9 @@ export class LevelListComponent {
   readonly levelToDelete = signal<Level | null>(null);
 
   readonly form = new FormGroup({
-    name: new FormControl('', [Validators.required, Validators.minLength(3)]),
-    modularCode: new FormControl(''),
-    tag: new FormControl('', [Validators.required, Validators.minLength(2)]),
+    name: new FormControl('', [Validators.required, Validators.minLength(4), Validators.maxLength(15)]),
+    modularCode: new FormControl('', [Validators.minLength(5), Validators.maxLength(20), Validators.pattern(/^[a-zA-Z0-9]+$/)]),
+    tag: new FormControl('', [Validators.required, Validators.minLength(2), Validators.maxLength(10)]),
   });
 
   readonly formErrors = new FormErrorHelper(this.form, () => this.isFormSubmitted());

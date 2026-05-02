@@ -99,15 +99,15 @@ export class EmployeeFormComponent implements OnInit, OnChanges {
 
   private buildForm(): FormGroup {
     return new FormGroup({
-      firstName:   new FormControl('', [Validators.required, Validators.minLength(2)]),
-      lastName:    new FormControl('', [Validators.required, Validators.minLength(2)]),
+      firstName:   new FormControl('', [Validators.required, Validators.minLength(2), Validators.maxLength(50)]),
+      lastName:    new FormControl('', [Validators.required, Validators.minLength(2), Validators.maxLength(50)]),
       dni:         new FormControl('', [Validators.required, DocumentValidators.dni()]),
       ruc:         new FormControl('', [DocumentValidators.ruc()]),
       gender:      new FormControl<Gender | null>(null, [Validators.required]),
       birthDate:   new FormControl('', [DateValidators.minAge(18)]),
       phoneNumber: new FormControl('', [Validators.required, ContactValidators.phone()]),
-      email:       new FormControl('', [Validators.email]),
-      address:     new FormControl(''),
+      email:       new FormControl('', [Validators.email, Validators.maxLength(50)]),
+      address:     new FormControl('', [Validators.minLength(2), Validators.maxLength(75)]),
       position:    new FormControl<EmployeePosition | null>(null, [Validators.required]),
       isActive:    new FormControl<boolean | null>(null, [Validators.required]),
     });
