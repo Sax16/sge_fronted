@@ -7,7 +7,8 @@ import { InputFieldReactiveComponent } from '../../../../shared/components/react
 import { DatePickerReactiveComponent } from '../../../../shared/components/reactive-form/date-picker-reactive/date-picker-reactive.component';
 import { SelectReactiveComponent } from '../../../../shared/components/reactive-form/select-reactive/select-reactive.component';
 import { SelectOption } from '../../../../shared/models/select-option.model';
-import { CreateEmployeeDto, UpdateEmployeeDto, Employee, EmployeeFormData, EmployeePosition, EMPLOYEE_POSITIONS } from '../../models/employee.model';
+import { CreateEmployeeDto, UpdateEmployeeDto, Employee, EmployeeFormData, EmployeePosition } from '../../models/employee.model';
+import { POSITION_OPTIONS } from '../../../../shared/constants/employee-position.constant';
 import { Gender } from '../../../../shared/models/person.model';
 import { DocumentValidators } from '../../../../shared/validators/document.validator';
 import { ContactValidators } from '../../../../shared/validators/contact.validator';
@@ -15,7 +16,8 @@ import { DateValidators } from '../../../../shared/validators/date.validator';
 import { FormErrorHelper } from '../../../../shared/utils/form-error.helper';
 import { DateFormatUtil } from '../../../../shared/utils/date-format.util';
 import { StringSanitizeUtil } from '../../../../shared/utils/string-sanitize.util';
-import { STATUS_OPTIONS, GENDER_OPTIONS } from '../../../../shared/constants/status-options.constant';
+import { STATUS_OPTIONS } from '../../../../shared/constants/status-options.constant';
+import { GENDER_OPTIONS } from '../../../../shared/constants/gender.constant';
 
 /**
  * Employee Form Component
@@ -44,8 +46,7 @@ export class EmployeeFormComponent implements OnInit, OnChanges {
   @Output() submitForm = new EventEmitter<CreateEmployeeDto | UpdateEmployeeDto>();
   @Output() cancelForm = new EventEmitter<void>();
 
-  // Derived from EMPLOYEE_POSITIONS to guarantee TypeScript exhaustiveness
-  readonly positionOptions: SelectOption[] = EMPLOYEE_POSITIONS;
+  readonly positionOptions: SelectOption[] = POSITION_OPTIONS;
 
   readonly statusOptions: SelectOption[] = STATUS_OPTIONS;
 

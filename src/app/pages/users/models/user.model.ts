@@ -1,19 +1,12 @@
+import { UserRole } from '../../../shared/constants/role.constant';
 
-export type Role = 'SUPER_ADMIN' | 'ADMIN';
+export type { UserRole };
 
-export const ROLES: {value: Role, label: string}[] = [
-  { value: 'SUPER_ADMIN', label: 'Super Admin' },
-  { value: 'ADMIN', label: 'Admin' },
-];
-
-/** User model interface */
-
-// Main User interface with strict types
 export interface User {
   readonly id: number;
   username: string;
   isActive: boolean;
-  role: Role;
+  role: UserRole;
   readonly createdAt: Date;
   employeeId: number;
 }
@@ -24,7 +17,7 @@ export interface CreateUserDto {
   password: string;
   isActive: boolean;
   employeeId: number;
-  role: Role;
+  role: UserRole;
 }
 
 // Data Transfer Object for updating users (all fields optional except id)
@@ -32,7 +25,7 @@ export interface UpdateUserDto {
   username?: string;
   password?: string;
   isActive?: boolean;
-  role?: Role;
+  role?: UserRole;
 }
 
 // View Model for table display
@@ -41,7 +34,7 @@ export interface UserTableViewModel {
   employeeName: string;
   status: boolean;
   createdAt: string;
-  role: Role;
+  role: UserRole;
 }
 
 // Form Model for user forms
@@ -50,6 +43,6 @@ export interface UserFormModel {
   password: string;
   isActive: boolean;
   employeeId: string | number;
-  role: Role;
+  role: UserRole;
 }
 

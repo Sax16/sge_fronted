@@ -1,4 +1,3 @@
-/**
- * Shared types related to persons
- */
-export type Gender = 'Masculino' | 'Femenino';
+import { Gender } from '../constants/gender.constant';
+
+export type { Gender };

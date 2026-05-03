@@ -1,26 +1,6 @@
-export type Management = 'Pública' | 'Privada';
-export type Ugel = 'Satipo' | 'Río Negro' | 'Mazamari' | 'Pangoa' | 'Pichanaki' | 'Río Tambo' | 'La Merced' | 'Concepción' | 'Jauja' | 'Huancayo' | 'Otro';
+import { Management, Ugel } from '../constants/school.constant';
 
-
-export const MANAGEMENT_OPTIONS: {value: Management, label: Management}[] = [
-    {value: 'Pública', label:'Pública'},
-    {value: 'Privada', label:'Privada'},
-];
-
-export const UGEL: {value: Ugel, label: string}[] = [
-    {value: 'Satipo', label:'UGEL - Satipo'},
-    {value: 'Río Negro', label:'UGEL - Río Negro'},
-    {value: 'Mazamari', label:'UGEL - Mazamari'},
-    {value: 'Pangoa', label:'UGEL - Pangoa'},
-    {value: 'Pichanaki', label:'UGEL - Pichanaki'},
-    {value: 'Río Tambo', label:'UGEL - Río Tambo'},
-    {value: 'La Merced', label:'UGEL - La Merced'},
-    {value: 'Concepción', label:'UGEL - Concepción'},
-    {value: 'Jauja', label:'UGEL - Jauja'},
-    {value: 'Huancayo', label:'UGEL - Huancayo'},
-    {value: 'Otro', label:'UGEL - Otro'},
-]
-
+export type { Management, Ugel };
 
 export interface School {
     readonly id: number;

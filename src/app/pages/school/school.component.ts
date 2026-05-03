@@ -4,7 +4,8 @@ import { CommonModule } from '@angular/common';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { SchoolService } from './services/school.service';
 import { AlertService } from '../../shared/services/alert.service';
-import { School, SchoolDto, MANAGEMENT_OPTIONS, UGEL, Management, Ugel } from './models/school.model';
+import { School, SchoolDto, Management, Ugel } from './models/school.model';
+import { MANAGEMENT_OPTIONS, UGEL_OPTIONS } from './constants/school.constant';
 import { DocumentValidators } from '../../shared/validators/document.validator';
 import { ContactValidators } from '../../shared/validators/contact.validator';
 import { FormErrorHelper } from '../../shared/utils/form-error.helper';
@@ -19,6 +20,7 @@ import { SelectOption } from '../../shared/models/select-option.model';
 import { parseApiError } from '../../shared/utils/api-error.util';
 import { EmployeeService } from '../employees/services/employee.service';
 import { Employee } from '../employees/models/employee.model';
+import { EmployeePositionType } from '../../shared/constants/employee-position.constant';
 
 @Component({
   selector: 'app-school',
@@ -53,7 +55,7 @@ export class SchoolComponent implements OnInit {
   deputyDirectorOptions: SelectOption[] = [];
 
   readonly managementOptions: SelectOption[] = MANAGEMENT_OPTIONS;
-  readonly ugelOptions: SelectOption[] = UGEL;
+  readonly ugelOptions: SelectOption[] = UGEL_OPTIONS;
 
   ngOnInit(): void {
     this.form = this.buildForm();
@@ -131,14 +133,14 @@ export class SchoolComponent implements OnInit {
 
   private mapEmployeeOptions(): void {
     this.headmasterOptions = this.employees
-      .filter((employee) => employee.position === 'Director')
+      .filter((employee) => employee.position === EmployeePositionType.DIRECTOR)
       .map((employee) => ({
         value: employee.id,
         label: `${employee.firstName} ${employee.lastName}`
       }));
       
     this.deputyDirectorOptions = this.employees
-      .filter((employee) => employee.position === 'Subdirector')
+      .filter((employee) => employee.position === EmployeePositionType.SUBDIRECTOR)
       .map((employee) => ({
         value: employee.id,
         label: `${employee.firstName} ${employee.lastName}`

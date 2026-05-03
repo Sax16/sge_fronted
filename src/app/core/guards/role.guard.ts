@@ -1,7 +1,7 @@
 import { inject } from '@angular/core';
 import { CanActivateFn, Router, ActivatedRouteSnapshot } from '@angular/router';
 import { AuthService } from '../../pages/auth-pages/services/auth.service';
-import { Role } from '../../pages/users/models/user.model';
+import { UserRole } from '../../pages/users/models/user.model';
 import { filter, map, take } from 'rxjs';
 
 /**
@@ -16,15 +16,15 @@ import { filter, map, take } from 'rxjs';
  *
  * Usage in routes:
  *   canActivate: [authGuard, roleGuard],
- *   data: { roles: ['SUPER_ADMIN'] }
+ *   data: { roles: [UserRoleType.SUPER_ADMIN] }
  */
 export const roleGuard: CanActivateFn = (route: ActivatedRouteSnapshot) => {
   const authService = inject(AuthService);
   const router = inject(Router);
 
-  const requiredRoles: Role[] = route.data['roles'] ?? [];
+  const requiredRoles: UserRole[] = route.data['roles'] ?? [];
 
-  const checkRole = (role: Role): boolean | ReturnType<typeof router.createUrlTree> => {
+  const checkRole = (role: UserRole): boolean | ReturnType<typeof router.createUrlTree> => {
     if (requiredRoles.length === 0 || requiredRoles.includes(role)) {
       return true;
     }

@@ -8,9 +8,10 @@ import { SelectReactiveComponent } from '../../../../shared/components/reactive-
 import { SelectOption } from '../../../../shared/models/select-option.model';
 import { UserValidators } from '../../../../shared/validators/user.validator';
 import { FormErrorHelper } from '../../../../shared/utils/form-error.helper';
-import { User, CreateUserDto, UpdateUserDto, Role, UserFormModel, ROLES } from '../../models/user.model';
+import { User, CreateUserDto, UpdateUserDto, UserRole, UserFormModel } from '../../models/user.model';
 import { Employee } from '../../../employees/models/employee.model';
 import { STATUS_OPTIONS } from '../../../../shared/constants/status-options.constant';
+import { ROLE_OPTIONS } from '../../../../shared/constants/role.constant';
 
 /**
  * User Form Component
@@ -45,7 +46,7 @@ export class UserFormComponent implements OnInit, OnChanges {
   isSubmitted = false;
   showPassword = false;
 
-  readonly roleOptions: SelectOption[] = ROLES;
+  readonly roleOptions: SelectOption[] = ROLE_OPTIONS;
 
   readonly statusOptions: SelectOption[] = STATUS_OPTIONS;
 
@@ -113,7 +114,7 @@ export class UserFormComponent implements OnInit, OnChanges {
     return new FormGroup({
       username: new FormControl('', [Validators.required, UserValidators.username()]),
       password: new FormControl('', this.isEditMode ? [UserValidators.password()] : [Validators.required, UserValidators.password()]),
-      role: new FormControl<Role | null>(null, [Validators.required]),
+      role: new FormControl<UserRole | null>(null, [Validators.required]),
       employeeId: new FormControl<string | null>(null, [Validators.required]),
       isActive: new FormControl<boolean | null>(true, [Validators.required]),
     });

@@ -24,6 +24,7 @@ import { UsersComponent } from './pages/users/users.component';
 import { EmployeesComponent } from './pages/employees/employees.component';
 import { SchoolComponent } from './pages/school/school.component';
 import { GradesSectionsComponent } from './pages/grades-sections/grades-sections.component';
+import { UserRoleType } from './shared/constants/role.constant';
 
 export const routes: Routes = [
   {
@@ -125,14 +126,14 @@ export const routes: Routes = [
       {
         path: 'school',
         canActivate: [roleGuard],
-        data: { breadcrumb: 'Datos de la Institución', roles: ['SUPER_ADMIN'] },
+        data: { breadcrumb: 'Datos de la Institución', roles: [UserRoleType.SUPER_ADMIN] },
         component: SchoolComponent,
         title: 'Datos Institucionales | ELOHIM SGE',
       },
       {
         path: 'users',
         canActivate: [roleGuard],
-        data: { breadcrumb: 'Gestión de Usuarios', roles: ['SUPER_ADMIN'] },
+        data: { breadcrumb: 'Gestión de Usuarios', roles: [UserRoleType.SUPER_ADMIN] },
         children: [
           {
             path: '',
