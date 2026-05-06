@@ -25,6 +25,7 @@ import { EmployeesComponent } from './pages/employees/employees.component';
 import { SchoolComponent } from './pages/school/school.component';
 import { GradesSectionsComponent } from './pages/grades-sections/grades-sections.component';
 import { UserRoleType } from './shared/constants/role.constant';
+import { EconomicLevelsComponent } from './pages/finances/economic-levels/economic-levels.component';
 
 export const routes: Routes = [
   {
@@ -111,6 +112,12 @@ export const routes: Routes = [
         path: 'videos',
         component: VideosComponent,
         title: 'Angular Videos Dashboard | TailAdmin - Angular Admin Dashboard Template'
+      },
+      {
+        path: 'economic-levels',
+        component: EconomicLevelsComponent,
+        title: 'Niveles Económicos | ELOHIM SGE',
+        data: { breadcrumb: 'Niveles Económicos' },
       },
       {
         path: 'grades-sections',
