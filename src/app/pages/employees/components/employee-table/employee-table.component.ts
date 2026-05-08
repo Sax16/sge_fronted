@@ -5,7 +5,6 @@ import { AvatarTextComponent } from '../../../../shared/components/ui/avatar/ava
 import { ButtonComponent } from '../../../../shared/components/ui/button/button.component';
 import { Employee } from '../../models/employee.model';
 import { getFullName } from '../../../../shared/utils/employee.util';
-import { getBadgeColor, getStatusLabel, formatDate } from '../../../../shared/utils/status.util';
 
 @Component({
   selector: 'app-employee-table',
@@ -26,11 +25,7 @@ export class EmployeeTableComponent {
   @Output() deleteEmployee = new EventEmitter<number>();
   @Output() viewEmployee = new EventEmitter<number>();
 
-  // Expose shared utils to the template
   readonly getFullName = getFullName;
-  readonly getBadgeColor = getBadgeColor;
-  readonly getStatusLabel = getStatusLabel;
-  readonly formatDate = formatDate;
 
   handleNewEmployeeClick(): void {
     this.newEmployee.emit();

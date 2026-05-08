@@ -3,7 +3,6 @@ import { Component, EventEmitter, Input, Output, ChangeDetectionStrategy } from 
 import { User } from '../../models/user.model';
 import { ButtonComponent } from '../../../../shared/components/ui/button/button.component';
 import { BadgeComponent } from '../../../../shared/components/ui/badge/badge.component';
-import { getBadgeColor, getStatusLabel } from '../../../../shared/utils/status.util';
 
 @Component({
   selector: 'app-user-detail',
@@ -21,10 +20,7 @@ export class UserDetailComponent {
   @Input() user: User | null = null;
   @Input() employeeFullName: string | null = null;
   @Output() editUser = new EventEmitter<number>();
-
-  // Expose shared utils to the template
-  readonly getBadgeColor = getBadgeColor;
-  readonly getStatusLabel = getStatusLabel;
+  @Output() back = new EventEmitter<void>();
 
   handleEditClick(userId: number): void {
     this.editUser.emit(userId);

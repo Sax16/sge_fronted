@@ -7,9 +7,23 @@
           {{ user.username }}
         </h4>
       </div>
-      <app-button (click)="handleEditClick(user.id)" size="sm" variant="outline" startIcon='<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="size-5"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M7 7h-1a2 2 0 0 0 -2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2 -2v-1" /><path d="M20.385 6.585a2.1 2.1 0 0 0 -2.97 -2.97l-8.415 8.385v3h3l8.385 -8.415z" /><path d="M16 5l3 3" /></svg>'>
-        Editar
-      </app-button>
+      <div class="flex items-center gap-2 border-l pl-4 border-gray-200 dark:border-gray-800">
+        <app-button
+          size="sm"
+          variant="outline"
+          (btnClick)="back.emit()"
+          startIcon='<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-arrow-back-up"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M9 14l-4 -4l4 -4" /><path d="M5 10h11a4 4 0 1 1 0 8h-1" /></svg>'
+        >
+          Volver
+        </app-button>
+        <app-button 
+          (click)="handleEditClick(user.id)"
+          size="sm"
+          variant="primary"
+          startIcon='<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="size-5"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M7 7h-1a2 2 0 0 0 -2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2 -2v-1" /><path d="M20.385 6.585a2.1 2.1 0 0 0 -2.97 -2.97l-8.415 8.385v3h3l8.385 -8.415z" /><path d="M16 5l3 3" /></svg>'>
+          Editar
+        </app-button>
+      </div>
     </div>
     <div class="space-y-6">
       <div>
@@ -51,10 +65,10 @@
                 </p>
                 <app-badge
                   variant="light"
-                  [color]="getBadgeColor(user.isActive)"
+                  [color]="user.isActive ? 'success' : 'light'"
                   size="md"
                 >
-                  {{ getStatusLabel(user.isActive) }}
+                  {{ user.isActive ? 'Activo' : 'Inactivo' }}
                 </app-badge>
               </div>
               <div>

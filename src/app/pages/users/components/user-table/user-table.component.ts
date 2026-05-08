@@ -6,7 +6,6 @@ import { ButtonComponent } from '../../../../shared/components/ui/button/button.
 import { User } from '../../models/user.model';
 import { Employee } from '../../../employees/models/employee.model';
 import { getFullName } from '../../../../shared/utils/employee.util';
-import { getBadgeColor, getStatusLabel, formatDate } from '../../../../shared/utils/status.util';
 
 /**
  * User Table Component
@@ -32,10 +31,6 @@ export class UserTableComponent {
   @Output() deleteUser = new EventEmitter<number>();
   @Output() viewUser = new EventEmitter<number>();
 
-  // Expose shared utils to the template
-  readonly getBadgeColor = getBadgeColor;
-  readonly getStatusLabel = getStatusLabel;
-  readonly formatDate = formatDate;
 
   handleNewUserClick(): void {
     this.newUser.emit();
@@ -59,9 +54,5 @@ export class UserTableComponent {
       return '#Error';
     }
     return getFullName(employee);
-  }
-
-  isUserListEmpty(): boolean {
-    return this.users.length === 0;
   }
 }

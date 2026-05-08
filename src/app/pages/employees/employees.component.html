@@ -57,6 +57,7 @@
       <app-employee-detail 
         [employee]="employee"
         (editEmployee)="navigateToEdit($event)"
+        (back)="navigateToList()"
       />
     }
   }

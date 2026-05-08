@@ -82,16 +82,16 @@
           </td>
           <td class="px-4 sm:px-6 py-3.5">
             <p class="text-gray-700 text-theme-sm dark:text-gray-400">
-              {{ formatDate(employee.createdAt) }}
+              {{ employee.createdAt | date: 'dd/MM/yyyy' }}
             </p>
           </td>
           <td class="px-4 sm:px-6 py-3.5">
             <app-badge
               variant="light"
-              [color]="getBadgeColor(employee.isActive)"
+              [color]="employee.isActive ? 'success' : 'light'"
               size="sm"
             >
-              {{ getStatusLabel(employee.isActive) }}
+              {{ employee.isActive ? 'Activo' : 'Inactivo' }}
             </app-badge>
           </td>
           <td class="px-4 sm:px-6 py-3.5">
