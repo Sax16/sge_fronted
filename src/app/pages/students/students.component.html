@@ -1,0 +1,78 @@
+<div class="">
+  <app-page-breadcrumb [pageTitle]="'Gestión de Estudiantes'" />
+
+  @if (alertService.alert(); as alert) {
+    <div class="mb-4">
+      <app-alert
+        [variant]="alert.variant"
+        [title]="alert.title"
+        [message]="alert.message"
+        [showLink]="false"
+        [showCloseButton]="true"
+        (alertClose)="alertService.clearAlert()"
+      />
+    </div>
+  }
+
+  <!-- LIST VIEW -->
+  @if (isListView()) {
+    <app-student-table
+      [students]="state.students()"
+      [isLoading]="state.isLoading()"
+      (create)="navigateToCreate()"
+      (edit)="navigateToEdit($event)"
+      (delete)="state.openDeleteConfirmModal($event)"
+      (view)="navigateToView($event)"
+    />
+  }
+
+  <!-- CREATE / EDIT VIEW -->
+  @if (isCreateView() || isEditView()) {
+    <div class="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/3">
+      <div class="px-6 py-5 border-b border-gray-200 dark:border-gray-800">
+        <h3 class="text-xl font-semibold text-gray-800 dark:text-white/90">
+          {{ isEditView() ? 'Editar Estudiante' : 'Registrar Estudiante' }}
+        </h3>
+      </div>
+      <div class="p-6">
+        <!-- Prevent rendering form until data is loaded for edit mode -->
+        @if (isCreateView() || (isEditView() && state.selectedStudent())) {
+          <app-student-form
+            [student]="state.selectedStudent()"
+            [economicLevels]="state.economicLevels()"
+            [isEditMode]="isEditView()"
+            (submitForm)="isCreateView() ? state.createStudent($any($event)) : handleStudentUpdate($event)"
+            (cancelForm)="navigateToList()"
+          />
+        } @else {
+          <div class="py-8 text-center text-gray-500">Cargando datos...</div>
+        }
+      </div>
+    </div>
+  }
+
+  <!-- DETAIL VIEW -->
+  @if (isDetailView()) {
+    @if (state.selectedStudent(); as student) {
+      <app-student-detail
+        [student]="student"
+        (back)="navigateToList()"
+        (edit)="navigateToEdit(student.id)"
+      />
+    } @else {
+      <div class="rounded-2xl border border-gray-200 bg-white p-8 text-center text-gray-500 dark:border-gray-800 dark:bg-white/3">
+        Cargando detalles del estudiante...
+      </div>
+    }
+  }
+
+  <app-confirm-modal
+    [isOpen]="state.isConfirmModalOpen()"
+    title="Eliminar Estudiante"
+    message="¿Está seguro de que desea eliminar a este estudiante? Esta acción no se puede deshacer."
+    confirmText="Eliminar"
+    cancelText="Cancelar"
+    (confirm)="state.deleteStudent()"
+    (cancel)="state.closeConfirmModal()"
+  />
+</div>

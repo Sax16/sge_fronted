@@ -1,0 +1,141 @@
+<div class="overflow-hidden rounded-2xl border border-gray-200 bg-white dark:border-white/5 dark:bg-white/3">
+  <!-- Header Section -->
+  <div class="border-b border-gray-200 px-6 py-5 dark:border-white/5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-gray-50 dark:bg-white/2">
+    <div>
+      <h3 class="text-xl font-bold text-gray-900 dark:text-white">
+        {{ getFullName() }}
+      </h3>
+      <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">
+        DNI: <span class="font-medium text-gray-700 dark:text-gray-300">{{ student.dni }}</span>
+      </p>
+    </div>
+    
+    <div class="flex items-center gap-3">
+      <app-badge
+        size="md"
+        [variant]="'light'"
+        [color]="getBadgeColor(student.status)"
+      >
+        {{ student.status }}
+      </app-badge>
+      <div class="flex items-center gap-2 border-l pl-4 border-gray-200 dark:border-gray-800">
+        <app-button
+          size="sm"
+          variant="outline"
+          (btnClick)="back.emit()"
+          startIcon='<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-arrow-back-up"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M9 14l-4 -4l4 -4" /><path d="M5 10h11a4 4 0 1 1 0 8h-1" /></svg>'
+        >
+          Volver
+        </app-button>
+        <app-button
+          size="sm"
+          (btnClick)="edit.emit()"
+          startIcon='<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="size-5"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M7 7h-1a2 2 0 0 0 -2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2 -2v-1" /><path d="M20.385 6.585a2.1 2.1 0 0 0 -2.97 -2.97l-8.415 8.385v3h3l8.385 -8.415z" /><path d="M16 5l3 3" /></svg>'
+        >
+          Editar
+        </app-button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Detail Content Section -->
+  <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-10">
+    
+    <!-- Columna Izquierda: Información Personal y de Contacto -->
+    <div class="space-y-8">
+      
+      <!-- Información Personal -->
+      <div>
+        <h4 class="text-sm font-semibold text-gray-800 dark:text-white/90 border-b border-gray-200 dark:border-gray-800 pb-2 mb-4">
+          Información Personal
+        </h4>
+        <dl class="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-4">
+          <div>
+            <dt class="text-xs leading-normal text-gray-500 dark:text-gray-400">Género</dt>
+            <dd class="mt-1 text-sm text-gray-800 dark:text-white/90 font-medium">{{ student.gender }}</dd>
+          </div>
+          <div>
+            <dt class="text-xs leading-normal text-gray-500 dark:text-gray-400">Fecha de Nacimiento</dt>
+            <dd class="mt-1 text-sm text-gray-800 dark:text-white/90 font-medium">
+              {{ student.birthDate ? (student.birthDate | date:'longDate') : 'N/A' }}
+            </dd>
+          </div>
+        </dl>
+      </div>
+
+      <!-- Información de Contacto -->
+      <div>
+        <h4 class="text-sm font-semibold text-gray-800 dark:text-white/90 border-b border-gray-200 dark:border-gray-800 pb-2 mb-4">
+          Información de Contacto
+        </h4>
+        <dl class="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-4">
+          <div class="sm:col-span-2">
+            <dt class="text-xs leading-normal text-gray-500 dark:text-gray-400">Dirección</dt>
+            <dd class="mt-1 text-sm text-gray-800 dark:text-white/90 font-medium">{{ student.address || '--' }}</dd>
+          </div>
+          <div>
+            <dt class="text-xs leading-normal text-gray-500 dark:text-gray-400">Teléfono</dt>
+            <dd class="mt-1 text-sm text-gray-800 dark:text-white/90 font-medium">{{ student.phoneNumber || '--' }}</dd>
+          </div>
+          <div>
+            <dt class="text-xs leading-normal text-gray-500 dark:text-gray-400">Correo Electrónico</dt>
+            <dd class="mt-1 text-sm text-gray-800 dark:text-white/90 font-medium">{{ student.email || '--' }}</dd>
+          </div>
+        </dl>
+      </div>
+
+    </div>
+
+    <!-- Columna Derecha: Información Académica e Institucional -->
+    <div class="space-y-8">
+      
+      <!-- Información Académica -->
+      <div>
+        <h4 class="text-sm font-semibold text-gray-800 dark:text-white/90 border-b border-gray-200 dark:border-gray-800 pb-2 mb-4">
+          Información Académica
+        </h4>
+        <dl class="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-4">
+          <div>
+            <dt class="text-xs leading-normal text-gray-500 dark:text-gray-400">Nivel Educativo</dt>
+            <dd class="mt-1 text-sm text-gray-800 dark:text-white/90 font-medium">{{ student.level || 'No asignado' }}</dd>
+          </div>
+          <div>
+            <dt class="text-xs leading-normal text-gray-500 dark:text-gray-400">Grado</dt>
+            <dd class="mt-1 text-sm text-gray-800 dark:text-white/90 font-medium">{{ student.grade || 'No asignado' }}</dd>
+          </div>
+        </dl>
+      </div>
+
+      <!-- Información Administrativa -->
+      <div>
+        <h4 class="text-sm font-semibold text-gray-800 dark:text-white/90 border-b border-gray-200 dark:border-gray-800 pb-2 mb-4">
+          Información Administrativa
+        </h4>
+        <dl class="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-4">
+          <div class="sm:col-span-2">
+            <dt class="text-xs leading-normal text-gray-500 dark:text-gray-400">Nivel Económico</dt>
+            <dd class="mt-1 text-sm text-gray-800 dark:text-white/90 font-medium">{{ student.economicLevelName || 'No registrado' }}</dd>
+          </div>
+        </dl>
+      </div>
+
+      <!-- Metadatos de Registro -->
+      <div>
+        <h4 class="text-sm font-semibold text-gray-800 dark:text-white/90 border-b border-gray-200 dark:border-gray-800 pb-2 mb-4">
+          Datos de Sistema
+        </h4>
+        <dl class="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-4">
+          <div>
+            <dt class="text-xs leading-normal text-gray-500 dark:text-gray-400">Fecha de Registro</dt>
+            <dd class="mt-1 text-sm text-gray-800 dark:text-white/90 font-medium">{{ student.createdAt | date:'short' }}</dd>
+          </div>
+          <div>
+            <dt class="text-xs leading-normal text-gray-500 dark:text-gray-400">Última Actualización</dt>
+            <dd class="mt-1 text-sm text-gray-800 dark:text-white/90 font-medium">{{ student.updatedAt | date:'short' }}</dd>
+          </div>
+        </dl>
+      </div>
+      
+    </div>
+  </div>
+</div>

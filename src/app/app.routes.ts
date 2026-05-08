@@ -26,6 +26,7 @@ import { SchoolComponent } from './pages/school/school.component';
 import { GradesSectionsComponent } from './pages/grades-sections/grades-sections.component';
 import { UserRoleType } from './shared/constants/role.constant';
 import { EconomicLevelsComponent } from './pages/finances/economic-levels/economic-levels.component';
+import { StudentsComponent } from './pages/students/students.component';
 
 export const routes: Routes = [
   {
@@ -195,6 +196,36 @@ export const routes: Routes = [
             component: EmployeesComponent,
             title: 'Ver Empleado | ELOHIM SGE',
             data: { breadcrumb: 'Ver Empleado', mode: 'view' },
+          }
+        ],
+      },
+      {
+        path: 'students',
+        data: { breadcrumb: 'Gestión de Estudiantes' },
+        children: [
+          {
+            path: '',
+            component: StudentsComponent,
+            title: 'Gestión de Estudiantes | ELOHIM SGE',
+            data: { breadcrumb: 'Gestión de Estudiantes', mode: 'list' },
+          },
+          {
+            path: 'create',
+            component: StudentsComponent,
+            title: 'Registrar Estudiante | ELOHIM SGE',
+            data: { breadcrumb: 'Registrar Estudiante', mode: 'create' },
+          },
+          {
+            path: 'edit/:id',
+            component: StudentsComponent,
+            title: 'Editar Estudiante | ELOHIM SGE',
+            data: { breadcrumb: 'Editar Estudiante', mode: 'edit' },
+          },
+          {
+            path: 'view/:id',
+            component: StudentsComponent,
+            title: 'Ver Estudiante | ELOHIM SGE',
+            data: { breadcrumb: 'Ver Estudiante', mode: 'view' },
           }
         ],
       }

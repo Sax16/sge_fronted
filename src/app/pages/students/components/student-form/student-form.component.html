@@ -1,0 +1,195 @@
+<form [formGroup]="form" (ngSubmit)="onSubmit()" class="flex flex-col gap-6">
+  
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <!-- Nombres y Apellidos -->
+    <div class="col-span-1 lg:col-span-3">
+      <h4 class="text-sm font-medium text-gray-500 uppercase tracking-wider mb-3 dark:text-gray-400 border-b border-gray-100 dark:border-gray-800 pb-2">
+        Datos Personales
+      </h4>
+    </div>
+    
+    <div>
+      <app-label for="paternalSurname" required>Apellido Paterno</app-label>
+      <app-input-field-reactive
+        id="paternalSurname"
+        formControlName="paternalSurname"
+        placeholder="Ej. Pérez"
+        [error]="formErrors.shouldShowError('paternalSurname')"
+        [hint]="formErrors.getHint('paternalSurname')"
+      />
+    </div>
+
+    <div>
+      <app-label for="maternalSurname" required>Apellido Materno</app-label>
+      <app-input-field-reactive
+        id="maternalSurname"
+        formControlName="maternalSurname"
+        placeholder="Ej. Gómez"
+        [error]="formErrors.shouldShowError('maternalSurname')"
+        [hint]="formErrors.getHint('maternalSurname')"
+      />
+    </div>
+
+    <div>
+      <app-label for="name" required>Nombres</app-label>
+      <app-input-field-reactive
+        id="name"
+        formControlName="name"
+        placeholder="Ej. Juan Carlos"
+        [error]="formErrors.shouldShowError('name')"
+        [hint]="formErrors.getHint('name')"
+      />
+    </div>
+
+    <div>
+      <app-label for="dni" required>DNI</app-label>
+      <app-input-field-reactive
+        id="dni"
+        formControlName="dni"
+        placeholder="Ej. 12345678"
+        [error]="formErrors.shouldShowError('dni')"
+        [hint]="formErrors.getHint('dni')"
+      />
+    </div>
+
+    <div>
+      <app-label for="gender" required>Género</app-label>
+      <app-select-reactive
+        id="gender"
+        formControlName="gender"
+        [options]="genderOptions"
+        placeholder="Seleccionar género"
+        [error]="formErrors.shouldShowError('gender')"
+        [hint]="formErrors.getHint('gender')"
+      />
+    </div>
+
+    <div>
+      <app-date-picker-reactive
+        [id]="'birthDate'"
+        label="Fecha de Nacimiento"
+        placeholder="Seleccionar fecha"
+        formControlName="birthDate"
+        [error]="formErrors.shouldShowError('birthDate')"
+        [hint]="formErrors.getHint('birthDate')"
+      />
+    </div>
+
+    <!-- Información de Contacto -->
+    <div class="col-span-1 md:col-span-2 lg:col-span-3 mt-4">
+      <h4 class="text-sm font-medium text-gray-500 uppercase tracking-wider mb-3 dark:text-gray-400 border-b border-gray-100 dark:border-gray-800 pb-2">
+        Información de Contacto
+      </h4>
+    </div>
+
+    <div class="col-span-1 md:col-span-2 lg:col-span-1">
+      <app-label for="address">Dirección Físca</app-label>
+      <app-input-field-reactive
+        id="address"
+        formControlName="address"
+        placeholder="Ej. Av. Los Pinos 123"
+        [error]="formErrors.shouldShowError('address')"
+        [hint]="formErrors.getHint('address')"
+      />
+    </div>
+
+    <div>
+      <app-label for="phoneNumber">Teléfono</app-label>
+      <app-input-field-reactive
+        id="phoneNumber"
+        formControlName="phoneNumber"
+        placeholder="Ej. 987654321"
+        [error]="formErrors.shouldShowError('phoneNumber')"
+        [hint]="formErrors.getHint('phoneNumber') || 'Debe empezar con 9 y tener 9 dígitos'"
+      />
+    </div>
+
+    <div>
+      <app-label for="email">Correo Electrónico</app-label>
+      <app-input-field-reactive
+        id="email"
+        formControlName="email"
+        type="email"
+        placeholder="Ej. juan@correo.com"
+        [error]="formErrors.shouldShowError('email')"
+        [hint]="formErrors.getHint('email')"
+      />
+    </div>
+
+    <!-- Datos Académicos y Administrativos -->
+    <div class="col-span-1 md:col-span-2 lg:col-span-3 mt-4">
+      <h4 class="text-sm font-medium text-gray-500 uppercase tracking-wider mb-3 dark:text-gray-400 border-b border-gray-100 dark:border-gray-800 pb-2">
+        Datos Académicos y Administrativos
+      </h4>
+    </div>
+
+    <div>
+      <app-label for="level">Nivel Educativo</app-label>
+      <app-input-field-reactive
+        id="level"
+        formControlName="level"
+        placeholder="Asignación automática"
+        [error]="formErrors.shouldShowError('level')"
+        [hint]="formErrors.getHint('level')"
+      />
+      <p class="text-xs text-gray-400 mt-1">No editable. Se asigna automáticamente.</p>
+    </div>
+
+    <div>
+      <app-label for="grade">Grado</app-label>
+      <app-input-field-reactive
+        id="grade"
+        formControlName="grade"
+        placeholder="Asignación automática"
+        [error]="formErrors.shouldShowError('grade')"
+        [hint]="formErrors.getHint('grade')"
+      />
+      <p class="text-xs text-gray-400 mt-1">No editable. Se asigna automáticamente.</p>
+    </div>
+
+    <div>
+      <app-label for="status" required>Estado</app-label>
+      <app-select-reactive
+        id="status"
+        formControlName="status"
+        [options]="statusOptions"
+        placeholder="Seleccionar estado"
+        [error]="formErrors.shouldShowError('status')"
+        [hint]="formErrors.getHint('status')"
+      />
+    </div>
+
+    <div>
+      <app-label for="economicLevelId" required>Nivel Económico</app-label>
+      <app-select-reactive
+        id="economicLevelId"
+        formControlName="economicLevelId"
+        [options]="economicLevelOptions"
+        placeholder="Seleccionar nivel económico"
+        [error]="formErrors.shouldShowError('economicLevelId')"
+        [hint]="formErrors.getHint('economicLevelId')"
+      />
+    </div>
+
+  </div>
+
+  <div class="flex items-center justify-end gap-3 mt-4 border-t border-gray-200 dark:border-gray-800 pt-4">
+    <app-button
+      label="Cancelar"
+      size="sm"
+      variant="outline"
+      type="button"
+      (btnClick)="onCancel()"
+    >
+      Cancelar
+    </app-button>
+    <app-button
+      size="sm"
+      type="submit"
+      [disabled]="form.invalid"
+    >
+      {{ submitButtonText }}
+    </app-button>
+  </div>
+
+</form>
